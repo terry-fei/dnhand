@@ -1,0 +1,29 @@
+{
+  "name": "neau",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "nodemon server/server.coffee"
+  },
+  "dependencies": {
+    "colors": "*",
+    "express": "3.x",
+    "ejs": "*",
+    "iconv-lite": "*",
+    "request": "2.27.0",
+    "log4js": "*",
+    "async": "*",
+    "cheerio": "*",
+    "mongoose": "*",
+    "wechat": "*",
+    "when": "*",
+    "underscore": "*",
+    "connect-multiparty": "~1.0.3"
+  },
+  "devDependencies": {
+  },
+  "engines": {
+    "node": "~0.10.x",
+    "npm": "1.2.x"
+  }
+}

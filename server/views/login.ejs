@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head id="head">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" id="V" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>东农助手</title>
+    <link rel="stylesheet" name="" type="text/css" href="/assets/res/style.css" />
+    <script src="http://cdn.bootcss.com/zepto/1.1.3/zepto.min.js"></script>
+    <script type="text/javascript" src="/assets/res/core.main.js"></script>
+</head>
+
+<body>
+    <div id="main">
+        <noscript>
+            &lt;p class=&quot;nojs&quot;&gt;您的浏览器已经禁用了脚本，这可能会影响您正常使用本站的功能。&lt;/p&gt;
+        </noscript>
+
+        <div class="Fh_hbotno"></div>
+        <section class="F_homec F_hcmain">
+            <ul class="Fh_dtlul marg20">
+                <li class="F_liti F_green">登录</li>
+
+                <li><strong>学号：</strong>
+                    <div class="F_inpAddr">
+                        <input id="stuid" type="text" value="A" />
+                    </div>
+                </li>
+                <li><strong>密码：</strong>
+                    <div class="F_inpAddr">
+                        <input id="pswd" type="password" value="" />
+                    </div>
+                </li>
+            </ul>
+            <div class="btn_box marg40 margb20">
+                <span><button id="commit" class="p_click_pg centerBtn">确定 </button> </span>
+            </div>
+        </section>
+    </div>
+
+<div id="dialog" style="display:none;"></div>
+<div class="margb20"></div>
+<section id="loadingBox" class="fullHtml" style="display:none;"><i></i><span>加载中..</span></section>
+<section id="maskBox" class="Fh_qdown_apv box-shadow" style="display:none;"><h1 class="F_red"></h1><p></p><span class="F_grey2">——东农助手——</span></section>
+<script type="text/javascript">
+  var stuid = null;
+  var pswd = null;
+  var ticket = null;
+  $("#commit").on("click", function (e) {
+    if(!(/^A\d{8}$/).test($("#stuid").val())){
+      return alert("学号格式不正确!");
+    }
+    if(!$("#pswd").val()) {
+      return alert("请输入密码!");
+    }
+    var _maskArea = new M.mask('#loadingBox');
+    stuid = $("#stuid").val();
+    pswd = $("#pswd").val();
+    $.post("/login", {
+        stuid: stuid,
+        pswd: pswd
+      }, function (res) {
+          _maskArea.hide();
+          if(!!res) {
+            if(!res.errcode){
+              setTimeout(function() {
+                location.assign('/');
+              }, 10);
+            } else if(res.errcode === 2) {
+              $("#pswd").val('');
+              $("#pswd").focus();
+              alert('学号或密码错误');
+            } else {
+              alert('服务器开小差了，请稍候再试');
+            }
+          } else {
+            alert('服务器开小差了，请稍候再试');
+          }
+      }, "json");
+  });
+</script>
+
+</body>
+
+</html>
