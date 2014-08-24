@@ -42,7 +42,7 @@ handler = (req, res) ->
             请点击查看你的成绩单
             """
       url = "http://n.feit.me/info/allgrade/#{msg.FromUserName}"
-      imageTextItem = new ImageText("#{student.name}同学的全部成绩", desc)
+      imageTextItem = new ImageText("#{student.name}同学的全部成绩", desc, url)
       return res.reply([imageTextItem])
 
   else if ct is "nowgrade"
@@ -151,7 +151,8 @@ getNowGrade = (req, res) ->
     if student && student.pswd && student.is_pswd_invalid != true
       info.getQbGrade student.stuid, (err, grade) ->
         if !grade
-          info.updateUserData(student.stuid)
+          process.nextTick () ->
+            info.updateUserData(student.stuid)
           return res.reply('正在获取你的信息\n     请稍候...')
         result = grade['qb']['2013-2014学年春(两学期)']
         if !result || result.length is 0
@@ -161,11 +162,13 @@ getNowGrade = (req, res) ->
         for item in result
           gradeStr.push("#{item.kcm}\n")
           gradeStr.push("成绩：#{item.cj}\n")
+          gradeStr.push("------------------\n")
         gradeStr.push("仅显示及格科目成绩！")
-        res.reply(gradeStr.join(''))
-        info.updateUserData(student.stuid)
+        process.nextTick () ->
+          info.updateUserData(student.stuid)
+        return res.reply(gradeStr.join(''))
     else
-      res.reply """
+      return res.reply """
                 你未绑定学号或更改了教务系统密码
                 请回复'绑定'重新认证身份信息
                 """
@@ -181,7 +184,8 @@ getBjgGrade = (req, res) ->
     if student && student.pswd && student.is_pswd_invalid != true
       info.getAllGrade student.stuid, (err, grade) ->
         if !grade
-          info.updateUserData(student.stuid)
+          process.nextTick () ->
+            info.updateUserData(student.stuid)
           return res.reply('正在获取你的信息\n     请稍候...')
         result = _.values(grade['fa'])[0]
         if !result || result.length is 0
@@ -193,10 +197,12 @@ getBjgGrade = (req, res) ->
             gradeStr.push("#{item.kcm}\n")
             gradeStr.push("学分：#{item.xf}\n")
             gradeStr.push("成绩：#{item.cj}\n")
-        res.reply(gradeStr.join(''))
-        info.updateUserData(student.stuid)
+            gradeStr.push("------------------\n")
+        process.nextTick () ->
+          info.updateUserData(student.stuid)
+        return res.reply(gradeStr.join(''))
     else
-      res.reply """
+      return res.reply """
                 你未绑定学号或更改了教务系统密码
                 请回复'绑定'重新认证身份信息
                 """

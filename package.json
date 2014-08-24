@@ -1,9 +1,9 @@
 {
-  "name": "neau",
+  "name": "dnhand",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "nodemon server/server.coffee"
+    "start": "coffee server/server.coffee"
   },
   "dependencies": {
     "colors": "*",
@@ -24,6 +24,6 @@
   },
   "engines": {
     "node": "~0.10.x",
-    "npm": "1.2.x"
+    "npm": "*"
   }
 }
