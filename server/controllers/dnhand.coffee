@@ -15,12 +15,11 @@ class ImageText
     @url = url
     @picurl = picurl
 
-
 handler = (req, res) ->
   msg = req.weixin
   ct = msg.Content ? msg.EventKey
   if msg.Event is "subscribe" or !ct
-    replyNoMatchMsg req, res
+    return replyNoMatchMsg req, res
 
   else if req.wxsession.status
     zt = req.wxsession.status
@@ -73,6 +72,9 @@ handler = (req, res) ->
     url = "weixin://contacts/profile/q13027722"
     imageTextItem = new ImageText(title, desc, url)
     return res.reply([imageTextItem])
+  
+  else if ct is "todaysyllabus"
+    getTodaySyllabus(req, res)
 
   else if ct.substring(0, 1) is "A" and ct.length is 9
     info.getProfileByStuid ct, (err, student) ->
@@ -112,7 +114,7 @@ handler = (req, res) ->
     imageTextItem = new ImageText(title, desc, url)
     return res.reply([imageTextItem])
   else
-    replyNoMatchMsg req, res
+    return replyNoMatchMsg req, res
 
 replyNoMatchMsg = (req, res) ->
   info.isBind req.weixin.FromUserName, (err, openid) ->
@@ -139,6 +141,14 @@ replyNoMatchMsg = (req, res) ->
 getTodaySyllabus = (req, res) ->
   msg = req.weixin
   info.getProfileByOpenid msg.FromUserName, (err, student) ->
+    day = new Date().getDay()
+    info.getSyllabus student.stuid, day, (err, ins) ->
+      if err
+        return res.reply('请稍候再试')
+      if !ins
+        return res.reply('未找到课表信息，请回复"绑定"，重新绑定账户信息')
+      else
+        return res.reply(JSON.stringify(ins))
 
 getNowGrade = (req, res) ->
   msg = req.weixin
@@ -210,8 +220,9 @@ getBjgGrade = (req, res) ->
 _replyExamInfo = (msgs, res) ->
   if msgs.length is 0
     return res.reply '暂无考试信息'
-  else
+  else if msgs.length > 8
     examInfo = []
+    nameAndStuidStr = '姓名:' + msgs[0].stuName + '\n' + '学号:' + msgs[0].stuid + '\n'
     examInfo.push('姓名:' + msgs[0].stuName + '\n')
     examInfo.push('学号:' + msgs[0].stuid + '\n')
     examInfo.push('------------------\n')
@@ -221,5 +232,14 @@ _replyExamInfo = (msgs, res) ->
       examInfo.push("地点:#{msg.location}\n")
       examInfo.push("------------------\n")
     return res.reply examInfo.join('')
+  else
+    result = []
+    result.push(new ImageText('      补考查询'))
+    nameAndStuidStr = '  姓名:' + msgs[0].stuName + '\n' + '  学号:' + msgs[0].stuid + '\n'
+    result.push(new ImageText(nameAndStuidStr))
+    for msg in msgs
+      examStr = "#{msg.courseName}\n" + "时间:#{msg.time}\n" + "地点:#{msg.location}\n"
+      result.push(new ImageText(examStr))
+    return res.reply result
 
 module.exports = wechat "feit", handler

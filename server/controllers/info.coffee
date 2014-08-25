@@ -22,6 +22,9 @@ info = {
 
   getNowGrade: (ticket, callback) ->
     netInfo.getGrade ticket, 'bxq', callback
+    
+  getSyllabus: (stuid, day, callback) ->
+    Syllabus.findOne {'stuid': stuid}, day, callback
 
   getProfileByTicket: (ticket, callback) ->
     netInfo.getProfile ticket, callback
