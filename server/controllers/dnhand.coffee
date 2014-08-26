@@ -203,6 +203,7 @@ getSyllabus = (req, res, day) ->
       if result.length is 1
         result.push(new ImageText("今天没课！"))
       result.push(new ImageText("      本周为第#{moment().week() - 35}周"))
+      return res.reply(result)
 
 getNowGrade = (req, res) ->
   msg = req.weixin
