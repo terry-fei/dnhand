@@ -160,7 +160,7 @@ getSyllabus = (req, res, day) ->
           info.updateUserData(student.stuid)
         return res.reply('正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息')
       syllabus = ins[day]
-      result = [new ImageText("                       #{moment().format('dddd')}")]
+      result = [new ImageText("                       #{_switchWeekDayName(day)}")]
       if syllabus['1']
         str = """
             第一节：#{syllabus['1'].name}
@@ -207,6 +207,16 @@ getSyllabus = (req, res, day) ->
         result.push(new ImageText("今天没课！"))
       result.push(new ImageText("                  本周为第#{moment().week() - 35}周"))
       return res.reply(result)
+
+_switchWeekDayName = (day) ->
+  switch day
+    when 1 then "星期一"
+    when 2 then "星期二"
+    when 3 then "星期三"
+    when 4 then "星期四"
+    when 5 then "星期五"
+    when 6 then "星期六"
+    when 7 then "星期日"
 
 getNowGrade = (req, res) ->
   msg = req.weixin
