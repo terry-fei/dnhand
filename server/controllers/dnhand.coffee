@@ -5,6 +5,8 @@ OpenId  = require '../models/OpenId'
 iconv = require 'iconv-lite'
 cheerio = require 'cheerio'
 _ = require 'underscore'
+moment = require 'moment'
+moment.locale("zh-cn")
 
 info = require './info'
 
@@ -74,7 +76,14 @@ handler = (req, res) ->
     return res.reply([imageTextItem])
   
   else if ct is "todaysyllabus"
-    getTodaySyllabus(req, res)
+    day = moment().day()
+    if day is 0
+      day = 7
+    getSyllabus(req, res, day)
+    
+  else if ct is "tomorrowsyllabus"
+    day = moment().day() + 1
+    getSyllabus(req, res, day)
 
   else if ct.substring(0, 1) is "A" and ct.length is 9
     info.getProfileByStuid ct, (err, student) ->
@@ -138,17 +147,62 @@ replyNoMatchMsg = (req, res) ->
       imageTextItem = new ImageText(title, desc, url)
       return res.reply([imageTextItem])
 
-getTodaySyllabus = (req, res) ->
+getSyllabus = (req, res, day) ->
   msg = req.weixin
   info.getProfileByOpenid msg.FromUserName, (err, student) ->
-    day = new Date().getDay()
-    info.getSyllabus student.stuid, day, (err, ins) ->
+    info.getSyllabus student.stuid, day + '', (err, ins) ->
       if err
         return res.reply('请稍候再试')
       if !ins
-        return res.reply('未找到课表信息，请回复"绑定"，重新绑定账户信息')
-      else
-        return res.reply(JSON.stringify(ins))
+        process.nextTick () ->
+          info.updateUserData(student.stuid)
+        return res.reply('正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息')
+      result = [new ImageText("                #{moment().format('dddd')}")]
+      if ins['1']
+        str = """
+            第一节：#{ins['1'].name}
+            @#{ins['1'].room}  by#{ins['1'].teacher}
+            #{ins['1'].week}
+            """
+        result.push(new ImageText(str))
+      else if ins['2']
+        str = """
+            第二节：#{ins['2'].name}
+            @#{ins['2'].room}  by#{ins['2'].teacher}
+            #{ins['2'].week}
+            """
+        result.push(new ImageText(str))
+      else if ins['3']
+        str = """
+            第三节：#{ins['3'].name}
+            @#{ins['3'].room}  by#{ins['3'].teacher}
+            #{ins['3'].week}
+            """
+        result.push(new ImageText(str))
+      else if ins['4']
+        str = """
+            第四节：#{ins['4'].name}
+            @#{ins['4'].room}  by#{ins['4'].teacher}
+            #{ins['4'].week}
+            """
+        result.push(new ImageText(str))
+      else if ins['5']
+        str = """
+            第五节：#{ins['5'].name}
+            @#{ins['5'].room}  by#{ins['5'].teacher}
+            #{ins['5'].week}
+            """
+        result.push(new ImageText(str))
+      else if ins['6']
+        str = """
+            第六节：#{ins['6'].name}
+            @#{ins['6'].room}  by#{ins['6'].teacher}
+            #{ins['6'].week}
+            """
+        result.push(new ImageText(str))
+      if result.length is 1
+        result.push(new ImageText("今天没课！"))
+      result.push(new ImageText("      本周为第#{moment().week() - 35}周"))
 
 getNowGrade = (req, res) ->
   msg = req.weixin
@@ -234,11 +288,11 @@ _replyExamInfo = (msgs, res) ->
     return res.reply examInfo.join('')
   else
     result = []
-    result.push(new ImageText('      补考查询'))
-    nameAndStuidStr = '  姓名:' + msgs[0].stuName + '\n' + '  学号:' + msgs[0].stuid + '\n'
+    result.push(new ImageText('                补考查询'))
+    nameAndStuidStr = '  姓名:' + msgs[0].stuName + '\n' + '  学号:' + msgs[0].stuid
     result.push(new ImageText(nameAndStuidStr))
     for msg in msgs
-      examStr = "#{msg.courseName}\n" + "时间:#{msg.time}\n" + "地点:#{msg.location}\n"
+      examStr = "#{msg.courseName}\n" + "时间:#{msg.time}\n" + "地点:    #{msg.location}"
       result.push(new ImageText(examStr))
     return res.reply result
 
