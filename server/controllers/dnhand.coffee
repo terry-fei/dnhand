@@ -161,13 +161,13 @@ getSyllabus = (req, res, day) ->
         return res.reply('正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息')
       syllabus = ins[day]
       weedDayName = switch
-        when day is 1 then "星期一"
-        when day is 2 then "星期二"
-        when day is 3 then "星期三"
-        when day is 4 then "星期四"
-        when day is 5 then "星期五"
-        when day is 6 then "星期六"
-        when day is 7 then "星期日"
+        when day is '1' then "星期一"
+        when day is '2' then "星期二"
+        when day is '3' then "星期三"
+        when day is '4' then "星期四"
+        when day is '5' then "星期五"
+        when day is '6' then "星期六"
+        when day is '7' then "星期日"
       result = [new ImageText("                    #{weedDayName}")]
       if syllabus['1']
         str = """
