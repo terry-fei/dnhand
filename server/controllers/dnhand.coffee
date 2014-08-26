@@ -126,6 +126,7 @@ handler = (req, res) ->
     return replyNoMatchMsg req, res
 
 replyNoMatchMsg = (req, res) ->
+  msg = req.weixin
   info.isBind req.weixin.FromUserName, (err, openid) ->
     if err
       return res.reply '请稍候再试'
