@@ -66,7 +66,7 @@ handler = (req, res) ->
     imageTextItem = new ImageText(title, desc, url)
     return res.reply([imageTextItem])
 
-  else if ct is "youni"
+  else if ct is "fankui"
     title = "东农助手"
     desc = """
           有问题可以加我微信，回复'hi'，查看我的微信号
