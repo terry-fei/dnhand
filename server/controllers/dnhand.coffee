@@ -160,52 +160,52 @@ getSyllabus = (req, res, day) ->
           info.updateUserData(student.stuid)
         return res.reply('正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息')
       syllabus = ins[day]
-      result = [new ImageText("                #{moment().format('dddd')}")]
+      result = [new ImageText("                       #{moment().format('dddd')}")]
       if syllabus['1']
         str = """
             第一节：#{syllabus['1'].name}
-            @#{syllabus['1'].room}  by#{syllabus['1'].teacher}
-            #{syllabus['1'].week}
+            教室： #{syllabus['1'].room}    任课教师： #{syllabus['1'].teacher}
+            上课周次：  #{syllabus['1'].week}
             """
         result.push(new ImageText(str))
-      else if syllabus['2']
+      if syllabus['2']
         str = """
             第二节：#{syllabus['2'].name}
-            @#{syllabus['2'].room}  by#{syllabus['2'].teacher}
-            #{syllabus['2'].week}
+            教室： #{syllabus['2'].room}    任课教师： #{syllabus['2'].teacher}
+            上课周次：  #{syllabus['2'].week}
             """
         result.push(new ImageText(str))
-      else if syllabus['3']
+      if syllabus['3']
         str = """
             第三节：#{syllabus['3'].name}
-            @#{syllabus['3'].room}  by#{syllabus['3'].teacher}
-            #{syllabus['3'].week}
+            教室： #{syllabus['3'].room}    任课教师： #{syllabus['3'].teacher}
+            上课周次：  #{syllabus['3'].week}
             """
         result.push(new ImageText(str))
-      else if syllabus['4']
+      if syllabus['4']
         str = """
             第四节：#{syllabus['4'].name}
-            @#{syllabus['4'].room}  by#{syllabus['4'].teacher}
-            #{syllabus['4'].week}
+            教室： #{syllabus['4'].room}    任课教师： #{syllabus['4'].teacher}
+            上课周次：  #{syllabus['4'].week}
             """
         result.push(new ImageText(str))
-      else if syllabus['5']
+      if syllabus['5']
         str = """
             第五节：#{syllabus['5'].name}
-            @#{syllabus['5'].room}  by#{syllabus['5'].teacher}
-            #{syllabus['5'].week}
+            教室： #{syllabus['5'].room}    任课教师： #{syllabus['5'].teacher}
+            上课周次：  #{syllabus['5'].week}
             """
         result.push(new ImageText(str))
-      else if syllabus['6']
+      if syllabus['6']
         str = """
             第六节：#{syllabus['6'].name}
-            @#{syllabus['6'].room}  by#{syllabus['6'].teacher}
-            #{syllabus['6'].week}
+            教室： #{syllabus['6'].room}    任课教师： #{syllabus['6'].teacher}
+            上课周次：  #{syllabus['6'].week}
             """
         result.push(new ImageText(str))
       if result.length is 1
         result.push(new ImageText("今天没课！"))
-      result.push(new ImageText("      本周为第#{moment().week() - 35}周"))
+      result.push(new ImageText("                  本周为第#{moment().week() - 35}周"))
       return res.reply(result)
 
 getNowGrade = (req, res) ->
