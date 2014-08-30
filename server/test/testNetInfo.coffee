@@ -11,5 +11,14 @@ getSyllabus = () ->
   netInfo.getSyllabus ticket, (err, syllabus) ->
     console.error err.message if err
     console.log syllabus
+    
+#230223199505182321 cet4
+getCetNumByIdcard = () ->
+  netInfo.getCetNumByIdcard '230223199505182321', (err, url) ->
+    console.log(url || err.message)
+    
+getCetGrade = () ->
+  netInfo.getCetGrade '230280141115023', '杨雪', (err, result) ->
+    console.log result || err
 
-getSyllabus()
+getCetGrade()

@@ -43,6 +43,42 @@ netInfo = {
       else
         callback new Error('school server error')
     ).form(params)
+    
+  getCetNumByIdcard: (idcard, callback) ->
+    cet4url = "http://202.118.167.91/bm/cetzkz/images/w4/#{idcard}.jpg"
+    cet6url = "http://202.118.167.91/bm/cetzkz/images/w6/#{idcard}.jpg"
+    request.get cet4url, (err, res) ->
+      if err
+        return callback(new Error("get cet number error"))
+      if res && res.statusCode == 200
+        callback(null, {type: '四', url: cet4url})
+      else
+        request.get cet6url, (err, res1) ->
+          if err
+            return callback(new Error("get cet number error"))
+          if res1 && res1.statusCode == 200
+            callback(null, {type: '六', url: cet6url})
+          else
+            callback(new Error('nothing'))
+            
+  getCetGrade: (cetNum, name, callback) ->
+    cetGradeUrl = "http://www.chsi.com.cn/cet/query?zkzh=#{cetNum}&xm=#{encodeURIComponent(name)}"
+    options = 
+      url: cetGradeUrl
+      headers:
+        'Referer': 'http://www.chsi.com.cn/cet/'
+        
+    request options, (err, res, body) ->
+      if err
+        return callback(err)
+      if res && res.statusCode == 200
+        cetGrade = parseCetGradeHtml body
+        if cetGrade and cetGrade.name and cetGrade.totle
+          callback null, cetGrade
+        else
+          callback new Error('nothing')
+      else
+        return callback(new Error('unkonw error'))
 
   getProfile: (ticket, callback) ->
     getPageFromSchoolServer ticket, "http://202.118.167.86/xjInfoAction.do?oper=xjxx", (err, html) ->
@@ -101,6 +137,47 @@ netInfo = {
       grade = parseGradeHtml(html, keys, groupNames)
       callback(null, grade)
 }
+
+parseCetGradeHtml = (cetHtml) ->
+  if /无法找到对应的分数/gi.test(cetHtml)
+	  return null
+
+  tdTagReg = /<td.*?>[\s\S]*?<\/td>/gi
+  tdTags = []
+  while (tdTag = tdTagReg.exec(cetHtml))
+  	tdTags.push(tdTag[0].replace(/<td>|<\/td>/g, ''))
+
+  name = tdTags[2];
+  schoolName = tdTags[3];
+  type = tdTags[4];
+  cetNumber = tdTags[5];
+  examDate = tdTags[6];
+  
+  gradeItemsStr = tdTags[7]
+  gradeReg = /\d{1,3}/gi
+  gradeItems = []
+  while (gradeItem = gradeReg.exec(gradeItemsStr)) 
+  	gradeItems.push(gradeItem[0])
+  	
+  totle = gradeItems[0];
+  listening = gradeItems[2];
+  read = gradeItems[4];
+  write = gradeItems[6];
+  
+  grade = {
+    name: name,
+    schoolName: schoolName,
+    type: type,
+    cetNumber: cetNumber,
+    examDate: examDate,
+    totle: totle,
+    listening: listening,
+    read: read,
+    write: write
+  }
+  	
+  grade
+  
 
 parseBuKaoHtml = (examHtml) ->
   msgs    = []

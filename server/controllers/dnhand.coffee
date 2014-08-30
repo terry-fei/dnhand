@@ -24,10 +24,44 @@ handler = (req, res) ->
     return replyNoMatchMsg req, res
 
   else if req.wxsession.status
-    zt = req.wxsession.status
+    status = req.wxsession.status
     if ct is "取消"
       delete req.wxsession.status
       return res.reply "已返回正常模式"
+    else if status is 'cet'
+      step = req.wxsession.cetStep
+      if step is 'replyCetNum'
+        if ct.length is 15
+          req.wxsession.cetNum = ct
+          req.wxsession.cetStep = 'replyName'
+          return res.reply '请回复你的姓名'
+        else
+          return res.reply '你回复的准考证号格式不正确'
+      else if step is 'replyName'
+        delete res.wxsession.status
+        delete res.wxsession.cetStep
+        delete res.wxsession.cetNum
+        cetNum = req.wxsession.cetNum
+        name = ct
+        info.getCetGrade cetNum, name, (err, grade) ->
+          if err
+            return res.reply '发生错误，请稍候再试'
+          if !grade
+            return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重试'
+          if grade and grade.name and grade.totle
+            result = [new ImageText("             #{grade.type}成绩")]
+            gradeStr = """
+                        姓名：#{grade.name}
+                        学校：#{grade.schoolName}
+                        考试时间：#{grade.examDate}
+                        
+                        总分：#{grade.totle}
+                        听力：#{grade.listening}
+                        阅读：#{grade.read}
+                        写作和翻译：#{grade.write}
+                      """
+            result.push(new ImageText(gradeStr))
+            return res.reply result
 
   else if ct is "allgrade"
     info.getProfileByOpenid msg.FromUserName, (err, student) ->
@@ -70,6 +104,7 @@ handler = (req, res) ->
     title = "东农助手"
     desc = """
           有问题可以加我微信，回复'hi'，查看我的微信号
+          回复“绑定”可以更换绑定的学号
           """
     url = "weixin://contacts/profile/q13027722"
     imageTextItem = new ImageText(title, desc, url)
@@ -113,6 +148,21 @@ handler = (req, res) ->
 
   else if ct is "exam"
     return res.reply "请回复 '补考'+'学号' 查询补考信息\n例如查询学号为A19120000的补考信息\n'补考A19120000'"
+    
+  else if ct is "cet"
+    req.wxsession.status = "cet"
+    req.wxsession.cetStep = 'replyCetNum'
+    return res.reply '请回复你的准考证号，农大的同学如果忘记了准考证号可以先回复“取消”，再回复你的身份证号码查询'
+    
+  else if ct.length is 18
+    info.getCetNumByIdcard ct, (err, result) ->
+      if err
+        if err.message == 'nothing'
+          return res.reply '没有找到准考证信息'
+        return res.reply '网络错误，请稍候再试'
+      title = "#{result.type}级准考证"
+      description = "请点击查看你的#{result.type}级准考证"
+      return res.reply([new ImageText(title, description, result.url)])
 
   else if ct is '绑定'
     title = "东农助手"

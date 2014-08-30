@@ -13,6 +13,10 @@ info = {
     OpenId.findOne {'openid': openid}, callback
 
   checkTicket: netInfo.checkTicket
+  
+  getCetNumByIdcard: netInfo.getCetNumByIdcard
+  
+  getCetGrade: netInfo.getCetGrade
 
   getAllGrade: (stuid, callback) ->
     Grade.findOne {'stuid': stuid}, 'fa', callback
@@ -22,7 +26,7 @@ info = {
 
   getNowGrade: (ticket, callback) ->
     netInfo.getGrade ticket, 'bxq', callback
-    
+
   getSyllabus: (stuid, day, callback) ->
     Syllabus.findOne {'stuid': stuid}, day, callback
 
@@ -36,7 +40,7 @@ info = {
     self = this
     self.isBind openid, (err, openid) ->
       if err
-        return callback err 
+        return callback err
       if openid
         self.getProfileByStuid openid.stuid, callback
       else
