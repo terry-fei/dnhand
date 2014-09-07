@@ -21,4 +21,9 @@ getQbGrade = () ->
     console.log grade['qb']['2013-2014学年春(两学期)']
     process.exit(1)
 
-getProfileByStuid()
+getRank = () ->
+  info.getRank 'A19120626', (err, student) ->
+    console.log err || student
+    process.exit(1)
+
+getRank()

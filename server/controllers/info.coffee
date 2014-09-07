@@ -2,10 +2,23 @@ netInfo = require './netInfo'
 _ = require 'underscore'
 async = require 'async'
 
+mysql = require('mysql')
+Thenjs = require('thenjs')
+
+mailer = require '../utils/mailer'
+
 Student = require("../models").Student
 OpenId = require("../models").OpenId
 Syllabus = require("../models").Syllabus
 Grade = require("../models").Grade
+
+pool = mysql.createPool({
+  connectionLimit: 10,
+  host: 'localhost',
+  user: 'root',
+  password: 'f6788f17',
+  database: 'intel_grade'
+});
 
 info = {
 
@@ -46,11 +59,15 @@ info = {
       else
         callback(new Error('openid not found'))
 
-  saveProfile: (ticket, stuid, callback) ->
+  saveProfile: (ticket, stuid) ->
     self = this
     self.getProfileByStuid stuid, (err, student) ->
       if !student || !student.sex || !student.major || student.class
         self.getProfileByTicket ticket, (err, profile) ->
+          if err
+              title = stuid + '获取个人信息发生错误'
+              mailer.sendErrorMail(title, err)
+              return
           if profile && profile.xm && profile.xb && profile.zy && profile.bj
             student.name = profile.xm
             student.sex = profile.xb
@@ -58,27 +75,50 @@ info = {
             student.class = profile.bj
             student.major = profile.zy
             student.year = profile.nj
-            student.save callback
+            student.save (err, ins) ->
+              if err
+                title = stuid + '存储个人信息发生错误'
+                mailer.sendErrorMail(title, err)
 
-  saveGrade: (ticket, stuid, callback) ->
+  saveGrade: (ticket, stuid) ->
     async.parallel [
       (asyncCallback) ->
         netInfo.getGrade ticket, 'fa', asyncCallback
       ,(asyncCallback) ->
         netInfo.getGrade ticket, 'qb', asyncCallback
       ], (err, results) ->
-        Grade.findOneAndUpdate {'stuid': stuid}, {$set: {'fa': results[0], 'qb': results[1]}}, {upsert: true}, callback
+        Grade.findOneAndRemove {'stuid': stuid}, (err) ->
+          if err
+            title = stuid + '获取成绩发生错误'
+            mailer.sendErrorMail(title, err)
+          grade = {
+            stuid: stuid,
+            fa: results[0],
+            qb: results[1]
+          }
+          gradeIns = new Grade(grade)
+          gradeIns.save (err, ins) ->
+            if err
+              title = stuid + '获取成绩发生错误'
+              mailer.sendErrorMail(title, err)
 
-  saveSyllabus: (ticket, stuid, callback) ->
+  saveSyllabus: (ticket, stuid) ->
+    sendError = (err) ->
+      title = stuid + '获取课表发生错误'
+      mailer.sendErrorMail(title, err)
     netInfo.getSyllabus ticket, (err, syllabus) ->
-      if err
-        return callback err
-      if syllabus
-        Syllabus.findOneAndRemove {'stuid': stuid}, (err) ->
-          syllabus.stuid = stuid
-          new Syllabus(syllabus).save callback
-      else
-        callback(new Error('school server error'))
+      if err or !syllabus
+        sendError(err||'parse syllabus error')
+        return
+
+      Syllabus.findOneAndRemove {'stuid': stuid}, (err) ->
+        if err
+          sendError(err)
+          return
+        syllabus.stuid = stuid
+        new Syllabus(syllabus).save (err, ins) ->
+          if err
+            sendError('save syllabus error')
 
   getExamInfo: netInfo.getExamInfo
 
@@ -109,11 +149,47 @@ info = {
   saveUserData: (stuid, ticket) ->
     self = this
     process.nextTick () ->
-      self.saveProfile ticket, stuid, (err) ->
+      self.saveProfile ticket, stuid
 
-      self.saveGrade ticket, stuid, (err) ->
+    process.nextTick () ->
+      self.saveGrade ticket, stuid
 
-      self.saveSyllabus ticket, stuid, (err) ->
+    process.nextTick () ->
+      self.saveSyllabus ticket, stuid
+
+  getRank: (stuid, callback) ->
+    student = {}
+    Thenjs((cont) ->
+      pool.query('SELECT * FROM grade WHERE stuid = ?', [stuid], cont)
+    ).
+    then((cont, arg) ->
+      student = arg[0]
+      student.zyGradeV = student.zyGrade + 0.00001
+      student['vagueClass'] = student['className'].substring(0, 4) + '__'
+      cont()
+    ).
+    parallel([(cont) ->
+      pool.query('SELECT count(className) AS clmcount FROM grade WHERE className=?', [student['className']], cont)
+    ,
+    (cont) ->
+      pool.query('SELECT count(className) AS mjcount FROM grade WHERE className LIKE ?', [student['vagueClass']], cont)
+    ,
+    (cont) ->
+      pool.query('SELECT count(className) AS clmrank FROM grade WHERE className=? AND zyGrade > ?', [student['className'], student['zyGradeV']], cont)
+    ,
+    (cont) ->
+      pool.query('SELECT count(className) AS mjrank FROM grade WHERE className LIKE ? AND zyGrade > ?', [student['vagueClass'], student['zyGradeV']], cont)
+    ]).
+    then((cont, result) ->
+      student['clmcount'] = result[0][0]['clmcount']
+      student['mjcount'] = result[1][0]['mjcount']
+      student['clmrank'] = result[2][0]['clmrank'] + 1
+      student['mjrank'] = result[3][0]['mjrank'] + 1
+      callback(null, student)
+    ).
+    fail((cont, error) ->
+      callback(error)
+    )
 
   route: (app) ->
     self = this
@@ -160,7 +236,7 @@ info = {
           self.getAllGrade student.stuid, (err, grade) ->
             if !grade
               self.updateUserData(student)
-              return res.end('正在获取你的信息\n     请稍候访问...')
+              return res.render 'notify', {title: "请稍候", content: "正在获取你的信息\n     请稍候访问..."}
             result = _.values(grade['fa'])[0]
             if !result || result.length is 0
               self.updateUserData(student)

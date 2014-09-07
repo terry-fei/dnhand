@@ -38,18 +38,19 @@ handler = (req, res) ->
         else
           return res.reply '你回复的准考证号格式不正确'
       else if step is 'replyName'
-        delete res.wxsession.status
-        delete res.wxsession.cetStep
-        delete res.wxsession.cetNum
         cetNum = req.wxsession.cetNum
         name = ct
+        delete req.wxsession.status
+        delete req.wxsession.cetStep
+        delete req.wxsession.cetNum
         info.getCetGrade cetNum, name, (err, grade) ->
           if err
+            if err.message == "nothing"
+              return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重试'
             return res.reply '发生错误，请稍候再试'
-          if !grade
-            return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重试'
-          if grade and grade.name and grade.totle
-            result = [new ImageText("             #{grade.type}成绩")]
+
+          if grade and grade.name == name
+            result = [new ImageText("                #{grade.type}成绩")]
             gradeStr = """
                         姓名：#{grade.name}
                         学校：#{grade.schoolName}
@@ -62,6 +63,8 @@ handler = (req, res) ->
                       """
             result.push(new ImageText(gradeStr))
             return res.reply result
+          else
+            return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重新回复\'cet\''
 
   else if ct is "allgrade"
     info.getProfileByOpenid msg.FromUserName, (err, student) ->
@@ -153,7 +156,35 @@ handler = (req, res) ->
     req.wxsession.status = "cet"
     req.wxsession.cetStep = 'replyCetNum'
     return res.reply '请回复你的准考证号，农大的同学如果忘记了准考证号可以先回复“取消”，再回复你的身份证号码查询'
-    
+
+  else if ct is "排名"
+    info.getProfileByOpenid msg.FromUserName, (err, student) ->
+      if err
+        if err.message is 'openid not found'
+          return res.reply "查询排名需先绑定账户\n   请回复'绑定'"
+        else
+          return res.reply "请稍候再试"
+      info.getRank student.stuid, (err, grade) ->
+        if err or !grade
+          return res.reply "请稍候再试"
+        if grade
+          clmpercent = Math.round(( (grade.clmcount - grade.clmrank + 1) / grade.clmcount) * 100)
+          mjpercent = Math.round(( (grade.mjcount - grade.mjrank + 1) / grade.mjcount) * 100)
+
+          result = []
+          result.push(new ImageText("            #{grade.className}  #{grade.name}"))
+          result.push(new ImageText("""
+            智育成绩：#{grade.zyGrade}
+            总学分绩：#{grade.totleGrade}
+            班级排名：#{grade.clmrank}
+            班级总人数：#{grade.clmcount}
+            专业排名：#{grade.mjrank}
+            专业总人数：#{grade.mjcount}
+            你击败了班级：#{clmpercent}%的同学
+            击败了同专业：#{mjpercent}%的同学
+            """))
+          return res.reply result
+
   else if ct.length is 18
     info.getCetNumByIdcard ct, (err, result) ->
       if err
@@ -182,89 +213,111 @@ replyNoMatchMsg = (req, res) ->
       return res.reply '请稍候再试'
     if openid
       info.getProfileByStuid openid.stuid, (err, student) ->
-        title = "东农助手"
+        result = [new ImageText('                    东农助手')]
         desc = """
-              #{student.name || ""}同学
-              感谢你的支持~
+              Hi，   #{student.name || ""}同学
+              基本功能在下方的按钮中
+              除此之外 回复以下关键字
+              【cet】查询四六级成绩
+              【绑定】更换绑定的学号
+              【排名】查看你上次考试智育成绩排名
+              【你的身份证号】查询四六级准考证信息
+              
+              部分功能正在建设中
+              本助手每周更新
+              欢迎告知你身边还没有关注的同学
               """
-        imageTextItem = new ImageText(title, desc)
-        return res.reply([imageTextItem])
+        result.push(new ImageText(desc))
+        return res.reply(result)
     else
       title = "东农助手"
       desc = """
             请点击本消息绑定学号
             """
       url = "http://n.feit.me/bind/#{msg.FromUserName}"
-      imageTextItem = new ImageText(title, desc, url)
+      picurl = "http://static.feit.me/dnhandlogo.jpg"
+      imageTextItem = new ImageText(title, desc, url, picurl)
       return res.reply([imageTextItem])
 
 getSyllabus = (req, res, day) ->
   msg = req.weixin
+  if day == 7
+    return res.reply '星期天休息，亲'
   day = day + ''
   info.getProfileByOpenid msg.FromUserName, (err, student) ->
-    info.getSyllabus student.stuid, day, (err, ins) ->
-      if err
-        return res.reply('请稍候再试')
-      if !ins
-        process.nextTick () ->
+    if err
+      if err.message is 'openid not found'
+        return res.reply "查询课表需先绑定账户\n   请回复'绑定'"
+      else
+        return res.reply "请稍候再试"
+    if student && student.pswd && student.is_pswd_invalid != true
+      info.getSyllabus student.stuid, day, (err, ins) ->
+        if err
+          return res.reply('请稍候再试')
+        if !ins or !ins[day]
           info.updateUserData(student.stuid)
-        return res.reply('正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息')
-      syllabus = ins[day]
-      weedDayName = switch
-        when day is '1' then "星期一"
-        when day is '2' then "星期二"
-        when day is '3' then "星期三"
-        when day is '4' then "星期四"
-        when day is '5' then "星期五"
-        when day is '6' then "星期六"
-        when day is '7' then "星期日"
-      result = [new ImageText("                    #{weedDayName}")]
-      if syllabus['1']
-        str = """
-            第一节：#{syllabus['1'].name}
-            教室： #{syllabus['1'].room}，    任课教师： #{syllabus['1'].teacher}
-            上课周次：  #{syllabus['1'].week}
-            """
-        result.push(new ImageText(str))
-      if syllabus['2']
-        str = """
-            第二节：#{syllabus['2'].name}
-            教室： #{syllabus['2'].room}，    任课教师： #{syllabus['2'].teacher}
-            上课周次：  #{syllabus['2'].week}
-            """
-        result.push(new ImageText(str))
-      if syllabus['3']
-        str = """
-            第三节：#{syllabus['3'].name}
-            教室： #{syllabus['3'].room}，    任课教师： #{syllabus['3'].teacher}
-            上课周次：  #{syllabus['3'].week}
-            """
-        result.push(new ImageText(str))
-      if syllabus['4']
-        str = """
-            第四节：#{syllabus['4'].name}
-            教室： #{syllabus['4'].room}，    任课教师： #{syllabus['4'].teacher}
-            上课周次：  #{syllabus['4'].week}
-            """
-        result.push(new ImageText(str))
-      if syllabus['5']
-        str = """
-            第五节：#{syllabus['5'].name}
-            教室： #{syllabus['5'].room}，    任课教师： #{syllabus['5'].teacher}
-            上课周次：  #{syllabus['5'].week}
-            """
-        result.push(new ImageText(str))
-      if syllabus['6']
-        str = """
-            第六节：#{syllabus['6'].name}
-            教室： #{syllabus['6'].room}，    任课教师： #{syllabus['6'].teacher}
-            上课周次：  #{syllabus['6'].week}
-            """
-        result.push(new ImageText(str))
-      if result.length is 1
-        result.push(new ImageText("今天没课！"))
-      result.push(new ImageText("                  本周为第#{moment().week() - 35}周"))
-      return res.reply(result)
+          return res.reply('正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息')
+        syllabus = ins[day]
+        weedDayName = switch
+          when day is '1' then "星期一"
+          when day is '2' then "星期二"
+          when day is '3' then "星期三"
+          when day is '4' then "星期四"
+          when day is '5' then "星期五"
+          when day is '6' then "星期六"
+          when day is '7' then "星期日"
+        result = [new ImageText("                    #{weedDayName}")]
+        if syllabus['1']
+          str = """
+              第一节：#{syllabus['1'].name}
+              教室： #{syllabus['1'].room}，    任课教师： #{syllabus['1'].teacher}
+              上课周次：  #{syllabus['1'].week}
+              """
+          result.push(new ImageText(str))
+        if syllabus['2']
+          str = """
+              第二节：#{syllabus['2'].name}
+              教室： #{syllabus['2'].room}，    任课教师： #{syllabus['2'].teacher}
+              上课周次：  #{syllabus['2'].week}
+              """
+          result.push(new ImageText(str))
+        if syllabus['3']
+          str = """
+              第三节：#{syllabus['3'].name}
+              教室： #{syllabus['3'].room}，    任课教师： #{syllabus['3'].teacher}
+              上课周次：  #{syllabus['3'].week}
+              """
+          result.push(new ImageText(str))
+        if syllabus['4']
+          str = """
+              第四节：#{syllabus['4'].name}
+              教室： #{syllabus['4'].room}，    任课教师： #{syllabus['4'].teacher}
+              上课周次：  #{syllabus['4'].week}
+              """
+          result.push(new ImageText(str))
+        if syllabus['5']
+          str = """
+              第五节：#{syllabus['5'].name}
+              教室： #{syllabus['5'].room}，    任课教师： #{syllabus['5'].teacher}
+              上课周次：  #{syllabus['5'].week}
+              """
+          result.push(new ImageText(str))
+        if syllabus['6']
+          str = """
+              第六节：#{syllabus['6'].name}
+              教室： #{syllabus['6'].room}，    任课教师： #{syllabus['6'].teacher}
+              上课周次：  #{syllabus['6'].week}
+              """
+          result.push(new ImageText(str))
+        if result.length is 1
+          result.push(new ImageText("今天没课！"))
+        result.push(new ImageText("                  本周为第#{moment().week() - 35}周"))
+        return res.reply(result)
+    else
+      return res.reply """
+                你未绑定学号或更改了教务系统密码
+                请回复'绑定'重新认证身份信息
+                """
 
 getNowGrade = (req, res) ->
   msg = req.weixin
@@ -277,9 +330,8 @@ getNowGrade = (req, res) ->
     if student && student.pswd && student.is_pswd_invalid != true
       info.getQbGrade student.stuid, (err, grade) ->
         if !grade
-          process.nextTick () ->
-            info.updateUserData(student.stuid)
-          return res.reply('正在获取你的信息\n     请稍候...')
+          info.updateUserData(student.stuid)
+          return res.reply('正在获取你的信息\n     请稍候再试')
         result = grade['qb']['2013-2014学年春(两学期)']
         if !result || result.length is 0
           return res.reply('暂时还没有上学期成绩信息')
@@ -290,8 +342,7 @@ getNowGrade = (req, res) ->
           gradeStr.push("成绩：#{item.cj}\n")
           gradeStr.push("------------------\n")
         gradeStr.push("仅显示及格科目成绩！")
-        process.nextTick () ->
-          info.updateUserData(student.stuid)
+        info.updateUserData(student.stuid)
         return res.reply(gradeStr.join(''))
     else
       return res.reply """
@@ -310,9 +361,8 @@ getBjgGrade = (req, res) ->
     if student && student.pswd && student.is_pswd_invalid != true
       info.getAllGrade student.stuid, (err, grade) ->
         if !grade
-          process.nextTick () ->
-            info.updateUserData(student.stuid)
-          return res.reply('正在获取你的信息\n     请稍候...')
+          info.updateUserData(student.stuid)
+          return res.reply('正在获取你的信息\n     请稍候再试')
         result = _.values(grade['fa'])[0]
         if !result || result.length is 0
           return res.reply('没找到不及格成绩信息')
@@ -324,8 +374,7 @@ getBjgGrade = (req, res) ->
             gradeStr.push("学分：#{item.xf}\n")
             gradeStr.push("成绩：#{item.cj}\n")
             gradeStr.push("------------------\n")
-        process.nextTick () ->
-          info.updateUserData(student.stuid)
+        info.updateUserData(student.stuid)
         return res.reply(gradeStr.join(''))
     else
       return res.reply """

@@ -16,10 +16,13 @@
     "cheerio": "*",
     "mongoose": "*",
     "moment": "*",
+    "nodemailer": "0.7.1",
     "wechat": "*",
     "when": "*",
     "underscore": "*",
-    "connect-multiparty": "~1.0.3"
+    "connect-multiparty": "~1.0.3",
+    "thenjs": "*",
+    "mysql": "*"
   },
   "devDependencies": {
   },
