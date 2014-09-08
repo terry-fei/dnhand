@@ -24,6 +24,9 @@ syllabusItemSubKeys = ["zc", "xq", "jc", "jieshu", "xiaoqu", "jsl", "js"]
 
 netInfo = {
   checkAccount: (stuid, pswd, callback) ->
+    if !stuid or stuid.length != 9 or !pswd
+      return callback(new Error('parameter error'))
+
     url = "http://neaucode.sinaapp.com/auth?stuid=#{stuid}&pswd=#{pswd}"
     request {uri: url, json: true}, (err, res, body) ->
       callback(err, body)

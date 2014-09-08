@@ -200,6 +200,8 @@ info = {
       stuid = req.body.stuid
       pswd = req.body.pswd
       openid = req.body.openid
+      if !stuid or stuid.length != 9 or !pswd or !openid
+        return res.json({errcode: 1})
       self.checkAccount stuid, pswd, (err, result) ->
         if err or !result
           return res.json({errcode: 1})

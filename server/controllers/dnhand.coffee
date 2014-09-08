@@ -201,43 +201,59 @@ handler = (req, res) ->
           请点击本消息绑定学号
           """
     url = "http://n.feit.me/bind/#{msg.FromUserName}"
-    imageTextItem = new ImageText(title, desc, url)
+    logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
+    imageTextItem = new ImageText(title, desc, url, logoUrl)
     return res.reply([imageTextItem])
   else
     return replyNoMatchMsg req, res
 
 replyNoMatchMsg = (req, res) ->
   msg = req.weixin
+  logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
+  bindUrl = "http://n.feit.me/bind/#{msg.FromUserName}"
   info.isBind req.weixin.FromUserName, (err, openid) ->
     if err
       return res.reply '请稍候再试'
     if openid
       info.getProfileByStuid openid.stuid, (err, student) ->
-        result = [new ImageText('                    东农助手')]
+        result = [new ImageText('                    东农助手', '', bindUrl)]
         desc = """
-              Hi，   #{student.name || ""}同学
-              基本功能在下方的按钮中
-              除此之外 回复以下关键字
-              【cet】查询四六级成绩
-              【绑定】更换绑定的学号
-              【排名】查看你上次考试智育成绩排名
-              【你的身份证号】查询四六级准考证信息
-              
-              部分功能正在建设中
-              本助手每周更新
-              欢迎告知你身边还没有关注的同学
-              """
-        result.push(new ImageText(desc))
+          Hi，   #{student.name || ""}同学
+          基本功能在下方的按钮中
+          除此之外 回复以下关键字
+          【cet】查询四六级成绩
+          【绑定】更换绑定的学号
+          【排名】查看你上次考试智育成绩排名
+          【你的身份证号】查询四六级准考证信息
+          
+          部分功能正在建设中
+          本助手每周更新
+          欢迎告知你身边还没有关注的同学
+          """
+        result.push(new ImageText(desc, '', bindUrl))
         return res.reply(result)
     else
-      title = "东农助手"
+      result = [new ImageText('                    东农助手', '', bindUrl)]
       desc = """
-            请点击本消息绑定学号
-            """
-      url = "http://n.feit.me/bind/#{msg.FromUserName}"
-      picurl = "http://static.feit.me/dnhandlogo.jpg"
-      imageTextItem = new ImageText(title, desc, url, picurl)
-      return res.reply([imageTextItem])
+        Hi，  亲爱的农大校友
+        基本功能在下方的按钮中
+        除此之外 回复以下关键字
+        【cet】查询四六级成绩
+        【绑定】更换绑定的学号
+        【排名】查看你上次考试智育成绩排名
+        【你的身份证号】查询四六级准考证信息
+        
+        部分功能正在建设中
+        本助手每周更新
+        欢迎告知你身边还没有关注的同学
+        """
+      result.push(new ImageText(desc, '', bindUrl))
+      bindInfo = """
+        部分功能需要绑定学号后使用
+        点我去绑定
+        """
+      result.push(new ImageText(bindInfo, '', bindUrl))
+      return res.reply(result)
 
 getSyllabus = (req, res, day) ->
   msg = req.weixin
