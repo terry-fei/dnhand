@@ -31,6 +31,8 @@ info = {
   
   getCetGrade: netInfo.getCetGrade
 
+  getRjInfo: netInfo.getRjInfo
+
   getAllGrade: (stuid, callback) ->
     Grade.findOne {'stuid': stuid}, 'fa', callback
 
@@ -128,6 +130,9 @@ info = {
   updateStudentPswd: (stuid, pswd, callback) ->
     Student.findOneAndUpdate {'stuid': stuid}, {$set: {'pswd': pswd, 'update_time': new Date()}}, {upsert: true}, callback
 
+  updateStudentRjPswd: (stuid, pswd, callback) ->
+    Student.findOneAndUpdate {'stuid': stuid}, {$set: {'rjpswd': pswd}}, {upsert: true}, callback
+
   markPswdInvalid: (stuid, callback) ->
     Student.findOneAndUpdate {'stuid': stuid}, {$set: {'is_pswd_invalid': true}}, {upsert: true}, callback
 
@@ -194,7 +199,7 @@ info = {
   route: (app) ->
     self = this
     app.get "/bind/:openid", (req, res, next) ->
-      res.render 'bind', {'openid': req.params.openid}
+      res.render 'login_lb', {'openid': req.params.openid}
 
     app.post "/bind", (req, res, next) ->
       stuid = req.body.stuid
@@ -211,6 +216,31 @@ info = {
         self.updateStudentPswd stuid, pswd, (err, ins) ->
           self.updateOpenid openid, stuid, (err) ->
             return res.json({errcode: 0})
+
+    app.get "/rj/bind/:stuid/:openid", (req, res, next) ->
+      res.render 'login_rj', {'openid': req.params.openid, 'stuid': req.params.stuid}
+
+    app.post "/rj/bind", (req, res, next) ->
+      stuid = req.body.stuid
+      pswd = req.body.pswd
+      openid = req.body.openid
+      if !stuid or stuid.length != 9 or !pswd or !openid
+        return res.json({errcode: 1})
+      self.getProfileByOpenid openid, (err, student) ->
+        if err
+          return res.json({errcode: 4})
+        if !student
+          return res.json({errcode: 5})
+        if student.stuid != stuid
+          return res.json({errcode: 6})
+        self.getRjInfo stuid, pswd, (err, result) ->
+          if err or !result
+            return res.json({errcode: 1})
+          if result.errcode
+            return res.json(result)
+          self.updateStudentRjPswd stuid, pswd, (err, ins) ->
+            result.errcode = 0
+            return res.json(result)
 
     app.get "/info/profile", (req, res, next) ->
       netInfo.getProfile req.query.ticket, (err, ret)->

@@ -17,22 +17,22 @@ menu = '{
       "key":"fankui"
     },
     {
-      "name":"校内新闻",
+      "name":"信息服务",
       "sub_button":[
         {
           "type":"click",
-          "name":"教务信息",
-          "key":"jiaowu"
+          "name":"新闻订阅",
+          "key":"xwdy"
         },
         {
           "type":"click",
-          "name":"考务信息",
-          "key":"kaowu"
+          "name":"锐捷",
+          "key":"ruijie"
         },
         {
           "type":"click",
-          "name":"学校公告",
-          "key":"xuexiaogonggao"
+          "name":"剩余时长",
+          "key":"sysc"
         },
         {
           "type":"click",

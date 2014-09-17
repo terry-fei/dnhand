@@ -3,6 +3,7 @@ mongoose = require 'mongoose'
 StudentSchema = new mongoose.Schema
   stuid: { type: String, unique: true }
   pswd: { type: String, default: ""}
+  rjpswd: { type: String, default: ""}
   name: String
   sex: String
   native: String

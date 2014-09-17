@@ -92,7 +92,7 @@ handler = (req, res) ->
   else if ct is "hi"
     title = "东农助手"
     desc = """
-          Hi 你好
+          嗨， 你好
           我的名字叫 费腾
           很高兴和你成为朋友
           安卓手机直接点这条信息就能添加我
@@ -102,6 +102,68 @@ handler = (req, res) ->
     url = "weixin://contacts/profile/q13027722"
     imageTextItem = new ImageText(title, desc, url)
     return res.reply([imageTextItem])
+
+  else if ct is "剩余时长" or ct is "sysc"
+    needBindStuid msg.FromUserName, (student) ->
+      if !student.rjpswd
+        return res.reply("你还没有绑定锐捷客户端，请回复“net”进行绑定")
+      else
+        info.getRjInfo student.stuid, student.rjpswd, (err, result) ->
+          if err or !result
+            return res.reply "请稍后再试"
+          if result.errcode is 2
+            return res.reply "身份过期，请回复“锐捷”重新认证"
+          if result.errcode is 0
+            arr = ["#{student.stuid}", "------------------"]
+            if !result.onlineCount
+              arr.push("账号当前没有在线")
+            else
+              arr.push("账号当前在线")
+              arr.push("在线IP地址：\n#{result.onlineIp}")
+              arr.push("上线时间：\n#{result.onlineTime}")
+            arr.push("------------------")
+            arr.push("账号状态：#{result.userstate}")
+            arr.push("余额：#{result.currentAccountFeeValue}, 待扣款：#{result.currentPrepareFee}")
+            arr.push("账号套餐：\n#{result.policydesc}")
+            if result.userstate is "正常"
+              arr.push("套餐周期：\n#{result.rangeStart}至#{result.rangeEnd}")
+              arr.push("已用时长：\n#{result.usedTime}")
+            return res.reply arr.join('\n')
+          else
+            return res.reply "未知错误，请重试"
+
+  else if ct is "自助暂停"
+    return res.reply "目前不能办理自助暂停业务"
+
+  else if ct is "自助恢复"
+    return res.reply "目前不能办理自助恢复业务"
+
+  else if ct is "充值网票"
+    return res.reply "网票充值手机页面正在紧张测试中，近两天开放！"
+
+  else if ct is "更改套餐"
+    return res.reply "更改套餐手机页面正在紧张测试中，近两天开放！"
+
+  else if ct is "net" or ct is "ruijie" or ct is "锐捷" or ct is "rj"
+    needBindStuid msg.FromUserName, (student) ->
+      if !student.rjpswd
+        title = "锐捷相关服务"
+        desc = "请点击本消息绑定锐捷客户端，绑定后可以使用查询剩余时长，充值网票等功能"
+        url = "http://n.feit.me/rj/bind/#{student.stuid}/#{msg.FromUserName}"
+        logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
+        imageTextItem = new ImageText(title, desc, url, logoUrl)
+        return res.reply([imageTextItem])
+      title = "锐捷相关服务"
+      desc = """
+            请回复以下关键字
+            【剩余时长】
+            【充值网票】【更改套餐】
+            【自助暂停】【自助恢复】
+            充值网票和更改套餐功能正在测试中，近两天开放！
+            """
+      url = "http://n.feit.me/rj/bind/#{student.stuid}/#{msg.FromUserName}"
+      imageTextItem = new ImageText(title, desc, url)
+      return res.reply([imageTextItem])
 
   else if ct is "fankui"
     title = "东农助手"
@@ -207,6 +269,15 @@ handler = (req, res) ->
   else
     return replyNoMatchMsg req, res
 
+needBindStuid = (openid, callback) ->
+  info.getProfileByOpenid openid, (err, student) ->
+    if err or !student
+      if err and err.message is 'openid not found'
+        return res.reply "使用此功能需先绑定账户\n   请回复'绑定'"
+      else
+        return res.reply "请稍候再试"
+    callback(student)
+
 replyNoMatchMsg = (req, res) ->
   msg = req.weixin
   logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
@@ -221,10 +292,11 @@ replyNoMatchMsg = (req, res) ->
           Hi，   #{student.name || ""}同学
           基本功能在下方的按钮中
           除此之外 回复以下关键字
+          【net】充值网票和剩余时长
           【cet】查询四六级成绩
           【绑定】更换绑定的学号
-          【排名】查看你上次考试智育成绩排名
-          【你的身份证号】查询四六级准考证信息
+          【排名】查看智育成绩排名
+          【你的身份证号】四六级准考证
           
           部分功能正在建设中
           本助手每周更新

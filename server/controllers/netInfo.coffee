@@ -31,6 +31,14 @@ netInfo = {
     request {uri: url, json: true}, (err, res, body) ->
       callback(err, body)
 
+  getRjInfo: (stuid, pswd, callback) ->
+    if !stuid or stuid.length != 9 or !pswd
+      return callback(new Error('parameter error'))
+
+    url = "http://neaucode.sinaapp.com/rj/login?stuid=#{stuid}&pswd=#{pswd}"
+    request {uri: url, json: true}, (err, res, body) ->
+      callback(err, body)
+
   checkTicket: (ticket, callback) ->
     url = 'http://202.118.167.86/userInfo.jsp'
     getPageFromSchoolServer ticket, url, (err, ret) ->
