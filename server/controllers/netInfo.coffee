@@ -39,6 +39,22 @@ netInfo = {
     request {uri: url, json: true}, (err, res, body) ->
       callback(err, body)
 
+  rjChargeSelf: (stuid, pswd, cardNo, secret, callback) ->
+    postData = {
+      stuid: stuid,
+      pswd: pswd,
+      cardno: cardNo,
+      secret: secret
+    }
+    options = {
+      uri: "http://neaucode.sinaapp.com/rj/chargeself",
+      method: 'POST',
+      json: true,
+      form: postData
+    }
+    request options, (err, res, body) ->
+      callback(err, body)
+
   checkTicket: (ticket, callback) ->
     url = 'http://202.118.167.86/userInfo.jsp'
     getPageFromSchoolServer ticket, url, (err, ret) ->
