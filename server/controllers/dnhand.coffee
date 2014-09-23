@@ -108,16 +108,25 @@ handler = (req, res) ->
         imageTextItem = new ImageText(title, desc, url, logoUrl)
         return res.reply([imageTextItem])
       req.wxsession.status = 'chargeSelf'
-      req.wxsession.netCardStep = 'replyCardNo'
-    return res.reply """
-      你即将为
-      #{student.name} #{student.stuid}
-      充值
-      确认请回复充值卡卡号
-    """
+      req.wxsession.netCardStep = 'replyStuid'
+    return res.reply "请回复你要充值的锐捷账号（学号）"
 
   else if ct is "更改套餐"
-    return res.reply "更改套餐手机页面正在紧张测试中，近两天开放！"
+    needBindStuid msg.FromUserName, (student) ->
+      if !student.rjpswd
+        title = "锐捷相关服务"
+        desc = "请点击本消息绑定锐捷客户端，绑定后可以使用查询剩余时长，充值网票等功能"
+        url = "http://n.feit.me/rj/bind/#{student.stuid}/#{msg.FromUserName}"
+        logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
+        imageTextItem = new ImageText(title, desc, url, logoUrl)
+        return res.reply([imageTextItem])
+      req.wxsession.status = 'changePolicy'
+      req.wxsession.netCardStep = 'replyPolicy'
+    return res.reply """请回复相应的套餐序号
+      【1】20元包30小时
+      【2】30元包60小时
+      【3】50元包150小时
+    """
 
   else if ct is "net" or ct is "ruijie" or ct is "锐捷" or ct is "rj"
     needBindStuid msg.FromUserName, (student) ->
@@ -377,9 +386,6 @@ dealWithStatus = (req, res) ->
           return res.reply '充值成功，请回复或点击“剩余时长”查看余额或时长，（如果查到的余额为0，那就是系统已经扣费，并开启新周期，如有异常，请电话联系我解决，13199561979）'
         else
           return res.reply "请检查输入的卡号和密码，如有异常，请电话联系我解决，13199561979"
-    
-
-
 
 needBindStuid = (openid, callback) ->
   info.getProfileByOpenid openid, (err, student) ->
