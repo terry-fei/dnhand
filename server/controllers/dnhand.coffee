@@ -120,8 +120,8 @@ handler = (req, res) ->
         logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
         imageTextItem = new ImageText(title, desc, url, logoUrl)
         return res.reply([imageTextItem])
-      req.wxsession.status = 'changePolicy'
-      req.wxsession.netCardStep = 'replyPolicy'
+      #req.wxsession.status = 'changePolicy'
+      #req.wxsession.netCardStep = 'replyPolicy'
     return res.reply """请回复相应的套餐序号
       【1】20元包30小时
       【2】30元包60小时
@@ -344,23 +344,23 @@ dealWithStatus = (req, res) ->
           return res.reply "你输入的密码不正确\n请回复锐捷登录密码（一般为6位数字）"
         if result.errcode is 0
           req.wxsession.netCardStep = 'replyCardNo'
-            req.wxsession.rjpswd = student.rjpswd
-            usedTime = ''
-            if result.userstate == '正常'
-              usedTime = '已用时长：\n' + result.usedTime
-            
-            return res.reply """
-            你即将为
-            #{student.name} #{student.stuid}
-            充值
-            用户当前状态：
-            #{result.userstate}
-            套餐为：
-            #{result.policydesc}
-            #{usedTime}
-            确认请回复充值卡卡号
-            取消请回复“取消”
-            """
+          req.wxsession.rjpswd = student.rjpswd
+          usedTime = ''
+          if result.userstate == '正常'
+            usedTime = '已用时长：\n' + result.usedTime
+          
+          return res.reply """
+          你即将为
+          #{student.name} #{student.stuid}
+          充值
+          用户当前状态：
+          #{result.userstate}
+          套餐为：
+          #{result.policydesc}
+          #{usedTime}
+          确认请回复充值卡卡号
+          取消请回复“取消”
+          """
         else
           return res.reply "请稍候再试"
 
