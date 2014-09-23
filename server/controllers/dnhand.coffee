@@ -24,47 +24,7 @@ handler = (req, res) ->
     return replyNoMatchMsg req, res
 
   else if req.wxsession.status
-    status = req.wxsession.status
-    if ct is "取消"
-      delete req.wxsession.status
-      return res.reply "已返回正常模式"
-    else if status is 'cet'
-      step = req.wxsession.cetStep
-      if step is 'replyCetNum'
-        if ct.length is 15
-          req.wxsession.cetNum = ct
-          req.wxsession.cetStep = 'replyName'
-          return res.reply '请回复你的姓名'
-        else
-          return res.reply '你回复的准考证号格式不正确'
-      else if step is 'replyName'
-        cetNum = req.wxsession.cetNum
-        name = ct
-        delete req.wxsession.status
-        delete req.wxsession.cetStep
-        delete req.wxsession.cetNum
-        info.getCetGrade cetNum, name, (err, grade) ->
-          if err
-            if err.message == "nothing"
-              return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重试'
-            return res.reply '发生错误，请稍候再试'
-
-          if grade and grade.name == name
-            result = [new ImageText("                #{grade.type}成绩")]
-            gradeStr = """
-                        姓名：#{grade.name}
-                        学校：#{grade.schoolName}
-                        考试时间：#{grade.examDate}
-                        
-                        总分：#{grade.totle}
-                        听力：#{grade.listening}
-                        阅读：#{grade.read}
-                        写作和翻译：#{grade.write}
-                      """
-            result.push(new ImageText(gradeStr))
-            return res.reply result
-          else
-            return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重新回复\'cet\''
+    dealWithStatus(req, res)
 
   else if ct is "allgrade"
     info.getProfileByOpenid msg.FromUserName, (err, student) ->
@@ -139,7 +99,22 @@ handler = (req, res) ->
     return res.reply "目前不能办理自助恢复业务"
 
   else if ct is "充值网票"
-    return res.reply "网票充值手机页面正在紧张测试中，近两天开放！"
+    needBindStuid msg.FromUserName, (student) ->
+      if !student.rjpswd
+        title = "锐捷相关服务"
+        desc = "请点击本消息绑定锐捷客户端，绑定后可以使用查询剩余时长，充值网票等功能"
+        url = "http://n.feit.me/rj/bind/#{student.stuid}/#{msg.FromUserName}"
+        logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
+        imageTextItem = new ImageText(title, desc, url, logoUrl)
+        return res.reply([imageTextItem])
+      req.wxsession.status = 'chargeSelf'
+      req.wxsession.netCardStep = 'replyCardNo'
+    return res.reply """
+      你即将为
+      #{student.name} #{student.stuid}
+      充值
+      确认请回复充值卡卡号
+    """
 
   else if ct is "更改套餐"
     return res.reply "更改套餐手机页面正在紧张测试中，近两天开放！"
@@ -269,7 +244,141 @@ handler = (req, res) ->
   else
     return replyNoMatchMsg req, res
 
-needBindStuid = (openid, res, callback) ->
+dealWithStatus = (req, res) ->
+  status = req.wxsession.status
+  weixin = req.weixin
+  if weixin.Content is "取消"
+    delete req.wxsession.status
+    return res.reply "已返回正常模式"
+  else if status is 'cet'
+    step = req.wxsession.cetStep
+    if step is 'replyCetNum'
+      if weixin.Content.length is 15
+        req.wxsession.cetNum = weixin.Content
+        req.wxsession.cetStep = 'replyName'
+        return res.reply '请回复你的姓名'
+      else
+        return res.reply '你回复的准考证号格式不正确'
+    else if step is 'replyName'
+      cetNum = req.wxsession.cetNum
+      name = weixin.Content
+      delete req.wxsession.status
+      delete req.wxsession.cetStep
+      delete req.wxsession.cetNum
+      info.getCetGrade cetNum, name, (err, grade) ->
+        if err
+          if err.message == "nothing"
+            return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重试'
+          return res.reply '发生错误，请稍候再试'
+
+        if grade and grade.name == name
+          result = [new ImageText("                #{grade.type}成绩")]
+          gradeStr = """
+                      姓名：#{grade.name}
+                      学校：#{grade.schoolName}
+                      考试时间：#{grade.examDate}
+                      
+                      总分：#{grade.totle}
+                      听力：#{grade.listening}
+                      阅读：#{grade.read}
+                      写作和翻译：#{grade.write}
+                    """
+          result.push(new ImageText(gradeStr))
+          return res.reply result
+        else
+          return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重新回复\'cet\''
+  else if status is 'chargeSelf'
+    step = req.wxsession.netCardStep
+    if step is 'replyStuid'
+      if stuid.substring(0, 1) not "A" or stuid.length not 9
+        return '学号格式不正确，请回复正确的学号'
+      req.wxsession.stuid = weixin.Content
+      info.getProfileByOpenid weixin.FromUserName, (err, student) ->
+        if err
+          return res.reply "请稍候再试"
+        if !student
+          req.wxsession.netCardStep = 'replyPswd'
+          return res.reply '请回复锐捷登录密码（一般为6位数字）'
+        info.getRjInfo student.stuid, student.rjpswd, (err, result) ->
+          if err or !result
+            return res.reply "请稍后再试"
+          if result.errcode is 2
+            req.wxsession.netCardStep = 'replyPswd'
+            return res.reply "请回复锐捷登录密码（一般为6位数字）"
+          if result.errcode is 0
+            req.wxsession.netCardStep = 'replyCardNo'
+            req.wxsession.rjpswd = student.rjpswd
+            usedTime = ''
+            if result.userstate == '正常'
+              usedTime = '已用时长：\n' + result.usedTime
+            
+            return res.reply """
+            你即将为
+            #{student.name} #{student.stuid}
+            充值
+            用户当前状态：
+            #{result.userstate}
+            套餐为：
+            #{result.policydesc}
+            #{usedTime}
+            确认请回复充值卡卡号
+            取消请回复“取消”
+            """
+          else
+            return res.reply "请稍候再试"
+
+    if step is 'replyPswd'
+      info.getRjInfo req.wxsession.stuid, msg.Content, (err, result) ->
+        if err or !result
+          return res.reply "请稍后再试"
+        if result.errcode is 2
+          return res.reply "你输入的密码不正确\n请回复锐捷登录密码（一般为6位数字）"
+        if result.errcode is 0
+          req.wxsession.netCardStep = 'replyCardNo'
+            req.wxsession.rjpswd = student.rjpswd
+            usedTime = ''
+            if result.userstate == '正常'
+              usedTime = '已用时长：\n' + result.usedTime
+            
+            return res.reply """
+            你即将为
+            #{student.name} #{student.stuid}
+            充值
+            用户当前状态：
+            #{result.userstate}
+            套餐为：
+            #{result.policydesc}
+            #{usedTime}
+            确认请回复充值卡卡号
+            取消请回复“取消”
+            """
+        else
+          return res.reply "请稍候再试"
+
+    if step is 'replyCardNo'
+      req.wxsession.cardNo = weixin.Content
+      req.wxsession.netCardStep = 'replyCardSecret'
+      return res.reply '请回复充值卡密码'
+
+    if step is 'replyCardSecret'
+      stuid = req.wxsession.stuid
+      rjpswd = req.wxsession.rjpswd
+      cardNo = req.wxsession.cardNo
+      secret = weixin.Content
+      info.rjChargeSelf (err, result) ->
+        if err || !result
+          return res.reply "发生网络错误，请重新回复充值卡密码，如有异常，请电话联系我解决，13199561979"
+        if result.errcode is 1
+          # TODO query card status
+          return res.reply '该充值卡已被充值或输入的卡密不正确，请检查输入的卡号和密码，如有异常，请电话联系我解决，13199561979'
+        else if result.errcode is 0
+          delete req.wxsession.status
+          delete res.wxsession.netCardStep
+          return res.reply '充值成功，请回复或点击“剩余时长”查看余额或时长，（如果查到的余额为0，那就是系统已经扣费，并开启新周期，如有异常，请电话联系我解决，13199561979）'
+        else
+          return res.reply "请检查输入的卡号和密码，如有异常，请电话联系我解决，13199561979"
+
+needBindStuid = (openid, callback) ->
   info.getProfileByOpenid openid, (err, student) ->
     if err or !student
       if err and err.message is 'openid not found'
