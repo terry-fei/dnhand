@@ -104,7 +104,7 @@ handler = (req, res) ->
     return res.reply([imageTextItem])
 
   else if ct is "剩余时长" or ct is "sysc"
-    needBindStuid msg.FromUserName, (student) ->
+    needBindStuid msg.FromUserName, res, (student) ->
       if !student.rjpswd
         return res.reply("你还没有绑定锐捷客户端，请回复“net”进行绑定")
       else
@@ -145,7 +145,7 @@ handler = (req, res) ->
     return res.reply "更改套餐手机页面正在紧张测试中，近两天开放！"
 
   else if ct is "net" or ct is "ruijie" or ct is "锐捷" or ct is "rj"
-    needBindStuid msg.FromUserName, (student) ->
+    needBindStuid msg.FromUserName, res, (student) ->
       if !student.rjpswd
         title = "锐捷相关服务"
         desc = "请点击本消息绑定锐捷客户端，绑定后可以使用查询剩余时长，充值网票等功能"
@@ -269,7 +269,7 @@ handler = (req, res) ->
   else
     return replyNoMatchMsg req, res
 
-needBindStuid = (openid, callback) ->
+needBindStuid = (openid, res, callback) ->
   info.getProfileByOpenid openid, (err, student) ->
     if err or !student
       if err and err.message is 'openid not found'
