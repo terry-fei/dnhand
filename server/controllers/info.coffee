@@ -33,6 +33,7 @@ info = {
 
   getRjInfo: netInfo.getRjInfo
   rjChargeSelf: netInfo.rjChargeSelf
+  rjChangePolicy: netInfo.rjChangePolicy
 
   getAllGrade: (stuid, callback) ->
     Grade.findOne {'stuid': stuid}, 'fa', callback

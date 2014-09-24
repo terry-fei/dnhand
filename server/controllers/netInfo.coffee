@@ -55,6 +55,21 @@ netInfo = {
     request options, (err, res, body) ->
       callback(err, body)
 
+  rjChangePolicy: (stuid, pswd, policy, callback) ->
+    postData = {
+      stuid: stuid,
+      pswd: pswd,
+      policy: policy
+    }
+    options = {
+      uri: "http://neaucode.sinaapp.com/rj/changepolicy",
+      method: 'POST',
+      json: true,
+      form: postData
+    }
+    request options, (err, res, body) ->
+      callback(err, body)
+
   checkTicket: (ticket, callback) ->
     url = 'http://202.118.167.86/userInfo.jsp'
     getPageFromSchoolServer ticket, url, (err, ret) ->
