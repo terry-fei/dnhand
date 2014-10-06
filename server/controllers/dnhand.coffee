@@ -4,9 +4,12 @@ Student = require '../models/Student'
 OpenId  = require '../models/OpenId'
 iconv = require 'iconv-lite'
 cheerio = require 'cheerio'
+async = require 'async'
 _ = require 'underscore'
 moment = require 'moment'
 moment.locale("zh-cn")
+
+wechatApi = require('../utils/wechat')
 
 info = require './info'
 
@@ -66,8 +69,7 @@ handler = (req, res) ->
   else if ct is "剩余时长" or ct is "sysc"
     needBindStuid msg.FromUserName, res, (student) ->
       if !student.rjpswd
-        return res.reply("你还没有绑定锐捷客户端，请回复“net”进行绑定")
-
+        return res.reply("你还没有绑定锐捷客户端，请点击第二栏中的“锐捷”按钮绑定")
       info.getRjInfo student.stuid, student.rjpswd, (err, result) ->
         if err or !result
           return res.reply "请稍后再试"
@@ -92,48 +94,6 @@ handler = (req, res) ->
         else
           return res.reply "未知错误，请重试"
 
-  else if ct is "自助暂停"
-    return res.reply "目前不能办理自助暂停业务"
-
-  else if ct is "自助恢复"
-    return res.reply "目前不能办理自助恢复业务"
-
-  else if ct is "充值网票"
-    needBindStuid msg.FromUserName, res, (student) ->
-      if !student.rjpswd
-        return res.reply("你还没有绑定锐捷客户端，请回复“net”进行绑定")
-      title = "充值网票"
-      desc = "请点击本消息去充值\n充值中遇到的任何问题请手机与我取得联系\n联系电话：13199561979"
-      url = "http://neaucode.sinaapp.com/netcard?id=#{msg.FromUserName}"
-      imageTextItem = new ImageText(title, desc, url)
-      return res.reply([imageTextItem])
-
-  else if ct is "更改套餐"
-    needBindStuid msg.FromUserName, res, (student) ->
-      if !student.rjpswd
-        return res.reply("你还没有绑定锐捷客户端，请回复“net”进行绑定")
-
-      info.getRjInfo student.stuid, student.rjpswd, (err, result) ->
-        if err or !result
-          return res.reply "请稍后再试"
-        if result.errcode is 2
-          return res.reply "身份过期，请回复“锐捷”重新认证"
-        if result.errcode is 0
-          fee = result.currentAccountFeeValue
-          #if fee is '0.00'
-            #return res.reply('你当前账户余额为0，不能更改套餐')
-          req.wxsession.status = 'changePolicy'
-          req.wxsession.netCardStep = 'replyPolicy'
-          req.wxsession.stuid = student.stuid
-          req.wxsession.rjpswd = student.rjpswd
-          return res.reply """
-            当前账户余额#{fee}
-            请回复相应的套餐序号
-            【1】20元包30小时
-            【2】30元包60小时
-            【3】50元包150小时
-          """
-
   else if ct is "net" or ct is "ruijie" or ct is "锐捷" or ct is "rj"
     needBindStuid msg.FromUserName, res, (student) ->
       if !student.rjpswd
@@ -143,16 +103,13 @@ handler = (req, res) ->
         logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
         imageTextItem = new ImageText(title, desc, url, logoUrl)
         return res.reply([imageTextItem])
-      title = "锐捷相关服务"
+      title = "锐捷助手"
       desc = """
-            请回复以下关键字
-            【剩余时长】
-            【充值网票】【更改套餐】
-            【自助暂停】【自助恢复】
-            充值网票和更改套餐功能正在测试中，近两天开放！
+            点我进入锐捷服务手机网页
             """
-      url = "http://n.feit.me/rj/bind/#{student.stuid}/#{msg.FromUserName}"
-      imageTextItem = new ImageText(title, desc, url)
+      url = "http://neaucode.sinaapp.com/netcard?openid=#{msg.FromUserName}"
+      logoUrl = "http://n.feit.me/assets/dnhandlogo.jpg"
+      imageTextItem = new ImageText(title, desc, url, logoUrl)
       return res.reply([imageTextItem])
 
   else if ct is "fankui"
@@ -169,11 +126,15 @@ handler = (req, res) ->
     day = moment().day()
     if day is 0
       day = 7
-    getSyllabus(req, res, day)
+    getSyllabusByDay(req, res, day)
 
   else if ct is "tomorrowsyllabus"
     day = moment().day() + 1
-    getSyllabus(req, res, day)
+    getSyllabusByDay(req, res, day)
+
+  else if ct is "allsyllabus" or ct is "全部课表"
+    res.end('');
+    getAllSyllabus(msg.FromUserName);
 
   else if ct.substring(0, 2) is "补考"
     stuid = ct.substring(2)
@@ -246,7 +207,7 @@ handler = (req, res) ->
 dealWithStatus = (req, res) ->
   status = req.wxsession.status
   weixin = req.weixin
-  if weixin.Content is "取消" or weixin.Content is "退出"
+  if weixin.Content is "取消" or weixin.Content is "退出" or !weixin.Content
     delete req.wxsession.status
     return res.reply "已返回正常模式"
   else if status is 'cet'
@@ -274,7 +235,7 @@ dealWithStatus = (req, res) ->
                       姓名：#{grade.name}
                       学校：#{grade.schoolName}
                       考试时间：#{grade.examDate}
-                      
+
                       总分：#{grade.totle}
                       听力：#{grade.listening}
                       阅读：#{grade.read}
@@ -284,39 +245,6 @@ dealWithStatus = (req, res) ->
           return res.reply result
         else
           return res.reply '未找到相关成绩，请检查你回复的准考证号和姓名并重新回复\'cet\''
-
-  else if status is 'changePolicy'
-    step = req.wxsession.netCardStep
-    if step is 'replyPolicy'
-      stuid = req.wxsession.stuid
-      rjpswd = req.wxsession.rjpswd
-      if weixin.Content is '1'
-        delete req.wxsession.status
-        info.rjChangePolicy stuid, rjpswd, '20', (err, ress) ->
-          if res.errcode is 0
-            return res.reply '套餐变更成功，当前为20元包30小时'
-          else
-            return res.reply '套餐变更失败，请检查账户余额并重试'
-      else if weixin.Content is '2'
-        delete req.wxsession.status
-        info.rjChangePolicy stuid, rjpswd, '30', (err, ress) ->
-          if res.errcode is 0
-            return res.reply '套餐变更成功，当前为30元包60小时'
-          else
-            return res.reply '套餐变更失败，请检查账户余额并重试'
-      else if weixin.Content is '3'
-        delete req.wxsession.status
-        info.rjChangePolicy stuid, rjpswd, '5', (err, ress) ->
-          if res.errcode is 0
-            return res.reply '套餐变更成功，当前为50元包150小时'
-          else
-            return res.reply '套餐变更失败，请检查账户余额并重试'
-      else
-        return res.reply '请回复正确的套餐编号'
-
-  else
-    delete req.wxsession.status
-    return res.reply "未知状态，已返回正常模式."
 
 needBindStuid = (openid, res, callback) ->
   info.getProfileByOpenid openid, (err, student) ->
@@ -363,7 +291,7 @@ replyNoMatchMsg = (req, res) ->
         【绑定】更换绑定的学号
         【排名】查看你上次考试智育成绩排名
         【你的身份证号】查询四六级准考证信息
-        
+
         部分功能正在建设中
         本助手每周更新
         欢迎告知你身边还没有关注的同学
@@ -376,85 +304,123 @@ replyNoMatchMsg = (req, res) ->
       result.push(new ImageText(bindInfo, '', bindUrl))
       return res.reply(result)
 
-getSyllabus = (req, res, day) ->
+getAllSyllabus =(openid) ->
+  info.getProfileByOpenid openid, (err, student) ->
+    if err
+      if err.message is 'openid not found'
+        return wechatApi.sendText(openid, "查询课表需先绑定账户\n   请回复'绑定'", wxErrorHandler)
+      else
+        return wechatApi.sendText(openid, "请稍候再试", wxErrorHandler)
+
+    if !student || !student.pswd || student.is_pswd_invalid == true
+      msg = """
+            你未绑定学号或更改了教务系统密码
+            请回复'绑定'重新认证身份信息
+            """
+      return wechatApi.sendText(openid, msg, wxErrorHandler)
+
+    info.getAllSyllabus student.stuid, (err, ins) ->
+      if err
+        return wechatApi.sendText(openid, "请稍候再试", wxErrorHandler)
+      if !ins
+        info.updateUserData(student.stuid)
+        msg = '正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息'
+        return wechatApi.sendText(openid, msg, wxErrorHandler)
+      syllabuses = []
+      ['1', '2', '3', '4', '5', '6'].forEach (item) ->
+        syllabuses.push syllabusFormatByDay ins[item], item
+      interval = 500
+      startTime = -500
+      syllabuses.forEach (item) ->
+        startTime = startTime + interval
+        setTimeout(() ->
+          wechatApi.sendNews openid, item, wxErrorHandler
+        , startTime)
+
+syllabusFormatByDay = (syllabus, day) ->
+  weedDayName = switch
+    when day is '1' then "星期一"
+    when day is '2' then "星期二"
+    when day is '3' then "星期三"
+    when day is '4' then "星期四"
+    when day is '5' then "星期五"
+    when day is '6' then "星期六"
+    when day is '7' then "星期日"
+  result = [new ImageText("                    #{weedDayName}")]
+  if syllabus['1']
+    str = """
+        第一节：#{syllabus['1'].name}
+        教室： #{syllabus['1'].room}，    任课教师： #{syllabus['1'].teacher}
+        上课周次：  #{syllabus['1'].week}
+        """
+    result.push(new ImageText(str))
+  if syllabus['2']
+    str = """
+        第二节：#{syllabus['2'].name}
+        教室： #{syllabus['2'].room}，    任课教师： #{syllabus['2'].teacher}
+        上课周次：  #{syllabus['2'].week}
+        """
+    result.push(new ImageText(str))
+  if syllabus['3']
+    str = """
+        第三节：#{syllabus['3'].name}
+        教室： #{syllabus['3'].room}，    任课教师： #{syllabus['3'].teacher}
+        上课周次：  #{syllabus['3'].week}
+        """
+    result.push(new ImageText(str))
+  if syllabus['4']
+    str = """
+        第四节：#{syllabus['4'].name}
+        教室： #{syllabus['4'].room}，    任课教师： #{syllabus['4'].teacher}
+        上课周次：  #{syllabus['4'].week}
+        """
+    result.push(new ImageText(str))
+  if syllabus['5']
+    str = """
+        第五节：#{syllabus['5'].name}
+        教室： #{syllabus['5'].room}，    任课教师： #{syllabus['5'].teacher}
+        上课周次：  #{syllabus['5'].week}
+        """
+    result.push(new ImageText(str))
+  if syllabus['6']
+    str = """
+        第六节：#{syllabus['6'].name}
+        教室： #{syllabus['6'].room}，    任课教师： #{syllabus['6'].teacher}
+        上课周次：  #{syllabus['6'].week}
+        """
+    result.push(new ImageText(str))
+  if result.length is 1
+    result.push(new ImageText("今天没课！"))
+  result.push(new ImageText("                  本周为第#{moment().week() - 35}周"))
+  return result
+
+getSyllabusByDay = (req, res, day) ->
   msg = req.weixin
-  if day == 7
-    return res.reply '星期天休息，亲'
-  day = day + ''
   info.getProfileByOpenid msg.FromUserName, (err, student) ->
     if err
       if err.message is 'openid not found'
         return res.reply "查询课表需先绑定账户\n   请回复'绑定'"
       else
         return res.reply "请稍候再试"
-    if student && student.pswd && student.is_pswd_invalid != true
-      info.getSyllabus student.stuid, day, (err, ins) ->
-        if err
-          return res.reply('请稍候再试')
-        if !ins or !ins[day]
-          info.updateUserData(student.stuid)
-          return res.reply('正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息')
-        syllabus = ins[day]
-        weedDayName = switch
-          when day is '1' then "星期一"
-          when day is '2' then "星期二"
-          when day is '3' then "星期三"
-          when day is '4' then "星期四"
-          when day is '5' then "星期五"
-          when day is '6' then "星期六"
-          when day is '7' then "星期日"
-        result = [new ImageText("                    #{weedDayName}")]
-        if syllabus['1']
-          str = """
-              第一节：#{syllabus['1'].name}
-              教室： #{syllabus['1'].room}，    任课教师： #{syllabus['1'].teacher}
-              上课周次：  #{syllabus['1'].week}
-              """
-          result.push(new ImageText(str))
-        if syllabus['2']
-          str = """
-              第二节：#{syllabus['2'].name}
-              教室： #{syllabus['2'].room}，    任课教师： #{syllabus['2'].teacher}
-              上课周次：  #{syllabus['2'].week}
-              """
-          result.push(new ImageText(str))
-        if syllabus['3']
-          str = """
-              第三节：#{syllabus['3'].name}
-              教室： #{syllabus['3'].room}，    任课教师： #{syllabus['3'].teacher}
-              上课周次：  #{syllabus['3'].week}
-              """
-          result.push(new ImageText(str))
-        if syllabus['4']
-          str = """
-              第四节：#{syllabus['4'].name}
-              教室： #{syllabus['4'].room}，    任课教师： #{syllabus['4'].teacher}
-              上课周次：  #{syllabus['4'].week}
-              """
-          result.push(new ImageText(str))
-        if syllabus['5']
-          str = """
-              第五节：#{syllabus['5'].name}
-              教室： #{syllabus['5'].room}，    任课教师： #{syllabus['5'].teacher}
-              上课周次：  #{syllabus['5'].week}
-              """
-          result.push(new ImageText(str))
-        if syllabus['6']
-          str = """
-              第六节：#{syllabus['6'].name}
-              教室： #{syllabus['6'].room}，    任课教师： #{syllabus['6'].teacher}
-              上课周次：  #{syllabus['6'].week}
-              """
-          result.push(new ImageText(str))
-        if result.length is 1
-          result.push(new ImageText("今天没课！"))
-        result.push(new ImageText("                  本周为第#{moment().week() - 35}周"))
-        return res.reply(result)
-    else
+
+    if day == 7
+      return res.reply '星期天休息，亲'
+    day = day + ''
+    if !student || !student.pswd || student.is_pswd_invalid == true
       return res.reply """
                 你未绑定学号或更改了教务系统密码
                 请回复'绑定'重新认证身份信息
                 """
+
+    info.getSyllabus student.stuid, day, (err, ins) ->
+      if err
+        return res.reply "请稍候再试"
+      if !ins or !ins[day]
+        info.updateUserData(student.stuid)
+        return res.reply('正在获取你的信息，如果多次查询无结果，请回复"绑定"重新认证身份信息')
+
+      result = syllabusFormatByDay ins[day], day
+      return res.reply(result)
 
 getNowGrade = (req, res) ->
   msg = req.weixin
@@ -543,5 +509,9 @@ _replyExamInfo = (msgs, res) ->
       examStr = "#{msg.courseName}\n" + "时间:#{msg.time}\n" + "地点:    #{msg.location}"
       result.push(new ImageText(examStr))
     return res.reply result
+
+wxErrorHandler = (err, result) ->
+  if err
+    console.log(err)
 
 module.exports = wechat "feit", handler

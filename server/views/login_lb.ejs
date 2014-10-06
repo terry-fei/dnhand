@@ -55,9 +55,9 @@
     pswd,
     openid = "<%= openid%>";
   $("#commit").on("click", function (e) {
-    if(!(/^A\d{8}$/).test($("#stuid").val())){
+    if(!$("#stuid").val()){
       $.dialog({
-        content : '学号格式不正确！',
+        content : '请输入学号！',
         title: "alert",
         time : 2000
       });

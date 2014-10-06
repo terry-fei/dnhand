@@ -1,13 +1,6 @@
-API = require('wechat').API
 
-api = new API('wx3ff5c48ba9ac6552', '2e1304394b0fe6306222cefb5c22b465')
 
-api.getAccessToken (err, ret) ->
-  if err
-    console.log "getAccessToken Err"
-  else
-    api.createMenu menu, (err, ret) ->
-      console.log  err || "dnhand menu ok \n #{ret.errmsg}"
+api = require '../wechat'
 
 menu = '{
   "button":[
@@ -66,9 +59,12 @@ menu = '{
         },
         {
           "type":"click",
-          "name":"明天课表",
-          "key":"tomorrowsyllabus"
+          "name":"全部课表",
+          "key":"allsyllabus"
         }]
       }
   ]
 }'
+
+api.createMenu menu, (err, ret) ->
+  console.log  err || "dnhand menu ok \n #{ret.errmsg}"

@@ -24,7 +24,7 @@ syllabusItemSubKeys = ["zc", "xq", "jc", "jieshu", "xiaoqu", "jsl", "js"]
 
 netInfo = {
   checkAccount: (stuid, pswd, callback) ->
-    if !stuid or stuid.length != 9 or !pswd
+    if !stuid or !pswd
       return callback(new Error('parameter error'))
 
     url = "http://neaucode.sinaapp.com/auth?stuid=#{stuid}&pswd=#{pswd}"
@@ -32,7 +32,7 @@ netInfo = {
       callback(err, body)
 
   getRjInfo: (stuid, pswd, callback) ->
-    if !stuid or stuid.length != 9 or !pswd
+    if !stuid or !pswd
       return callback(new Error('parameter error'))
 
     url = "http://neaucode.sinaapp.com/rj/login?stuid=#{stuid}&pswd=#{pswd}"

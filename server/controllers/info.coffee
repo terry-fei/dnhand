@@ -6,6 +6,7 @@ mysql = require('mysql')
 Thenjs = require('thenjs')
 
 mailer = require '../utils/mailer'
+wechatApi = require('../utils/wechat')
 
 Student = require("../models").Student
 OpenId = require("../models").OpenId
@@ -46,6 +47,9 @@ info = {
 
   getSyllabus: (stuid, day, callback) ->
     Syllabus.findOne {'stuid': stuid}, day, callback
+
+  getAllSyllabus: (stuid, callback) ->
+    Syllabus.findOne {'stuid': stuid}, callback
 
   getProfileByTicket: (ticket, callback) ->
     netInfo.getProfile ticket, callback
@@ -122,7 +126,7 @@ info = {
         syllabus.stuid = stuid
         new Syllabus(syllabus).save (err, ins) ->
           if err
-            sendError('save syllabus error')
+            console.log(err)
 
   getExamInfo: netInfo.getExamInfo
 
@@ -207,13 +211,33 @@ info = {
       stuid = req.body.stuid
       pswd = req.body.pswd
       openid = req.body.openid
-      if !stuid or stuid.length != 9 or !pswd or !openid
+      if !stuid or !pswd or !openid
         return res.json({errcode: 1})
       self.checkAccount stuid, pswd, (err, result) ->
         if err or !result
           return res.json({errcode: 1})
         if result.errcode
           return res.json(result)
+        templateId = 'zPBcYZ708hYfPDCg-bGzZG4g_UyxBxGZe_lbHBVGZ9k'
+        url = ''
+        topColor = ''
+        data = 
+          first:
+            value: '教务账号绑定成功'
+            color: '#173177'
+          keyword1:
+            value: 'dnhand'
+            color: '#173177'
+          keyword2:
+            value: stuid
+            color: '#173177'
+          keyword3:
+            value: '查询课表，成绩等'
+            color: '#173177'
+          remark:
+            value: '感谢你的使用！'
+            color: '#173177'
+        wechatApi.sendTemplate openid, templateId, url, topColor, data, () ->
         self.saveUserData(stuid, result.ticket)
         self.updateStudentPswd stuid, pswd, (err, ins) ->
           self.updateOpenid openid, stuid, (err) ->
@@ -226,7 +250,7 @@ info = {
       stuid = req.body.stuid
       pswd = req.body.pswd
       openid = req.body.openid
-      if !stuid or stuid.length != 9 or !pswd or !openid
+      if !stuid or !pswd or !openid
         return res.json({errcode: 1})
       self.getProfileByOpenid openid, (err, student) ->
         if err
@@ -240,6 +264,26 @@ info = {
             return res.json({errcode: 1})
           if result.errcode
             return res.json(result)
+          templateId = 'zPBcYZ708hYfPDCg-bGzZG4g_UyxBxGZe_lbHBVGZ9k'
+          url = ''
+          topColor = ''
+          data = 
+            first:
+              value: '锐捷账号绑定成功'
+              color: '#173177'
+            keyword1:
+              value: 'dnhand'
+              color: '#173177'
+            keyword2:
+              value: stuid
+              color: '#173177'
+            keyword3:
+              value: '查询剩余时长，充值网票，更改套餐等'
+              color: '#173177'
+            remark:
+              value: '感谢你的使用！'
+              color: '#173177'
+          wechatApi.sendTemplate openid, templateId, url, topColor, data, () ->
           self.updateStudentRjPswd stuid, pswd, (err, ins) ->
             result.errcode = 0
             return res.json(result)
