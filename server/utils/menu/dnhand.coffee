@@ -6,16 +6,16 @@ menu = '{
   "button":[
     {
       "type":"click",
-      "name":"意见反馈",
+      "name":"红",
       "key":"fankui"
     },
     {
-      "name":"信息服务",
+      "name":"领",
       "sub_button":[
         {
-          "type":"click",
-          "name":"新闻订阅",
-          "key":"xwdy"
+          "type":"view",
+          "name":"绑定",
+          "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3ff5c48ba9ac6552&redirect_uri=http://n.feit.me/wx/oauth&response_type=code&scope=snsapi_base&state=bind#wechat_redirect"
         },
         {
           "type":"click",
@@ -24,7 +24,12 @@ menu = '{
         },
         {
           "type":"click",
-          "name":"剩余时长",
+          "name":"新闻",
+          "key":"xwdy"
+        },
+        {
+          "type":"click",
+          "name":"上网时长",
           "key":"sysc"
         },
         {
@@ -35,7 +40,7 @@ menu = '{
         ]
     },
     {
-      "name":"Me",
+      "name":"巾",
       "sub_button":[
         {
           "type":"click",

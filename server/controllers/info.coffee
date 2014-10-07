@@ -7,6 +7,8 @@ Thenjs = require('thenjs')
 
 mailer = require '../utils/mailer'
 wechatApi = require('../utils/wechat')
+OAuth = require('wechat').OAuth
+oauthApi = new OAuth('wx3ff5c48ba9ac6552', '2715445e17a0640bc4f2a2f884a69124')
 
 Student = require("../models").Student
 OpenId = require("../models").OpenId
@@ -343,6 +345,14 @@ info = {
           res.send('ticket vailed')
         else
           res.send('ticket expired')
+
+    app.get '/wx/oauth', (req, res) ->
+      code = req.query.code
+      state = req.query.state
+      oauthApi.getAccessToken code, (err, result) ->
+        openid = result.data.openid
+        if state is 'bind'
+          res.redirect '/bind/' + openid
 
 }
 
