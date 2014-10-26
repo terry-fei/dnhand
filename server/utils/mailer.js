@@ -53,13 +53,13 @@ exports.sendErrorMail = function (title, err) {
   wechatApi.sendTemplate(openid, templateId, url, topColor, data, function () {});
 };
 
-exports.sendErrorMail2 = function (title, err) {
+exports.sendErrMail = function (title, err) {
   var from = util.format('%s <%s>', '东农助手', 'dnhand@feit.me');
-  var to = '13027722@qq.com';
+  var to = 'errors@feit.me';
   var subject = title;
   var content;
   if (err.message) {
-    content = err.message
+    content = err.name + '\n' + err.message
   } else {
     content = err
   }

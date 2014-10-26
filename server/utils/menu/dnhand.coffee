@@ -6,11 +6,22 @@ menu = '{
   "button":[
     {
       "type":"click",
-      "name":"红",
-      "key":"fankui"
+      "name":"口罩",
+      "sub_button":[
+        {
+          "type":"view",
+          "name":"口罩",
+          "url":"http://shop334273.koudaitong.com/v2/showcase/feature?alias=1dv995gjg&from=groupmessage&isappinstalled=0"
+        },
+        {
+          "type":"click",
+          "name":"客服",
+          "key":"fankui"
+        }
+      ]
     },
     {
-      "name":"领",
+      "name":"要不",
       "sub_button":[
         {
           "type":"view",
@@ -37,10 +48,10 @@ menu = '{
           "name":"考试查询",
           "key":"exam"
         }
-        ]
+      ]
     },
     {
-      "name":"巾",
+      "name":"要！",
       "sub_button":[
         {
           "type":"click",

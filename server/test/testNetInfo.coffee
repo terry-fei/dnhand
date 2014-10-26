@@ -1,7 +1,7 @@
 netInfo = require '../controllers/netInfo'
 
 #ticket = 'cdbhwR0kollePeRHEdOFu'
-ticket = 'abduonwxXmaexgjgmOpHu'
+ticket = 'dbcX3cqDTQ8oq7Gw6QQJu'
 
 getProfile = () ->
   netInfo.getProfile ticket, (err, profile) ->
@@ -26,4 +26,4 @@ getCetGrade = () ->
   netInfo.getCetGrade '230280141115023', '杨雪额', (err, result) ->
     console.log result || err
 
-getCetGrade()
+getSyllabus()

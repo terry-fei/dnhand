@@ -3,7 +3,7 @@ request = require "request"
 cheerio = require "cheerio"
 async   = require "async"
 util    = require "util"
-_       = require "underscore"
+_       = require "lodash"
 fs      = require 'fs'
 
 afacjKeys   = ["kch", "kxh", "kcm", "ywkcm", "xf", "cksx", "cj", "wtgyy"]
@@ -133,7 +133,7 @@ netInfo = {
       $("#tblView [width=275]").each (i, e) ->
         values.push($(e).text().trim())
 
-      callback(null, _.object(profileKeys, values))
+      callback(null, _.zipObject(profileKeys, values))
 
   getSyllabus: (ticket, callback) ->
     if ticket
@@ -183,42 +183,19 @@ netInfo = {
 }
 
 parseCetGradeHtml = (cetHtml) ->
-  if /无法找到对应的分数/gi.test(cetHtml)
+  if /无法找到对应的分数/.test(cetHtml)
     return null
-
-  tdTagReg = /<td.*?>[\s\S]*?<\/td>/gi
-  tdTags = []
-  while (tdTag = tdTagReg.exec(cetHtml))
-    tdTags.push(tdTag[0].replace(/<td>|<\/td>/g, ''))
-
-  name = tdTags[2];
-  schoolName = tdTags[3];
-  type = tdTags[4];
-  cetNumber = tdTags[5];
-  examDate = tdTags[6];
-  
-  gradeItemsStr = tdTags[7]
-  gradeReg = /\d{1,3}/gi
-  gradeItems = []
-  while (gradeItem = gradeReg.exec(gradeItemsStr)) 
-    gradeItems.push(gradeItem[0])
-    
-  totle = gradeItems[0];
-  listening = gradeItems[2];
-  read = gradeItems[4];
-  write = gradeItems[6];
-
-  grade = {
-    name: name,
-    schoolName: schoolName,
-    type: type,
-    cetNumber: cetNumber,
-    examDate: examDate,
-    totle: totle,
-    listening: listening,
-    read: read,
-    write: write
-  }
+  cetHtml = cetHtml.replace(/\n/g, '').replace(/\r/g, '').replace(/\t/g, '')
+  grade =
+    schoolName: /学校：<\/th><td>(.*?)<\/td>/.exec(cetHtml)[1]
+    name: /姓名：<\/th><td>(.*?)<\/td>/.exec(cetHtml)[1]
+    type: /考试类别：<\/th><td>(.*?)<\/td>/.exec(cetHtml)[1]
+    cetNumber: /准考证号：<\/th><td>(.*?)<\/td>/.exec(cetHtml)[1]
+    examDate: /考试时间：<\/th><td>(.*?)<\/td>/.exec(cetHtml)[1]
+    totle: /<span class=\"colorRed\">(.*?)<\/span>/.exec(cetHtml)[1].trim()
+    listening: /听力：<\/span>(.*?)<br \/>/.exec(cetHtml)[1].trim()
+    read: /阅读：<\/span>(.*?)<br \/>/.exec(cetHtml)[1].trim()
+    write: /写作与翻译：<\/span>(.*?)<\/td>/.exec(cetHtml)[1].trim()
 
   grade
 
@@ -263,9 +240,9 @@ parseGradeHtml = (html, keys, groupNames) ->
       values = []
       cheerio(@).children("td").each ->
         values.push(cheerio(@).text().trim())
-      items.push(_.object(keys, values))
+      items.push(_.zipObject(keys, values))
     group.push(items)
-  ret = _.object(groupNames, group)
+  ret = _.zipObject(groupNames, group)
   ret
 
 parseSyllabusHtml = (html) ->
@@ -282,14 +259,14 @@ parseSyllabusHtml = (html) ->
         else
           itemSub.push($(@).text().trim())
       item.push([])
-      itemObj = _.object(syllabusItemKeys, item)
-      itemObj.msg.push(_.object(syllabusItemSubKeys, itemSub))
+      itemObj = _.zipObject(syllabusItemKeys, item)
+      itemObj.msg.push(_.zipObject(syllabusItemSubKeys, itemSub))
       items.push(itemObj)
     else
       itemSub = []
       temp.each ->
         itemSub.push($(@).text().trim())
-      items[items.length-1].msg.push(_.object(syllabusItemSubKeys, itemSub))
+      items[items.length-1].msg.push(_.zipObject(syllabusItemSubKeys, itemSub))
 
   fillSyllabusItem = (weekDay, num, item, m) ->
     weekDay[num] = {

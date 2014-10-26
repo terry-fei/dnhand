@@ -1,11 +1,11 @@
 netInfo = require './netInfo'
-_ = require 'underscore'
+_ = require 'lodash'
 async = require 'async'
 
 mysql = require('mysql')
 Thenjs = require('thenjs')
 
-mailer = require '../utils/mailer'
+errorHandler = require('../errors').errorHandler
 wechatApi = require('../utils/wechat')
 OAuth = require('wechat').OAuth
 oauthApi = new OAuth('wx3ff5c48ba9ac6552', '2715445e17a0640bc4f2a2f884a69124')
@@ -75,9 +75,8 @@ info = {
       if !student || !student.sex || !student.major || student.class
         self.getProfileByTicket ticket, (err, profile) ->
           if err
-              title = stuid + '获取个人信息发生错误'
-              mailer.sendErrorMail(title, err)
-              return
+              err.name = stuid + '获取个人信息发生错误\n' + err.name
+              return errorHandler(err)
           if profile && profile.xm && profile.xb && profile.zy && profile.bj
             student.name = profile.xm
             student.sex = profile.xb
@@ -87,8 +86,8 @@ info = {
             student.year = profile.nj
             student.save (err, ins) ->
               if err
-                title = stuid + '存储个人信息发生错误'
-                mailer.sendErrorMail(title, err)
+                err.name = stuid + '存储个人信息发生错误\n' + err.name
+                return errorHandler(err)
 
   saveGrade: (ticket, stuid) ->
     async.parallel [
@@ -99,8 +98,8 @@ info = {
       ], (err, results) ->
         Grade.findOneAndRemove {'stuid': stuid}, (err) ->
           if err
-            title = stuid + '获取成绩发生错误'
-            mailer.sendErrorMail(title, err)
+            err.name = stuid + '获取成绩发生错误\n' + err.name
+            return errorHandler(err)
           grade = {
             stuid: stuid,
             fa: results[0],
@@ -109,26 +108,22 @@ info = {
           gradeIns = new Grade(grade)
           gradeIns.save (err, ins) ->
             if err
-              title = stuid + '获取成绩发生错误'
-              mailer.sendErrorMail(title, err)
+              err.name = stuid + '获取成绩发生错误\n' + err.name
+              return errorHandler(err)
 
   saveSyllabus: (ticket, stuid) ->
-    sendError = (err) ->
-      title = stuid + '获取课表发生错误'
-      mailer.sendErrorMail(title, err)
     netInfo.getSyllabus ticket, (err, syllabus) ->
-      if err or !syllabus
-        sendError(err||'parse syllabus error')
-        return
+      if err
+        return errorHandler(err)
+      if !syllabus
+        err = new Error('parse syllabus error')
+        return errorHandler(err)
 
       Syllabus.findOneAndRemove {'stuid': stuid}, (err) ->
         if err
-          sendError(err)
-          return
+          return errorHandler(err)
         syllabus.stuid = stuid
-        new Syllabus(syllabus).save (err, ins) ->
-          if err
-            console.log(err)
+        new Syllabus(syllabus).save errorHandler
 
   getExamInfo: netInfo.getExamInfo
 
@@ -151,12 +146,12 @@ info = {
     if (!student.update_time) || (new Date() - student.update_time > 1800000)
       process.nextTick () ->
         self.checkAccount student.stuid, student.pswd, (err, result) ->
-          if err or !result
-            return
-          if result.errcode == 2
+          if err
+            return errorHandler(err)
+          if result and result.errcode == 2
             self.markPswdInvalid student.stuid, (err) ->
             return
-          if !result.errcode
+          else if !result.errcode
             self.saveUserData(student.stuid, result.ticket)
 
   saveUserData: (stuid, ticket) ->
