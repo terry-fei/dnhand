@@ -6,7 +6,7 @@ menu = '{
   "button":[
     {
       "type":"click",
-      "name":"口罩",
+      "name":"今天",
       "sub_button":[
         {
           "type":"view",
@@ -21,7 +21,7 @@ menu = '{
       ]
     },
     {
-      "name":"要不",
+      "name":"天气",
       "sub_button":[
         {
           "type":"view",
@@ -51,7 +51,7 @@ menu = '{
       ]
     },
     {
-      "name":"要！",
+      "name":"不错",
       "sub_button":[
         {
           "type":"click",
