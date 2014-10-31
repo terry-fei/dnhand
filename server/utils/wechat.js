@@ -1,6 +1,6 @@
 var wechatApi = require('wechat').API;
 
-var api = new wechatApi('wx3ff5c48ba9ac6552', 'a24c6ca520e8f40db635b3dadba6a945 ');
+var api = new wechatApi('wx3ff5c48ba9ac6552', '6e1b422de4b33e385165ab80f73492df');
 
 api.getLatestToken(function () {});
 
