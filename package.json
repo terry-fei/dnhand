@@ -1,28 +1,27 @@
 {
   "name": "dnhand",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "coffee server/server.coffee"
+    "start": "coffee app.coffee"
   },
   "dependencies": {
-    "colors": "*",
-    "express": "3.x",
-    "ejs": "0.8.4",
-    "ejs-locals": "^1.0.2",
-    "iconv-lite": "*",
-    "request": "2.27.0",
-    "mini-logger": "*",
+    "express": "^4.10.2",
+    "ejs": "^1.0.0",
+    "body-parser": "^1.9.3",
+    "express-session": "^1.9.1",
+    "iconv-lite": "^ 0.4.5",
+    "request": "^2.48.0",
+    "mini-logger": " 1.0.0",
     "async": "*",
-    "cheerio": "*",
-    "mongoose": "*",
-    "moment": "*",
+    "cheerio": "^0.18.0",
+    "mongoose": "^3.8.19",
+    "moment": "^2.8.4",
     "nodemailer": "0.7.1",
-    "wechat": "*",
-    "lodash": "*",
-    "connect-multiparty": "~1.0.3",
-    "thenjs": "*",
-    "mysql": "*"
+    "wechat": "^1.0.1",
+    "lodash": "^2.4.1",
+    "thenjs": "^1.4.5",
+    "mysql": "^2.5.3"
   },
   "devDependencies": {
   },
