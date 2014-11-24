@@ -1,13 +1,13 @@
 mongoose = require('mongoose')
-
-conn = mongoose.createConnection('mongodb://localhost/dnhand')
+logger = require('winston')
+conn = mongoose.createConnection('mongodb://mongo/dnhand')
 
 conn.on 'error', (err) ->
-  console.error('connect to dnhand error: ')
+  logger.error('connect to mongodb:dnhand error: ', err)
   process.exit(1)
 
 conn.once 'open', () ->
-  console.log('connect to dnhand success!')
+  logger.info('connect to mongodb:dnhand success!')
 
 GradeSchema = require('./Grade')
 OpenIdSchema = require('./OpenId')
@@ -20,6 +20,5 @@ models = {
   Student: conn.model('Student', StudentSchema),
   Syllabus: conn.model('Syllabus', SyllabusSchema)
 }
-
 
 module.exports = models
