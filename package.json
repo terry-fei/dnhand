@@ -11,6 +11,7 @@
     "st": "^0.5.2",
     "body-parser": "^1.9.3",
     "express-session": "^1.9.1",
+    "connect-mongo": "^0.4.1",
     "copy-to": "^2.0.1",
     "iconv-lite": "^ 0.4.5",
     "request": "^2.48.0",
@@ -25,6 +26,10 @@
     "mysql": "^2.5.3"
   },
   "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "chai-http": "*",
+    "coffee-script": "*"
   },
   "engines": {
     "node": "~0.10.x",

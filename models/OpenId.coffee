@@ -6,5 +6,7 @@ OpenIdSchema = new mongoose.Schema
   nickname: String
   sex: String
   city: String
+  province: String
+  headimgurl: String
 
 module.exports = OpenIdSchema

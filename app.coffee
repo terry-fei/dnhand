@@ -1,6 +1,7 @@
 express = require 'express'
 bodyParser = require 'body-parser'
 session = require 'express-session'
+MongoStore = require('connect-mongo')(session)
 logger = require 'winston'
 require './models'
 
@@ -10,7 +11,10 @@ wechatHanler = require './controllers/wechatHandler'
 app = express()
 
 # session
-app.use session secret: 'feit', cookie: maxAge: 60 * 5
+app.use session
+  secret: 'feit'
+  store: new MongoStore
+    db: 'dnhand'
 
 # wechat
 app.use '/wx/api', wechat 'feit', wechatHanler

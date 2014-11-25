@@ -1,13 +1,11 @@
 mongoose = require('mongoose')
 logger = require('winston')
-conn = mongoose.createConnection('mongodb://mongo/dnhand')
+config = require('../config')
 
+conn = mongoose.createConnection(config.mongodb.host, config.mongodb.dbname)
 conn.on 'error', (err) ->
   logger.error('connect to mongodb:dnhand error: ', err)
   process.exit(1)
-
-conn.once 'open', () ->
-  logger.info('connect to mongodb:dnhand success!')
 
 GradeSchema = require('./Grade')
 OpenIdSchema = require('./OpenId')
