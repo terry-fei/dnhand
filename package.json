@@ -14,7 +14,7 @@
     "connect-mongo": "^0.4.1",
     "copy-to": "^2.0.1",
     "iconv-lite": "^ 0.4.5",
-    "request": "^2.48.0",
+    "urllib": "^2.2.0",
     "winston": "^0.8.3",
     "cheerio": "^0.18.0",
     "mongoose": "^3.8.19",

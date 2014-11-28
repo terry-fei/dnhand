@@ -5,7 +5,7 @@ MOCHA = ./node_modules/mocha/bin/_mocha
 
 docker:
 	sudo docker run -i -t -p 7080:7080 --rm --link \
-	mongoda:mongo -v `pwd`:/src ifeiteng/dnhand-dev:0.1
+		mongodb:mongo -v `pwd`:/src ifeiteng/dnhand-dev:0.1
 
 test:
 	@NODE_ENV=test $(MOCHA) -R $(REPORTER) -t $(TIMEOUT) \

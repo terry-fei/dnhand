@@ -7,6 +7,10 @@ openIdDao = require('../models').OpenId
 wxApi = require('../lib/wechatApi')
 
 openIdService =
+
+  # save user info to db
+  # if has advance interface then save more info
+  # return OpenId instance
   createUser: (openid, callback) ->
     if wxApi.canThis
       Then (cont) ->
@@ -14,12 +18,13 @@ openIdService =
       .then (cont, user) ->
         openIdDao.create user, cont
       .fin (cont, error, user) ->
-        if error then cont(error)
+        if error then return cont(error)
         callback(null, user)
       .fail callback
     else
       openIdDao.create openid: openid, callback
 
+  # if has advance interface and user info not enough then fill it
   fillUserInfo: (openid, callback) ->
     if wxApi.canThis
       userTemp = null
@@ -35,11 +40,14 @@ openIdService =
           .override(userTemp)
           userTemp.save cont
         .fin (cont, error, user) ->
-          if error then callback?(error)
+          if error then return callback?(error)
           callback?(user)
     else
       callback?()
 
+  # get user info by openid
+  # if not find in db then get it by this.createUser
+  # return OpenId instance
   getUser: (openid, callback) ->
     Then (cont) ->
       openIdDao.findOne openid: openid, cont
@@ -51,7 +59,7 @@ openIdService =
           openIdService.fillUserInfo openIdIns.openid
         cont(null, openIdIns)
     .fin (cont, error, result) ->
-      if error then cont(error)
+      if error then return cont(error)
       callback(null, result)
     .fail callback
 

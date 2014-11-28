@@ -2,13 +2,20 @@ chai = require 'chai'
 should = chai.should()
 
 studentService = require '../services/Student'
-ticket
+stuid = 'A19120626'
+pswd = '1230.0'
+student = new studentService stuid, pswd
 
 describe 'StudentService', () ->
-  before () ->
-    studentService.login 'A19120626', '1230.0', (err, result) ->
-      ticket = result.ticket
-  describe 'getStudentByTicket', () ->
+  before (done) ->
+    student.login (err, result) ->
+      done(err)
+
+  describe 'getProfileByTicket', () ->
     it 'get student by net should ok', (done) ->
-      studentService.getStudentByTicket
-      done()
+      student.getProfileByTicket (err, profile) ->
+        profile.stuid.should.equal stuid
+        profile.pswd.should.equal pswd
+        profile.name.should.exist
+        profile.id_card.should.exist
+        done(err)
