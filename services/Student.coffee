@@ -37,6 +37,7 @@ class Student
       return callback new Error 'please instance this class with ticket or use login before this'
 
     Then (cont) ->
+      
       self.jwcRequest.get JwcRequest::PROFILE, cont
 
     .then (cont, profileHtml) ->
@@ -49,12 +50,9 @@ class Student
       student = pswd: self.pswd
       copy(profile).pick('stuid', 'name', 'sex', 'native', 'class', 'major', 'year', 'id_card').to(student)
 
-      logger.info student
-
       studentDao.create student, cont
 
-    .fin (cont, error, student) ->
-      if error then return cont error
+    .then (cont, student) ->
       logger.debug student
       callback null, student
 

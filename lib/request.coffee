@@ -21,7 +21,7 @@ class JwcRequest
       headers:
         Cookie: "JSESSIONID=#{@ticket}"
 
-    urllib.request url opts, callback
+    urllib.request url, opts, callback
 
 loginRequest = (stuid, pswd, callback) ->
   url = "http://neaucode.sinaapp.com/auth?stuid=#{stuid}&pswd=#{pswd}"
