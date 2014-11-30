@@ -15,11 +15,13 @@ openIdService =
     if wxApi.canThis
       Then (cont) ->
         wxApi.getUser openid, cont
+
       .then (cont, user) ->
         openIdDao.create user, cont
-      .fin (cont, error, user) ->
-        if error then return cont(error)
+
+      .then (cont, user) ->
         callback(null, user)
+
       .fail callback
     else
       openIdDao.create openid: openid, callback
@@ -31,17 +33,22 @@ openIdService =
       process.nextTick () ->
         Then (cont) ->
           openIdDao.findOne openid: openid, cont
+
         .then (cont, user) ->
           userTemp = user
           wxApi.getUser user.openid, cont
+
         .then (cont, wxUser) ->
           copy(wxUser)
           .pick('nickname', 'sex', 'city', 'province', 'headimgurl')
           .override(userTemp)
+
           userTemp.save cont
-        .fin (cont, error, user) ->
-          if error then return callback?(error)
+
+        .then (cont, user) ->
           callback?(user)
+        .fail (error) ->
+          callback?(error)
     else
       callback?()
 
@@ -51,6 +58,7 @@ openIdService =
   getUser: (openid, callback) ->
     Then (cont) ->
       openIdDao.findOne openid: openid, cont
+
     .then (cont, openIdIns) ->
       if not openIdIns
         openIdService.createUser openid, cont
@@ -58,9 +66,10 @@ openIdService =
         if not openIdIns.nickname
           openIdService.fillUserInfo openIdIns.openid
         cont(null, openIdIns)
-    .fin (cont, error, result) ->
-      if error then return cont(error)
+
+    .fin (cont, result) ->
       callback(null, result)
+      
     .fail callback
 
   removeUser: (openid, callback) ->

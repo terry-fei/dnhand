@@ -1,8 +1,12 @@
 _ = require 'lodash'
 cheerio = require 'cheerio'
 copy = require 'copy-to'
+Then = require 'thenjs'
 request = require '../lib/request'
+logger = require 'winston'
 JwcRequest = request.JwcRequest
+
+studentDao = require('../models').Student
 
 class Student
   constructor: (@stuid, @pswd, ticket) ->
@@ -30,17 +34,30 @@ class Student
   getProfileByTicket: (callback) ->
     self = this
     if not @jwcRequest
-      return callback new Error 'please instance this class with ticket'
+      return callback new Error 'please instance this class with ticket or use login before this'
 
-    @jwcRequest.get JwcRequest::PROFILE, (err, profileHtml) ->
+    Then (cont) ->
+      self.jwcRequest.get JwcRequest::PROFILE, cont
+
+    .then (cont, profileHtml) ->
       $ = cheerio.load(profileHtml)
       values = []
       $("#tblView [width=275]").each (i, e) ->
         values.push(cheerio(e).text().trim())
 
-      profile = _.zipObject(Student::profileKeys, values)
+      profile = _.zipObject Student::profileKeys, values
       student = pswd: self.pswd
       copy(profile).pick('stuid', 'name', 'sex', 'native', 'class', 'major', 'year', 'id_card').to(student)
-      callback(null, student)
+
+      logger.info student
+
+      studentDao.create student, cont
+
+    .fin (cont, error, student) ->
+      if error then return cont error
+      logger.debug student
+      callback null, student
+
+    .fail callback
 
 module.exports = Student

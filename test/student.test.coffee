@@ -14,8 +14,9 @@ describe 'StudentService', () ->
   describe 'getProfileByTicket', () ->
     it 'get student by net should ok', (done) ->
       student.getProfileByTicket (err, profile) ->
+        if err then return done(err)
         profile.stuid.should.equal stuid
         profile.pswd.should.equal pswd
         profile.name.should.exist
         profile.id_card.should.exist
-        done(err)
+        done()
