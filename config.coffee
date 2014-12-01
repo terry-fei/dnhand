@@ -21,9 +21,9 @@ if env is 'production'
 else if env is 'development'
   config =
     wechat:
-      openid: 'ofu7Ts4-v3xMIqAXfkEbyuEvb_Uc'
-      appid: 'wxc49d99a484205dd0'
-      secret: '75676597753ddb51c8d74273650daa76'
+      openid: 'wx15c96420dd54edf9'
+      appid: 'wx15c96420dd54edf9'
+      secret: '5bf2a19b70f0aa9b05ea4da757ee3e1a'
       canThis: true
     mongodb:
       user: ''

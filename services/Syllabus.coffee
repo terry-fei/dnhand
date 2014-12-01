@@ -28,7 +28,7 @@ class Syllabus
     if weekDay[num] then weekDay[num].push course else weekDay[num] = [course]
 
   getSyllabusByTicket: (callback) =>
-    if not @jwcRequest
+    unless @jwcRequest
       return callback new Error 'please do not instance this class directly'
 
     Then (cont) =>
@@ -84,7 +84,7 @@ class Syllabus
               }
 
       # 挂载未分配的科目
-      if unassigned.length isnt 0
+      unless unassigned.length is 0
         syllabus[0] = unassigned
         syllabus.length = 7
 

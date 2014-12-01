@@ -33,4 +33,4 @@ app.use(bodyParser.json())
 app.listen 7080, () ->
   logger.info 'Server Start at port 7080'
 
-#require('./controllers/info').route(app)
+require('./controllers/bindStuid')(app)

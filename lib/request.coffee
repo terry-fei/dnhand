@@ -70,14 +70,14 @@ httpGet = (opts, callback) ->
 
         # 根据响应header的charset转码body
         type = res.headers['content-type']
-        if not type
+        unless type
           body = body.toString()
 
         else
           charset = /^.*charset=(.+)/.exec(type)[1]
           charset ?= 'urf-8'
 
-          if not Buffer.isEncoding charset
+          unless Buffer.isEncoding charset
             body = iconv.decode body, charset
           else
             body = body.toString(charset)

@@ -16,14 +16,18 @@ class Student
       @jwcRequest = new JwcRequest(ticket)
 
   login: (callback) =>
-    if not @pswd
+    unless @pswd
       callback new Error('pswd not set')
+
     loginRequest @stuid, @pswd, (err, data, res) =>
       if err then return callback err
-      if res.statusCode isnt 200
+
+      unless res.statusCode is 200
         return callback new Error('request error status code is ' + statusCode)
-      if data.errcode isnt 0
+
+      unless data.errcode is 0
         return callback new Error 'auth failed', data
+
       @jwcRequest = new JwcRequest(data.ticket)
       callback null, data
 
@@ -33,7 +37,7 @@ class Student
     "ssdz", "yxsj", "pycc", "pyfs", "flfx", "sflx", "bz", "bz1", "bz2", "bz3"]
 
   getProfileByTicket: (callback) =>
-    if not @jwcRequest
+    unless @jwcRequest
       return callback new Error 'please instance this class with ticket or use login before this'
 
     Then (cont) =>

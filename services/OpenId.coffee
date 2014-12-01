@@ -60,10 +60,10 @@ openIdService =
       openIdDao.findOne openid: openid, cont
 
     .then (cont, openIdIns) ->
-      if not openIdIns
+      unless openIdIns
         openIdService.createUser openid, cont
       else
-        if not openIdIns.nickname
+        unless openIdIns.nickname
           openIdService.fillUserInfo openIdIns.openid
         cont(null, openIdIns)
 

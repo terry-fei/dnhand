@@ -5,7 +5,7 @@
   "scripts": {
     "start": "coffee app.coffee",
     "test": "mocha --compilers coffee:coffee-script/register",
-    "docker-dev": "sudo docker run -i -t -p 7080:7080 --rm --link mongodb:mongo -v `pwd`:/src ifeiteng/dnhand:dev"
+    "docker": "sudo docker run -i -t -p 7080:7080 --rm --link mongodb:mongo -v `pwd`:/src ifeiteng/dnhand:dev"
   },
   "dependencies": {
     "express": "^4.10.2",
