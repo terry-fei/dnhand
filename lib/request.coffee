@@ -4,20 +4,30 @@ urllib = require 'urllib'
 urlUtil = require('url')
 
 class JwcRequest
-
-  PROFILE:    'http://202.118.167.86/xjInfoAction.do?oper=xjxx'
-  SYLLABUS:   'http://202.118.167.86/xkAction.do?actionType=6'
-  GRADE_BXQ:  'http://202.118.167.86/bxqcjcxAction.do'
-  GRADE_BJG:  'http://202.118.167.86/gradeLnAllAction.do?oper=bjg'
-  GRADE_FA:   'http://202.118.167.86/gradeLnAllAction.do?oper=fainfo'
-  GRADE_QB:   'http://202.118.167.86/gradeLnAllAction.do?oper=qbinfo'
-  GRADE_KCSX: 'http://202.118.167.86/gradeLnAllAction.do?oper=sxinfo'
-
   constructor: (@ticket) ->
 
-  get: (url, callback) ->
+  @PROFILE:    'http://202.118.167.86/xjInfoAction.do?oper=xjxx'
+  @SYLLABUS:   'http://202.118.167.86/xkAction.do?actionType=6'
+
+  @GRADE_URLS:
+    # 本学期成绩
+    bxq: 'http://202.118.167.86/bxqcjcxAction.do'
+
+    # 不及格成绩
+    bjg: 'http://202.118.167.86/gradeLnAllAction.do?oper=bjg'
+
+    # 方案全部成绩
+    fa: 'http://202.118.167.86/gradeLnAllAction.do?oper=fainfo'
+
+    # 全部及格成绩
+    qb: 'http://202.118.167.86/gradeLnAllAction.do?oper=qbinfo'
+
+    # 课程属性成绩
+    kcsx: 'http://202.118.167.86/gradeLnAllAction.do?oper=sxinfo'
+
+  get: (url, callback) =>
     opts =
-      timeout: 20000
+      dataType: 'text'
       headers:
         Cookie: "JSESSIONID=#{@ticket}"
 
@@ -32,12 +42,12 @@ loginRequest = (stuid, pswd, callback) ->
 
 httpGet = (opts, callback) ->
   url = opts.url
-  delete opts.url
+  opts.url = null
   parsedUrl = if typeof url is 'string' then urlUtil.parse url else url
-  opts.port = parsedUrl.port or 80
-  opts.host = parsedUrl.hostname or parsedUrl.host or 'localhost'
-  opts.path = parsedUrl.path or '/'
-  if not opts.timeout then opts.timeout = 5000
+  opts.port = parsedUrl.port ? 80
+  opts.host = parsedUrl.hostname ? parsedUrl.host ? 'localhost'
+  opts.path = parsedUrl.path ? '/'
+  opts.timeout ?= 5000
   timer = null
   req = http.get opts, (res) ->
     chunks = []
@@ -55,14 +65,17 @@ httpGet = (opts, callback) ->
         clearTimeout(timer)
         timer = null
 
+      # 根据期望的数据类型转换body
       if opts.dataType
+
+        # 根据响应header的charset转码body
         type = res.headers['content-type']
         if not type
           body = body.toString()
 
         else
           charset = /^.*charset=(.+)/.exec(type)[1]
-          charset = charset or 'urf-8'
+          charset ?= 'urf-8'
 
           if not Buffer.isEncoding charset
             body = iconv.decode body, charset
@@ -70,12 +83,13 @@ httpGet = (opts, callback) ->
             body = body.toString(charset)
 
         if opts.dataType is 'json'
-          body = JSON.parse body 
+          body = JSON.parse body
 
       console.log body
       callback null, body, res
   .on 'error', callback
 
+# 设定定时器
   timer = setTimeout () ->
     timer = null
     req.abort()

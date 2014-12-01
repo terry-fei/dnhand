@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "coffee app.coffee"
+    "start": "coffee app.coffee",
+    "test": "mocha --compilers coffee:coffee-script/register",
+    "docker-dev": "sudo docker run -i -t -p 7080:7080 --rm --link mongodb:mongo -v `pwd`:/src ifeiteng/dnhand:dev"
   },
   "dependencies": {
     "express": "^4.10.2",
@@ -26,10 +28,12 @@
     "mysql": "^2.5.3"
   },
   "devDependencies": {
-    "mocha": "*",
     "chai": "*",
     "chai-http": "*",
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "grunt": "^0.4.5",
+    "grunt-mocha-test": "^0.12.4",
+    "mocha": "*"
   },
   "engines": {
     "node": "~0.10.x",

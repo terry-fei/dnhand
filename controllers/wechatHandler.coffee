@@ -2,7 +2,6 @@ _       = require('lodash')
 Then    = require('thenjs')
 moment  = require('moment')
 wechat  = require('wechat')
-request = require('request')
 moment.locale('zh-cn')
 
 Student  = require('../services/Student')
