@@ -47,7 +47,7 @@ openIdService =
 
         .then (cont, user) ->
           callback?(user)
-        .fail (error) ->
+        .fail (cont, error) ->
           callback?(error)
     else
       callback?()

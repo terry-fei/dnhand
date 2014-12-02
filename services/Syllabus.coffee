@@ -3,6 +3,8 @@ Then = require 'thenjs'
 cheerio = require 'cheerio'
 {JwcRequest} = require '../lib/request'
 
+syllabustDao = require('../models').Syllabus
+
 class Syllabus
   constructor: (@stuid, @jwcRequest) ->
 
@@ -91,5 +93,8 @@ class Syllabus
       callback null, syllabus
 
     .fail callback
+
+  @updateSyllabus: (syllabus, callback) =>
+    syllabustDao.findOneAndUpdate {stuid: syllabus.stuid}, syllabus, {upsert: true}, callback
 
 module.exports = Syllabus

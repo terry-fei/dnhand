@@ -17,8 +17,10 @@ if env is 'production'
     email:
       user: process.env.EMALL_USER
       pass: process.env.EMALL_PASS
+    session:
+      secret: process.env.SESSION_SECRET
 
-else if env is 'development'
+else
   config =
     wechat:
       openid: 'wx15c96420dd54edf9'
@@ -34,22 +36,7 @@ else if env is 'development'
     email:
       user: ''
       pass: ''
-
-else if env is 'test'
-  config =
-    wechat:
-      openid: 'ofu7Ts4-v3xMIqAXfkEbyuEvb_Uc'
-      appid: 'wxc49d99a484205dd0'
-      secret: '75676597753ddb51c8d74273650daa76'
-      canThis: true
-    mongodb:
-      user: ''
-      pass: ''
-      host: 'mongo'
-      port: '27017'
-      dbname: 'dnhand_test'
-    email:
-      user: ''
-      pass: ''
+    session:
+      secret: 'feit'
 
 module.exports = config

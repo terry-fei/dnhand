@@ -3,6 +3,8 @@ cheerio = require 'cheerio'
 Then = require 'thenjs'
 {JwcRequest} = require '../lib/request'
 
+gradeDao = require('../models').Grade
+
 class Grade
   constructor: (@stuid, @jwcRequest) ->
 
@@ -66,5 +68,8 @@ class Grade
       callback null, _.zipObject(groupNames, group)
 
     .fail callback
+
+  @updateGrade: (grade, callback) =>
+    gradeDao.findOneAndUpdate {stuid: grade.stuid}, grade, {upsert: true}, callback
 
 module.exports = Grade
