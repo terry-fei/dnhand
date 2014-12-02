@@ -92,7 +92,8 @@ class Syllabus
 
       callback null, syllabus
 
-    .fail callback
+    .fail (cont, err) ->
+      callback err
 
   @updateSyllabus: (syllabus, callback) =>
     syllabustDao.findOneAndUpdate {stuid: syllabus.stuid}, syllabus, {upsert: true}, callback

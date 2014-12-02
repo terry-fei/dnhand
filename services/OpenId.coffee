@@ -22,7 +22,8 @@ openIdService =
       .then (cont, user) ->
         callback(null, user)
 
-      .fail callback
+      .fail (cont, err) ->
+        callback err
     else
       openIdDao.create openid: openid, callback
 
@@ -70,15 +71,16 @@ openIdService =
     .fin (cont, result) ->
       callback(null, result)
       
-    .fail callback
+    .fail (cont, err) ->
+      callback err
 
-  removeUser: (openid, callback) ->
+  @removeUser: (openid, callback) ->
     openIdDao.findOneAndRemove({openid: openid}, callback)
 
-  bindStuid: (openid, stuid, callback) ->
-    openIdDao.findOneAndUpdate({openid: openid}, {$set: {stuid: stuid}}, callback)
+  @bindStuid: (openid, stuid, callback) ->
+    openIdDao.findOneAndUpdate({openid: openid}, {$set: {stuid: stuid}}, {upsert: true}, callback)
 
-  unBindStuid: (openid, callback) ->
+  @unBindStuid: (openid, callback) ->
     openIdDao.findOneAndUpdate({openid: openid}, {$set: {stuid: ''}}, callback)
 
 module.exports = openIdService

@@ -1,6 +1,8 @@
 
 Then = require 'thenjs'
-studentService = require '../services/student'
+
+openIdService = require '../services/OpenId'
+studentService = require '../services/Student'
 
 module.exports = (app) ->
 
@@ -21,6 +23,10 @@ module.exports = (app) ->
       student.login cont
 
     .then (cont, result) ->
+
+      openIdService.bindStuid openid, stuid, cont
+
+    .then (cont, openid) ->
 
       student.getInfoAndSave cont
 

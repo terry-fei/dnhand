@@ -60,7 +60,8 @@ class Student
 
       callback null, student
 
-    .fail callback
+    .fail (cont, err) ->
+      callback err
 
   getSyllabusByTicket: (callback) =>
     syllabus = new syllabusService @stuid, @jwcRequest
@@ -92,7 +93,8 @@ class Student
     .then (cont, grade) =>
       callback()
 
-    .fail callback
+    .fail (cont, err) ->
+      callback err
 
   getStudentAndSave: (callback) =>
     Then (cont) =>
@@ -101,7 +103,8 @@ class Student
     .then (cont, profile) =>
       Student.updateStudent profile, callback
 
-    .fail callback
+    .fail (cont, err) ->
+      callback err
 
   getSyllabusAndSave: (callback) =>
     Then (cont) =>
@@ -110,7 +113,8 @@ class Student
     .then (cont, syllabus) =>
       Student.updateSyllabus syllabus, callback
 
-    .fail callback
+    .fail (cont, err) ->
+      callback err
 
   getGradeAndSave: (type, callback) =>
     Then (cont) =>
@@ -122,6 +126,7 @@ class Student
 
       Student.updateGrade gradeIns, callback
 
-    .fail callback
+    .fail (cont, err) ->
+      callback err
 
 module.exports = Student

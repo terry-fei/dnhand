@@ -67,7 +67,8 @@ class Grade
         group.push(items)
       callback null, _.zipObject(groupNames, group)
 
-    .fail callback
+    .fail (cont, err) ->
+      callback err
 
   @updateGrade: (grade, callback) =>
     gradeDao.findOneAndUpdate {stuid: grade.stuid}, grade, {upsert: true}, callback
