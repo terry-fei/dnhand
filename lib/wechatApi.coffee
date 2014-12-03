@@ -1,4 +1,4 @@
-wechatApi = require('wechat').API
+wechatApi = require('wechat-api')
 config = require '../config'
 
 api = new wechatApi(config.wechat.appid, config.wechat.secret)

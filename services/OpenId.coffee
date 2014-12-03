@@ -56,9 +56,9 @@ openIdService =
   # get user info by openid
   # if not find in db then get it by this.createUser
   # return OpenId instance
-  getUser: (openid, callback) ->
+  getUser: (openid, field, callback) ->
     Then (cont) ->
-      openIdDao.findOne openid: openid, cont
+      openIdDao.findOne {openid: openid}, field, cont
 
     .then (cont, openIdIns) ->
       unless openIdIns
@@ -68,19 +68,19 @@ openIdService =
           openIdService.fillUserInfo openIdIns.openid
         cont(null, openIdIns)
 
-    .fin (cont, result) ->
+    .then (cont, result) ->
       callback(null, result)
-      
+
     .fail (cont, err) ->
       callback err
 
-  @removeUser: (openid, callback) ->
+  remove: (openid, callback) ->
     openIdDao.findOneAndRemove({openid: openid}, callback)
 
-  @bindStuid: (openid, stuid, callback) ->
+  bindStuid: (openid, stuid, callback) ->
     openIdDao.findOneAndUpdate({openid: openid}, {$set: {stuid: stuid}}, {upsert: true}, callback)
 
-  @unBindStuid: (openid, callback) ->
+  unBindStuid: (openid, callback) ->
     openIdDao.findOneAndUpdate({openid: openid}, {$set: {stuid: ''}}, callback)
 
 module.exports = openIdService

@@ -1,5 +1,4 @@
-chai = require 'chai'
-should = chai.should()
+should = require 'should'
 
 studentService = require '../services/Student'
 stuid = 'A03120582'

@@ -1,59 +1,78 @@
 _       = require('lodash')
 Then    = require('thenjs')
-moment  = require('moment')
 wechat  = require('wechat')
+logger  = require('winston')
+moment  = require('moment')
 moment.locale('zh-cn')
-
-Student  = require('../services/Student')
-OpenId   = require('../services/OpenId')
-Syllabus = require('../services/Syllabus')
-Grade    = require('../services/Grade')
 
 cons = require('../lib/constants')
 wechatApi = require('../lib/wechatApi')
 
-class ImageText
-  constructor: (title, description = '', url = '', picurl = '') ->
-    @title = title
-    @description = description
-    @url = url
-    @picurl = picurl
+openIdService = require '../services/OpenId'
+studentService = require '../services/Student'
+syllabusService = require '../services/Syllabus'
 
-module.exports = wechat.text (req, res) ->
+class ImageText
+  constructor: (@title, @description = '', @url = '', @picurl = '') ->
+
+module.exports = wechat.text((info, req, res) ->
   # 处理存在预先状态的消息
   if req.wxsession and req.wxsession.hasStatus
     dealWithStatus req, res
     return
 
-.event (req, res) ->
-  switch req.weixin.Event
+  res.reply 'haha'
+
+).event((info, req, res) ->
+  switch info.Event
     when 'CLICK'
-      key = req.weixin.EventKey
+
+      switch info.EventKey
+        when 'todaySyllabus'
+          info.day = moment().day()
+          info.day = 7 if info.day is 0
+          getSyllabusByDay(info, res)
+
+        when 'tomorrowsyllabus'
+          day = moment().day() + 1
+          getSyllabusByDay(info, res)
+
+        else
+          res.reply()
 
     when 'subscribe'
-      openid = req.weixin.FromUserName
+      openid = info.FromUserName
       Then (cont) ->
-        OpenId.getUser openid, cont
+        openIdService.getUser openid, cont
       .then (cont, user) ->
-        if user.stuid
-          Student.get user.stuid, cont
-        else
-          cont(null, user)
-      .fin (cont, error, result) ->
-        isBind = result.stuid?
-        name = if isBind then result.name else result.nickname
-        name = '同学' if not name
         its = [new ImageText('             如何优雅的使用')]
-        its.push new ImageText(cons.subscribe(name: name))
-        if not isBind
-          its.push new ImageText('       点我绑定账户', '', "http://n.feit.me/bind/#{openid}")
+        its.push new ImageText(cons.subscribe(name: user.nickname))
+        unless user.stuid
+          its.push new ImageText('   欢迎关注，点我绑定账户', '', "http://n.feit.me/bind/openid=#{openid}")
         res.reply its
 
     when 'unsubscribe'
-      # nothing
       res.reply()
 
     else
       res.reply()
-    
-.voice (req, res) ->
+
+)
+
+getSyllabusByDay = (info, res) ->
+  Then (cont) ->
+    openIdService.getUser info.FromUserName, 'stuid', cont
+
+  .then (cont, user) ->
+    unless user.stuid
+      res.reply '查询课表需先绑定账户\n   请回复"绑定"'
+    else
+      syllabusService.getSyllabus user.stuid, "#{info.day}", cont
+
+  .then (cont, syllabus) ->
+    syllabus = syllabus[info.day]
+    res.reply syllabus.toString()
+
+  .fail(cont, err) ->
+    logger.error err
+    res.reply '发生错误，请稍候再试'

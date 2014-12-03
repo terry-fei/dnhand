@@ -95,7 +95,10 @@ class Syllabus
     .fail (cont, err) ->
       callback err
 
-  @updateSyllabus: (syllabus, callback) =>
+  @updateSyllabus: (syllabus, callback) ->
     syllabustDao.findOneAndUpdate {stuid: syllabus.stuid}, syllabus, {upsert: true}, callback
+
+  @getSyllabus: (stuid, field, callback) ->
+    syllabustDao.findOne {stuid: stuid}, field, callback
 
 module.exports = Syllabus

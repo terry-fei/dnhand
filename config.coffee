@@ -23,7 +23,8 @@ if env is 'production'
 else
   config =
     wechat:
-      openid: 'wx15c96420dd54edf9'
+      token: 'feit'
+      openid: 'oZpuouAIdkHmuba1JFLbb4HUMVu8'
       appid: 'wx15c96420dd54edf9'
       secret: '5bf2a19b70f0aa9b05ea4da757ee3e1a'
       canThis: true

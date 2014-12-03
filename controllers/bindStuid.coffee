@@ -7,6 +7,8 @@ studentService = require '../services/Student'
 module.exports = (app) ->
 
   app.get '/bind', (req, res) ->
+    return res.end 'Not Found' unless req.query.openid
+    
     res.render 'bind', {openid: req.query.openid}
 
   app.post '/bind', (req, res) ->

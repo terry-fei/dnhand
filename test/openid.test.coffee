@@ -1,6 +1,5 @@
 Then = require 'thenjs'
-chai = require 'chai'
-should = chai.should()
+should = require 'should'
 config = require '../config'
 
 openIdService = require '../services/OpenId'

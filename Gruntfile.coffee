@@ -1,17 +1,13 @@
-
-modules.exports = (grunt) ->
-
-
+module.exports = (grunt) ->
   grunt.initConfig {
-
     pkg: grunt.file.readJSON 'package.json'
-
     mochaTest:
       test:
         options:
           reporter: 'spec'
+          timeout: 20000
           require: 'coffee-script/register'
-        src: ['test/**/*.coffee']
+        src: ['test/**/*.now.coffee']
   }
 
   grunt.loadNpmTasks 'grunt-mocha-test'

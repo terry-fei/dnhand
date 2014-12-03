@@ -10,7 +10,7 @@ config = require './config'
 wechat = require 'wechat'
 wechatHanler = require './controllers/wechatHandler'
 
-app = express()
+module.exports = app = express()
 
 # session
 app.use session
@@ -19,7 +19,7 @@ app.use session
     db: config.mongodb.dbname
 
 # wechat
-app.use '/wx/api', wechat 'feit', wechatHanler
+app.use '/wx/api', wechat(config.wechat.token, wechatHanler)
 
 # static files
 app.use st({path: __dirname + '/public', url: '/public', index: false})
