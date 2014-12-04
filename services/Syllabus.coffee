@@ -26,6 +26,8 @@ class Syllabus
       teacher :item.js
       week    :m.zc
       room    :m.js
+      building: m.jsl
+      credit: item.xf
     }
     if weekDay[num] then weekDay[num].push course else weekDay[num] = [course]
 
@@ -98,7 +100,7 @@ class Syllabus
   @updateSyllabus: (syllabus, callback) ->
     syllabustDao.findOneAndUpdate {stuid: syllabus.stuid}, syllabus, {upsert: true}, callback
 
-  @getSyllabus: (stuid, field, callback) ->
+  @get: (stuid, field, callback) ->
     syllabustDao.findOne {stuid: stuid}, field, callback
 
 module.exports = Syllabus

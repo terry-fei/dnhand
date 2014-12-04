@@ -1,7 +1,7 @@
 http = require 'http'
 iconv = require 'iconv-lite'
 urllib = require 'urllib'
-urlUtil = require('url')
+urlUtil = require 'url'
 
 class JwcRequest
   constructor: (@ticket) ->

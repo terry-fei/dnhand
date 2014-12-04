@@ -90,6 +90,12 @@ class Student
     .then (cont, syllabus) =>
       @getGradeAndSave 'fa', cont
 
+    .then (cont, syllabus) =>
+      @getGradeAndSave 'qb', cont
+
+    .then (cont, syllabus) =>
+      @getGradeAndSave 'bjg', cont
+
     .then (cont, grade) =>
       callback()
 

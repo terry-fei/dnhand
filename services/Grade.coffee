@@ -73,4 +73,7 @@ class Grade
   @updateGrade: (grade, callback) =>
     gradeDao.findOneAndUpdate {stuid: grade.stuid}, grade, {upsert: true}, callback
 
+  @get: (stuid, field, callback) ->
+    gradeDao.findOne {stuid: stuid}, field, callback
+
 module.exports = Grade

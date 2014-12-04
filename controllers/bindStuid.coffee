@@ -1,5 +1,6 @@
 
 Then = require 'thenjs'
+logger = require 'winston'
 
 openIdService = require '../services/OpenId'
 studentService = require '../services/Student'
@@ -25,19 +26,39 @@ module.exports = (app) ->
       student.login cont
 
     .then (cont, result) ->
-
       openIdService.bindStuid openid, stuid, cont
 
     .then (cont, openid) ->
-
       student.getInfoAndSave cont
 
     .then (cont) ->
-
       res.json errcode: 0
+      templateId = 'zPBcYZ708hYfPDCg-bGzZG4g_UyxBxGZe_lbHBVGZ9k'
+      url = ''
+      topColor = ''
+      data = 
+        first:
+          value: '教务账号绑定成功'
+          color: '#173177'
+        keyword1:
+          value: 'dnhand'
+          color: '#173177'
+        keyword2:
+          value: stuid
+          color: '#173177'
+        keyword3:
+          value: '查询课表，成绩等'
+          color: '#173177'
+        remark:
+          value: '感谢你的使用！'
+          color: '#173177'
+      wechatApi.sendTemplate openid, templateId, url, topColor, data, cont
 
     .fail (cont, err) ->
+      logger.error err
       if err.errcode
         res.json errcode: err.errcode
       else
-        res.json errcode: -1, errmsg: 'other'
+        try
+          res.json errcode: -1, errmsg: 'other'
+        catch e
