@@ -38,7 +38,7 @@ module.exports = wechat.text((info, req, res) ->
       imageTextItem = new ImageText(title, desc, url, logoUrl)
       res.reply([imageTextItem])
 
-    when /.*[课|课程]表/.test key
+    when /.*(课|课程)表/.test key
       info.day = switch
         when !!~ key.indexOf '今'   then 0
         when !!~ key.indexOf '明'   then 1
@@ -50,13 +50,13 @@ module.exports = wechat.text((info, req, res) ->
 
       if info.day? then getSyllabusByDay info, res else getAllSyllabus info, res
 
-    when /.*[成绩|分数]/.test key
+    when /.*(成绩|分数)/.test key
       switch
         when !!~ key.indexOf '本学期'
           getNowGrade info, res
         when !!~ key.indexOf '不及格'
           getNoPassGrade info, res
-        when /.*[四|六|四六]级/.test key
+        when /.*(四|六|四六)级/.test key
           getCetGrade info, res
         else
           getAllGrade info, res
@@ -129,6 +129,9 @@ getAllSyllabus = (info, res) ->
 
     .then (cont, syllabus) ->
 
+      unless syllabus
+        updateUserInfo(info, res)
+        return
       syllabuses = []
       for i in [0...7]
         syllabuses.push _formatSyllabus(i, syllabus[i])
@@ -158,7 +161,6 @@ getSyllabusByDay = (info, res) ->
       absDay = (moment().day() + info.day) % 7
       absDay = 7 + absDay if absDay < 0
       absDay
-
     else
       moment().day()
 
@@ -167,6 +169,10 @@ getSyllabusByDay = (info, res) ->
     syllabusService.get user.stuid, "#{info.day}", cont
 
   .then (cont, syllabus) ->
+    unless syllabus
+      updateUserInfo(info, res)
+      return
+
     syllabus = syllabus[info.day]
     res.reply _formatSyllabus(info.day, syllabus)
 
@@ -231,8 +237,8 @@ getNowGrade = (info, res) ->
 
   .then (cont, grade) ->
     unless grade
-      # TODO update grade
-      return res.reply '正在更新你的成绩\n            请稍候再试'
+      updateUserInfo(info, res)
+      return
 
     result = grade['qb']['2013-2014学年春(两学期)']
     if not result or result.length is 0
@@ -248,7 +254,6 @@ getNowGrade = (info, res) ->
 
   .fail (cont, err) ->
     logger.error err
-    res.reply '请稍候再试'
 
 getNoPassGrade = (info, res) ->
   Then (cont) ->
@@ -263,8 +268,8 @@ getNoPassGrade = (info, res) ->
 
   .then (cont, grade) ->
     unless grade
-      # TODO update grade
-      return res.reply '正在更新你的成绩\n            请稍候再试'
+      updateUserInfo(info, res)
+      return
 
     gradeStr = ["学号：#{info.stuid}\n\n"]
     now = grade['bjg']['尚不及格']
@@ -295,7 +300,30 @@ getNoPassGrade = (info, res) ->
 
   .fail (cont, err) ->
     logger.error err
-    res.reply '请稍候再试'
+
+updateUserInfo = (info, res) ->
+  Then (cont) ->
+    studentServic.get info.stuid, null, cont
+
+  .then (cont, studentInfo) ->
+    if studentInfo.is_pswd_invalid
+      res.reply '您的身份信息已过期，请回复"绑定"重新认证'
+    else
+      res.reply '正在更新你的信息\n            请稍候...'
+      info.student = new studentServic(studentInfo.stuid, studentInfo.pswd)
+      info.student.hasBind = true
+      info.student.login cont
+
+  .then (cont, result) ->
+    info.student.getInfoAndSave cont
+
+  .then (cont) ->
+    if wechatApi.canThis
+      wechatApi.sendText info.FromUserName, '您的信息更新成功。'
+  .fail (cont, err) ->
+    logger.error err
+    if wechatApi.canThis
+      wechatApi.sendText info.FromUserName, '您的信息更新失败。\n请回复"绑定"重新认证身份'
 
 getCetGrade: (cetNum, name, res) ->
   cetGradeUrl = "http://www.chsi.com.cn/cet/query?zkzh=#{cetNum}&xm=#{encodeURIComponent(name)}"
@@ -340,7 +368,6 @@ getCetGrade: (cetNum, name, res) ->
 
   .fail (cont, err) ->
     logger.error err
-    res.reply '请稍候再试'
 
 getTermEndExamInfo = (stuid, res) ->
   url = 'http://202.118.167.76/ksap/all.asp'
@@ -411,7 +438,7 @@ getNeauExamInfo = (stuid, title, url, res) ->
           地点:  #{msg.location}
           """
         result.push(new ImageText(examStr))
-        res.reply result
+      res.reply result
 
   .fail (cont, err) ->
     logger.error err

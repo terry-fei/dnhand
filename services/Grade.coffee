@@ -41,7 +41,7 @@ class Grade
     .then (cont, gradeHtml) ->
 
       unless !!~ gradeHtml.indexOf("课程")
-        err = new Error('wrong page')
+        err = new Error('wrongpage')
         return cont err
 
       $ = cheerio.load(gradeHtml)

@@ -25,7 +25,6 @@ describe 'StudentService', () ->
     it 'get syllabus by net should ok', (done) ->
       student.getSyllabusByTicket (err, syllabus) ->
         if err then return done(err)
-        # 没办法测试数据准确性，经大量测试没问题
         syllabus.should.be.exist
         done()
 
@@ -33,7 +32,6 @@ describe 'StudentService', () ->
     it 'get qb grade by net should ok', (done) ->
       student.getGradeByTicket 'qb', (err, grade) ->
         if err then return done(err)
-        # 没办法测试数据准确性，经大量测试没问题
         grade.should.be.exist
         done()
 
@@ -41,7 +39,6 @@ describe 'StudentService', () ->
     it 'get bjg grade by net should ok', (done) ->
       student.getGradeByTicket 'bjg', (err, grade) ->
         if err then return done(err)
-        # 没办法测试数据准确性，经大量测试没问题
         grade.should.be.exist
         done()
 
@@ -49,7 +46,6 @@ describe 'StudentService', () ->
     it 'get fa grade by net should ok', (done) ->
       student.getGradeByTicket 'fa', (err, grade) ->
         if err then return done(err)
-        # 没办法测试数据准确性，经大量测试没问题
         grade.should.be.exist
         done()
 
@@ -57,7 +53,6 @@ describe 'StudentService', () ->
     it 'get kcsx grade by net should ok', (done) ->
       student.getGradeByTicket 'kcsx', (err, grade) ->
         if err then return done(err)
-        # 没办法测试数据准确性，经大量测试没问题
         grade.should.be.exist
         done()
 
@@ -66,7 +61,6 @@ describe 'StudentService', () ->
     it 'get bxq grade by net should ok', (done) ->
       student.getGradeByTicket 'bxq', (err, grade) ->
         if err then return done(err)
-        # 没办法测试数据准确性，经大量测试没问题
         grade.should.be.exist
         done()
 ###

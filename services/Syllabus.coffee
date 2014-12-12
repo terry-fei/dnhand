@@ -41,6 +41,10 @@ class Syllabus
 
     .then (cont, syllabusHtml) =>
 
+      unless !!~ gradeHtml.indexOf("学生选课结果")
+        err = new Error('wrongpage')
+        return cont err
+
       # 解析html， 取得Syllabus对象
       items = []
       $ = cheerio.load(syllabusHtml)

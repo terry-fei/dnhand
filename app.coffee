@@ -32,7 +32,7 @@ app.engine('html', require('ejs').renderFile)
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.listen 7080, () ->
-  logger.info 'Server Start at port 7080'
+app.listen config.port, () ->
+  logger.info "Server Start at port #{config.port}"
 
 require('./controllers/bindStuid')(app)

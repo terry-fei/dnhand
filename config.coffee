@@ -19,6 +19,7 @@ if env is 'production'
       pass: process.env.EMALL_PASS
     session:
       secret: process.env.SESSION_SECRET
+    port: 7080
 
 else
   config =
@@ -39,5 +40,6 @@ else
       pass: ''
     session:
       secret: 'feit'
+    port: 7080
 
 module.exports = config

@@ -27,6 +27,9 @@ class Student
         return callback new Error('request error status code is ' + statusCode)
 
       unless data.errcode is 0
+        if data.errcode is 2 and @hasBind
+          @markPswdInvalid()
+
         err = new Error 'auth failed'
         err.name = 'loginerror'
         copy(data).pick('errcode', 'errmsg').to(err)
@@ -56,12 +59,21 @@ class Student
 
       profile = _.zipObject Student.profileKeys, values
       student = pswd: @pswd
-      copy(profile).pick('stuid', 'name', 'sex', 'native', 'class', 'major', 'year', 'id_card').to(student)
+      if profile.name and profile.major
+        copy(profile).pick('stuid', 'name', 'sex', 'native', 'class', 'major', 'year', 'id_card').to(student)
 
-      callback null, student
+        callback null, student
+      else
+        callback new Error 'wrongdata'
 
     .fail (cont, err) ->
       callback err
+
+  markPswdInvalid: () =>
+    studentDao.findOneAndUpdate {stuid: @stuid}, {is_pswd_invalid: true}, () ->
+
+  @get: (stuid, field, callback) ->
+    studentDao.findOne {stuid: stuid}, field, callback
 
   getSyllabusByTicket: (callback) =>
     syllabus = new syllabusService @stuid, @jwcRequest
