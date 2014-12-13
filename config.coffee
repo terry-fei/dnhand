@@ -5,9 +5,9 @@ if env is 'production'
   config =
     wechat:
       # 'wx3ff5c48ba9ac6552', '6e1b422de4b33e385165ab80f73492df'
-      appid: process.env.WX_APPID
-      secret: process.env.WX_SECRET
-      canThis: process.env.HAS_ADVANCED_INTERFACE
+      appid: "wx3ff5c48ba9ac6552" 
+      secret: "6e1b422de4b33e385165ab80f73492df"
+      canThis: true
     mongodb:
       user: process.env.MONGO_USER
       pass: process.env.MONGO_PASS
@@ -18,7 +18,7 @@ if env is 'production'
       user: process.env.EMALL_USER
       pass: process.env.EMALL_PASS
     session:
-      secret: process.env.SESSION_SECRET
+      secret: "secret feit"
     port: 7080
 
 else
