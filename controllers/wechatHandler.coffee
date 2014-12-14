@@ -12,10 +12,10 @@ cons = require('../lib/constants')
 wechatApi = require('../lib/wechatApi')
 logger = console
 
-openIdService   = require '../services/OpenId'
-gradeService    = require '../services/Grade'
-studentService  = require '../services/Student'
-syllabusService = require '../services/Syllabus'
+openIdService   = require '../service/OpenId'
+gradeService    = require '../service/Grade'
+studentService  = require '../service/Student'
+syllabusService = require '../service/Syllabus'
 
 class ImageText
   constructor: (@title, @description = '', @url = '', @picurl = '') ->
@@ -33,7 +33,7 @@ module.exports = wechat.text((info, req, res) ->
       desc = """
             请点击本消息绑定学号
             """
-      url = "http://n.feit.me/bind/openid=#{info.FromUserName}"
+      url = "http://n.feit.me/bind?openid=#{info.FromUserName}"
       logoUrl = "http://n.feit.me/public/dnhandlogo.jpg"
       imageTextItem = new ImageText(title, desc, url, logoUrl)
       res.reply([imageTextItem])
@@ -303,14 +303,14 @@ getNoPassGrade = (info, res) ->
 
 updateUserInfo = (info, res) ->
   Then (cont) ->
-    studentServic.get info.stuid, null, cont
+    studentService.get info.stuid, null, cont
 
   .then (cont, studentInfo) ->
     if studentInfo.is_pswd_invalid
       res.reply '您的身份信息已过期，请回复"绑定"重新认证'
     else
       res.reply '正在更新你的信息\n            请稍候...'
-      info.student = new studentServic(studentInfo.stuid, studentInfo.pswd)
+      info.student = new studentService(studentInfo.stuid, studentInfo.pswd)
       info.student.hasBind = true
       info.student.login cont
 

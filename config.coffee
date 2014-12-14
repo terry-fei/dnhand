@@ -5,6 +5,7 @@ if env is 'production'
   config =
     wechat:
       # 'wx3ff5c48ba9ac6552', '6e1b422de4b33e385165ab80f73492df'
+      token: "feit"
       appid: "wx3ff5c48ba9ac6552" 
       secret: "6e1b422de4b33e385165ab80f73492df"
       canThis: true

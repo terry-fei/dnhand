@@ -10,6 +10,8 @@ gradeService = require './Grade'
 
 studentDao = require('../models').Student
 
+logger = console
+
 class Student
   constructor: (@stuid, @pswd, ticket) ->
     if stuid and pswd and ticket
@@ -102,10 +104,10 @@ class Student
     .then (cont, syllabus) =>
       @getGradeAndSave 'fa', cont
 
-    .then (cont, syllabus) =>
+    .then (cont, grade) =>
       @getGradeAndSave 'qb', cont
 
-    .then (cont, syllabus) =>
+    .then (cont, grade) =>
       @getGradeAndSave 'bjg', cont
 
     .then (cont, grade) =>

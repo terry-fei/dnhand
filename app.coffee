@@ -15,7 +15,10 @@ module.exports = app = express()
 # session
 app.use session
   secret: config.session.secret
+  resave: false
+  saveUninitialized: true
   store: new MongoStore
+    host: config.mongodb.host
     db: config.mongodb.dbname
 
 # wechat

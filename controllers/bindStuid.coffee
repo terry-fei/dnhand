@@ -2,8 +2,11 @@
 Then = require 'thenjs'
 logger = require 'winston'
 
-openIdService = require '../services/OpenId'
-studentService = require '../services/Student'
+openIdService = require '../service/OpenId'
+studentService = require '../service/Student'
+logger = console
+
+
 
 module.exports = (app) ->
 
