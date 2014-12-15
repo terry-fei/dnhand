@@ -37,7 +37,7 @@ class JwcRequest
     urllib.request url, opts, callback
 
 loginRequest = (stuid, pswd, callback) ->
-  host = "http://202.118.167.86"
+  host = "http://202.118.167.85"
   arg = "#{__dirname}/JwcLoginHelper.py #{stuid} #{pswd} #{host}"
   exec arg, (error, stdout, stderr) ->
     if error
