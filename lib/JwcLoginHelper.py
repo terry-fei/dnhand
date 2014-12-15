@@ -13,23 +13,26 @@ sys.setdefaultencoding('utf-8')
 
 class JwcLoginHelper:
 
-  indexUrl  = "http://202.118.167.86:9003"
-  codeUrl   = "http://202.118.167.86/validateCodeAction.do"
-  verifyUrl = "http://202.118.167.86/loginAction.do"
-  indexUrl1 = "http://202.118.167.85:9004/"
-  indexUrl2 = "http://202.118.167.86:9002/"
-  indexUrl3 = "http://202.118.167.86:9001/"
+  CodePath  = "/validateCodeAction.do"
+  VerifyPath = "/loginAction.do"
 
-  def __init__(self, stuid, pswd):
+  def __init__(self, stuid, pswd, host):
     self.stuid = stuid
     self.pswd  = pswd
+    self.host = host
 
-  #  0 -- success  1 -- connectError  2 -- identifyError  3 -- codeError   
+  # 0 -- success  1 -- connectError  2 -- identifyError  3 -- codeError   
   def login(self):
+
+    # 获取验证码图片和cookie
     self._getCookieAndCodeImg()
     if self.getCookieSuccess != True:
       return {'errcode': 1, 'errmsg': 'connect error'}
+
+    # 识别验证码
     self._identifyCode()
+
+    # 通过网络验证验证码
     self._verifyAccount()
     return self.loginResult
 
@@ -38,7 +41,7 @@ class JwcLoginHelper:
       "mm": self.pswd, "v_yzm": self.code, "zjh": self.stuid }
     headers = {'Cookie': self.cookie}
     data = urllib.urlencode(params)
-    req = urllib2.Request(self.verifyUrl, data, headers)
+    req = urllib2.Request(self.host + self.VerifyPath, data, headers)
     try:
       res = urllib2.urlopen(req)
     except:
@@ -58,7 +61,7 @@ class JwcLoginHelper:
 
   def _getCookieAndCodeImg(self):
     try:
-      res = urllib2.urlopen(url=self.codeUrl, timeout=3)
+      res = urllib2.urlopen(url=self.host + self.CodePath, timeout=3)
       if res.getcode() == 200:
         self.cookie = res.info()['Set-Cookie']
       else:
@@ -112,5 +115,13 @@ class JwcLoginHelper:
     return codeHash[hitChar]
 
 if __name__ == '__main__':
-  loginHelper = JwcLoginHelper("A19120626", "1230.0")
-  print(loginHelper.login())
+  stuid = sys.argv[1]
+  pswd  = sys.argv[2]
+  host  = sys.argv[3]
+  if host == None:
+     host = "http://202.118.167.86"
+
+  result = JwcLoginHelper(stuid, pswd, host).login()
+  while(result['errcode'] == 3):
+    result = JwcLoginHelper(stuid, pswd, host).login()
+  print json.dumps(result)

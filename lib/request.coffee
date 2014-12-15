@@ -2,31 +2,33 @@ http = require 'http'
 iconv = require 'iconv-lite'
 urllib = require 'urllib'
 urlUtil = require 'url'
+exec = require('child_process').exec
 
 class JwcRequest
-  constructor: (@ticket) ->
+  constructor: (@ticket, @host) ->
 
-  @PROFILE:    'http://202.118.167.86/xjInfoAction.do?oper=xjxx'
-  @SYLLABUS:   'http://202.118.167.86/lnkbcxAction.do?zxjxjhh=2014-2015-2-1'
-  # @SYLLABUS:   'http://202.118.167.86/xkAction.do?actionType=6'
+  @PROFILE:    '/xjInfoAction.do?oper=xjxx'
+  @SYLLABUS:   '/lnkbcxAction.do?zxjxjhh=2014-2015-2-1'
+  # @SYLLABUS:   '/xkAction.do?actionType=6'
 
   @GRADE_URLS:
     # 本学期成绩
-    bxq: 'http://202.118.167.86/bxqcjcxAction.do'
+    bxq: '/bxqcjcxAction.do'
 
     # 不及格成绩
-    bjg: 'http://202.118.167.86/gradeLnAllAction.do?oper=bjg'
+    bjg: '/gradeLnAllAction.do?oper=bjg'
 
     # 方案全部成绩
-    fa: 'http://202.118.167.86/gradeLnAllAction.do?oper=fainfo'
+    fa: '/gradeLnAllAction.do?oper=fainfo'
 
     # 全部及格成绩
-    qb: 'http://202.118.167.86/gradeLnAllAction.do?oper=qbinfo'
+    qb: '/gradeLnAllAction.do?oper=qbinfo'
 
     # 课程属性成绩
-    kcsx: 'http://202.118.167.86/gradeLnAllAction.do?oper=sxinfo'
+    kcsx: '/gradeLnAllAction.do?oper=sxinfo'
 
-  get: (url, callback) =>
+  get: (path, callback) =>
+    url = "#{@host}#{path}"
     opts =
       dataType: 'text'
       headers:
@@ -35,11 +37,19 @@ class JwcRequest
     urllib.request url, opts, callback
 
 loginRequest = (stuid, pswd, callback) ->
-  url = "http://neaucode.sinaapp.com/auth?stuid=#{stuid}&pswd=#{pswd}"
-  opts =
-    timeout: 20000
-    dataType: 'json'
-  urllib.request url, opts, callback
+  host = "http://202.118.167.86"
+  arg = "#{__dirname}/JwcLoginHelper.py #{stuid} #{pswd} #{host}"
+  exec arg, (error, stdout, stderr) ->
+    if error
+      return callback error
+
+    try
+      ret = JSON.parse stdout
+    catch e
+      return callback e
+
+    ret.host = host
+    callback null, ret
 
 httpGet = (opts, callback) ->
   url = opts.url

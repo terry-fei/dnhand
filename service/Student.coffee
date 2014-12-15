@@ -13,19 +13,16 @@ StudentDao = require('../models').Student
 logger = console
 
 class Student
-  constructor: (@stuid, @pswd, ticket) ->
-    if stuid and pswd and ticket
-      @jwcRequest = new JwcRequest(ticket)
+  constructor: (@stuid, @pswd, ticket, host) ->
+    if stuid and pswd and ticket and host
+      @jwcRequest = new JwcRequest(ticket, host)
 
   login: (callback) =>
     unless @pswd
       callback new Error('pswd not set')
 
-    loginRequest @stuid, @pswd, (err, data, res) =>
+    loginRequest @stuid, @pswd, (err, data) =>
       return callback err if err
-
-      unless res.statusCode is 200
-        return callback new Error('request error status code is ' + statusCode)
 
       unless data.errcode is 0
         if data.errcode is 2 and @hasBind
@@ -36,7 +33,7 @@ class Student
         copy(data).pick('errcode', 'errmsg').to(err)
         return callback err
 
-      @jwcRequest = new JwcRequest(data.ticket)
+      @jwcRequest = new JwcRequest(data.ticket, data.host)
       callback null, data
 
   @profileKeys: ["stuid", "name", "xmpy", "ywxm", "cym", "id_card", "sex", "sslb", "tsxslx", "xjzt", "sflb",
