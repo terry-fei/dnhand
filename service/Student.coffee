@@ -120,7 +120,6 @@ class Student
         (cont) ->
           self.getGradeAndSave 'bjg', (err, grade) ->
             if err
-              logger.trace err
               return cont()
             cont null, grade
       ]

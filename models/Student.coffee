@@ -10,7 +10,7 @@ StudentSchema = new mongoose.Schema
   class: String
   major: String
   year: String
-  id_card: Number
+  id_card: String
   is_pswd_invalid: Boolean
   update_time: Date
 
