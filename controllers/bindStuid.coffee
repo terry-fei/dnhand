@@ -1,4 +1,3 @@
-
 Then = require 'thenjs'
 logger = require 'winston'
 
@@ -7,7 +6,19 @@ StudentService = require '../service/Student'
 logger = console
 wechatApi = require '../lib/wechatApi'
 
+oauthApi = wechatApi.oauthApi
+
 module.exports = (app) ->
+
+  app.get '/wx/oauth', (req, res) ->
+    code = req.query.code
+    state = req.query.state
+    oauthApi.getAccessToken code, (err, result) ->
+      openid = result.data.openid
+      if state is 'bind'
+        res.redirect '/bind?openid=' + openid
+      else
+        res.end('Not Found')
 
   app.get '/bind', (req, res) ->
     return res.end 'Not Found' unless req.query.openid

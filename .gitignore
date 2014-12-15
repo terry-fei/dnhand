@@ -6,5 +6,3 @@ server/errors/logs/
 .vagrant
 Vagrantfile
 *.pyc
-lib/fonts.py
-

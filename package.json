@@ -25,6 +25,7 @@
     "urllib": "^2.2.0",
     "wechat": "^1.0.1",
     "wechat-api": "^1.1.2",
+    "wechat-oauth": "^1.0.0",
     "winston": "^0.8.3"
   },
   "devDependencies": {

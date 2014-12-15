@@ -62,12 +62,38 @@ module.exports = wechat.text((info, req, res) ->
           getAllGrade info, res
 
     when /^补考.*/.test key
+      if key is '补考'
+        return res.reply """
+          请回复补考+学号查询
+          例：补考A19120626
+          """
       stuid = info.Content.substring(2)
       getMakeUpExamInfo stuid, res
 
     when /^期末.*/.test key
+      if key is '期末'
+        return res.reply """
+          请回复期末+学号查询
+          例：期末A19120626
+          """
       stuid = info.Content.substring(2)
       getTermEndExamInfo stuid, res
+
+    when key is '准考证'
+      res.reply """
+        请回复身份证号查询四六级准考证
+        仅限农大同学
+        """
+
+    when key.length is 18
+      url = "http://202.118.167.91/bm/cetzkz/images/#{key}.jpg"
+      title = "四六级级准考证"
+      description = """
+        请点击查看你的准考证
+        如果没有看到准考证图片
+        请检查并重新回复身份证号
+        """
+      return res.reply([new ImageText(title, description, url)])
 
     when key is '更新'
       updateUserInfo(info, res)
@@ -94,6 +120,21 @@ module.exports = wechat.text((info, req, res) ->
 
         when 'bjggrade'
           getNoPassGrade info, res
+
+        when 'allgrade'
+          getAllGrade info, res
+
+        when 'exam'
+          res.reply """
+          请回复期末+学号查询
+          例：期末A19120626
+
+          请回复补考+学号查询
+          例：补考A19120626
+
+          请回复身份证号查询四六级准考证
+          仅限农大同学
+          """
 
         else
           replyUsage info, res

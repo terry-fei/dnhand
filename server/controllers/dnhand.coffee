@@ -179,7 +179,7 @@ handler = (req, res) ->
 
   else if content is "allsyllabus" or content is "课表" or content is "全部课表"
     res.end('');
-    getAllSyllabus(msg.FromUserName);
+    getAllSyllabus(msg.FromUserName)
 
   else if content is "exam"
     return res.reply "请回复 '补考'+'学号' 查询补考信息\n例如查询学号为A19120000的补考信息\n'补考A19120000'"
