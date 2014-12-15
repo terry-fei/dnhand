@@ -327,14 +327,14 @@ updateUserInfo = (info, res) ->
       .then (cont1, result) ->
         student.getInfoAndSave cont
       .fail (cont1, err) ->
-        if err.name isnt 'loginerror'
-          cont1 err
+        cont err
 
   .then (cont) ->
     if wechatApi.canThis
       wechatApi.sendText info.FromUserName, '您的信息更新成功。'
   .fail (cont, err) ->
-    logger.trace err
+    if err.name isnt 'loginerror'
+      logger.trace err
     if wechatApi.canThis
       openid = info.FromUserName
       wechatApi.sendText openid, "您的信息更新失败。\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
