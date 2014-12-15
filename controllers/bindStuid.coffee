@@ -56,7 +56,8 @@ module.exports = (app) ->
       wechatApi.sendTemplate openid, templateId, url, topColor, data, cont
 
     .fail (cont, err) ->
-      logger.trace err
+      if err.name isnt 'loginerror'
+        logger.trace err
       if err.errcode
         res.json errcode: err.errcode
       else

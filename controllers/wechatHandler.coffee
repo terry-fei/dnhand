@@ -12,10 +12,10 @@ cons = require('../lib/constants')
 wechatApi = require('../lib/wechatApi')
 logger = console
 
-openIdService   = require '../service/OpenId'
-gradeService    = require '../service/Grade'
-studentService  = require '../service/Student'
-syllabusService = require '../service/Syllabus'
+OpenIdService   = require '../service/OpenId'
+GradeService    = require '../service/Grade'
+StudentService  = require '../service/Student'
+SyllabusService = require '../service/Syllabus'
 
 class ImageText
   constructor: (@title, @description = '', @url = '', @picurl = '') ->
@@ -72,61 +72,64 @@ module.exports = wechat.text((info, req, res) ->
     when key is '更新'
       updateUserInfo(info, res)
     else
-      res.reply('欢迎使用')
+      replyUsage info, res
 
 ).event((info, req, res) ->
   switch info.Event
     when 'CLICK'
 
       switch info.EventKey
-        when 'todaySyllabus'
+        when 'todaysyllabus'
           getSyllabusByDay info, res
 
-        when 'tomorrowSyllabus'
+        when 'tomorrowsyllabus'
           info.day = 1
           getSyllabusByDay info, res
 
-        when 'allSyllabus'
+        when 'allsyllabus'
           getAllSyllabus info, res
 
-        when 'nowGrade'
+        when 'nowgrade'
           getNowGrade info, res
 
-        when 'noPassGrade'
+        when 'bjggrade'
           getNoPassGrade info, res
 
         else
-          res.reply()
+          replyUsage info, res
 
     when 'subscribe'
-      openid = info.FromUserName
-      Then (cont) ->
-        openIdService.getUser openid, 'stuid nickname', cont
-      .then (cont, user) ->
-        its = [new ImageText('             如何优雅的使用')]
-        its.push new ImageText(cons.subscribe(name: user.nickname))
-        unless user.stuid
-          its.push new ImageText('   欢迎关注，点我绑定账户', '', "http://n.feit.me/bind?openid=#{openid}")
-        res.reply its
+      replyUsage info, res
 
     when 'unsubscribe'
       res.reply()
 
     else
-      res.reply()
+      replyUsage info, res
 
 )
+
+replyUsage = (info, res) ->
+  openid = info.FromUserName
+  Then (cont) ->
+    OpenIdService.getUser openid, 'stuid nickname', cont
+  .then (cont, user) ->
+    its = [new ImageText('             如何优雅的使用')]
+    its.push new ImageText(cons.subscribe(name: user.nickname))
+    unless user.stuid
+      its.push new ImageText('   欢迎关注，点我绑定账户', '', "http://n.feit.me/bind?openid=#{openid}")
+    res.reply its
 
 getAllSyllabus = (info, res) ->
   if wechatApi.canThis
     Then (cont) ->
-      openIdService.getUser info.FromUserName, 'stuid', cont
+      OpenIdService.getUser info.FromUserName, 'stuid', cont
 
     .then (cont, user) ->
       unless user.stuid
         return res.reply '查询课表需先绑定账户\n   请回复"绑定"'
 
-      syllabusService.get user.stuid, null, cont
+      SyllabusService.get user.stuid, null, cont
 
     .then (cont, syllabus) ->
 
@@ -153,7 +156,7 @@ getAllSyllabus = (info, res) ->
 
 getSyllabusByDay = (info, res) ->
   Then (cont) ->
-    openIdService.getUser info.FromUserName, 'stuid', cont
+    OpenIdService.getUser info.FromUserName, 'stuid', cont
 
   .then (cont, user) ->
     unless user.stuid
@@ -168,7 +171,7 @@ getSyllabusByDay = (info, res) ->
 
     return res.reply '星期天休息，亲' if info.day is 0
 
-    syllabusService.get user.stuid, "#{info.day}", cont
+    SyllabusService.get user.stuid, "#{info.day}", cont
 
   .then (cont, syllabus) ->
     unless syllabus
@@ -226,14 +229,14 @@ getAllGrade = (info, res) ->
 
 getNowGrade = (info, res) ->
   Then (cont) ->
-    openIdService.getUser info.FromUserName, 'stuid', cont
+    OpenIdService.getUser info.FromUserName, 'stuid', cont
 
   .then (cont, user) ->
     unless user.stuid
       return res.reply '查询成绩需先绑定账户\n   请回复"绑定"'
 
     info.stuid = user.stuid
-    gradeService.get user.stuid, 'qb', cont
+    GradeService.get user.stuid, 'qb', cont
 
   .then (cont, grade) ->
     unless grade
@@ -256,14 +259,14 @@ getNowGrade = (info, res) ->
 
 getNoPassGrade = (info, res) ->
   Then (cont) ->
-    openIdService.getUser info.FromUserName, 'stuid', cont
+    OpenIdService.getUser info.FromUserName, 'stuid', cont
 
   .then (cont, user) ->
     unless user.stuid
       return res.reply '查询成绩需先绑定账户\n   请回复"绑定"'
 
     info.stuid = user.stuid
-    gradeService.get user.stuid, 'bjg', cont
+    GradeService.get user.stuid, 'bjg', cont
 
   .then (cont, grade) ->
     unless grade
@@ -301,14 +304,14 @@ getNoPassGrade = (info, res) ->
 
 updateUserInfo = (info, res) ->
   Then (cont) ->
-    openIdService.getUser info.FromUserName, 'stuid', cont
+    OpenIdService.getUser info.FromUserName, 'stuid', cont
 
   .then (cont, user) ->
     unless user.stuid
       openid = info.FromUserName
       return res.reply "<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
 
-    studentService.get user.stuid, null, cont
+    StudentService.get user.stuid, null, cont
 
   .then (cont, studentInfo) ->
     if studentInfo.is_pswd_invalid
@@ -316,7 +319,7 @@ updateUserInfo = (info, res) ->
       res.reply "您的身份信息已过期，\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
     else
       res.reply '正在更新你的信息\n            请稍候...'
-      student = new studentService(studentInfo.stuid, studentInfo.pswd)
+      student = new StudentService(studentInfo.stuid, studentInfo.pswd)
       student.hasBind = true
 
       Then (cont1) ->
@@ -324,7 +327,8 @@ updateUserInfo = (info, res) ->
       .then (cont1, result) ->
         student.getInfoAndSave cont
       .fail (cont1, err) ->
-        cont1 err
+        if err.name isnt 'loginerror'
+          cont1 err
 
   .then (cont) ->
     if wechatApi.canThis
