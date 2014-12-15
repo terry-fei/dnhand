@@ -1,8 +1,10 @@
+_ = require 'lodash'
 Then = require 'thenjs'
 logger = require 'winston'
 
 OpenIdService = require '../service/OpenId'
 StudentService = require '../service/Student'
+GradeService = require '../service/Grade'
 logger = console
 wechatApi = require '../lib/wechatApi'
 
@@ -75,3 +77,28 @@ module.exports = (app) ->
         try
           res.json errcode: -1, errmsg: 'other'
         catch e
+
+  app.get "/info/allgrade", (req, res, next) ->
+    openid = req.query.openid
+    Then (cont) ->
+      OpenIdService.getUser openid, 'stuid', cont
+
+    .then (cont, user) ->
+      unless user.stuid
+        return res.redirect '/bind?openid=' + openid
+
+      GradeService.get user.stuid, 'fa', cont
+
+    .then (cont, grade) ->
+      unless grade
+        return res.redirect '/bind?openid=' + openid
+
+      result = _.values(grade['fa'])[0]
+      return res.render 'all_grade', {'items': result}
+
+    .fail (cont, error) ->
+      logger.trace error
+      try
+        res.end('请稍候访问')
+      catch e
+        # ...

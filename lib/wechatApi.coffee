@@ -61,7 +61,8 @@ menu = '{
   ]
 }'
 
-api.createMenu menu, (err, ret) ->
-  console.log  err || "dnhand menu ok \n #{ret.errmsg}"
+if process.env.NODE_ENV is 'production'
+  api.createMenu menu, (err, ret) ->
+    console.log  err || "dnhand menu ok msg from wechat: #{ret.errmsg}"
 
 module.exports = api

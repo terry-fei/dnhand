@@ -6,7 +6,7 @@ openIdDao = require('../models').OpenId
 
 wxApi = require('../lib/wechatApi')
 
-openIdService =
+OpenIdService =
 
   # save user info to db
   # if has advance interface then save more info
@@ -62,10 +62,10 @@ openIdService =
 
     .then (cont, openIdIns) ->
       unless openIdIns
-        openIdService.createUser openid, cont
+        OpenIdService.createUser openid, cont
       else
         unless openIdIns.nickname
-          openIdService.fillUserInfo openIdIns.openid
+          OpenIdService.fillUserInfo openIdIns.openid
         cont(null, openIdIns)
 
     .then (cont, result) ->
@@ -83,4 +83,4 @@ openIdService =
   unBindStuid: (openid, callback) ->
     openIdDao.findOneAndUpdate({openid: openid}, {$set: {stuid: ''}}, callback)
 
-module.exports = openIdService
+module.exports = OpenIdService
