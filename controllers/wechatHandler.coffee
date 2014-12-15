@@ -69,8 +69,10 @@ module.exports = wechat.text((info, req, res) ->
       stuid = info.Content.substring(2)
       getTermEndExamInfo stuid, res
 
+    when key is '更新'
+      updateUserInfo(info, res)
     else
-      res.reply()
+      res.reply('欢迎使用')
 
 ).event((info, req, res) ->
   switch info.Event
@@ -104,7 +106,7 @@ module.exports = wechat.text((info, req, res) ->
         its = [new ImageText('             如何优雅的使用')]
         its.push new ImageText(cons.subscribe(name: user.nickname))
         unless user.stuid
-          its.push new ImageText('   欢迎关注，点我绑定账户', '', "http://n.feit.me/bind/openid=#{openid}")
+          its.push new ImageText('   欢迎关注，点我绑定账户', '', "http://n.feit.me/bind?openid=#{openid}")
         res.reply its
 
     when 'unsubscribe'
@@ -124,14 +126,14 @@ getAllSyllabus = (info, res) ->
       unless user.stuid
         return res.reply '查询课表需先绑定账户\n   请回复"绑定"'
 
-      res.reply '正在查询...'
       syllabusService.get user.stuid, null, cont
 
     .then (cont, syllabus) ->
 
       unless syllabus
-        updateUserInfo(info, res)
-        return
+        return res.reply "您的信息已过期，请回复“更新”，获取最新信息"
+
+      res.reply("正在查询...")
       syllabuses = []
       for i in [0...7]
         syllabuses.push _formatSyllabus(i, syllabus[i])
@@ -144,7 +146,7 @@ getAllSyllabus = (info, res) ->
         setTimeout(sendNews, startTime)
 
     .fail (cont, err) ->
-      logger.error err
+      logger.trace err
 
   else
     res.reply '未取得高级接口权限，不能进行此操作'
@@ -170,15 +172,13 @@ getSyllabusByDay = (info, res) ->
 
   .then (cont, syllabus) ->
     unless syllabus
-      updateUserInfo(info, res)
-      return
+      return res.reply "您的信息已过期，请回复“更新”，获取最新信息"
 
     syllabus = syllabus[info.day]
     res.reply _formatSyllabus(info.day, syllabus)
 
   .fail (cont, err) ->
-    logger.error err
-    res.reply '请稍候再试'
+    logger.trace err
 
 _formatSyllabus = (day, syllabus) ->
   if day is 0
@@ -237,8 +237,7 @@ getNowGrade = (info, res) ->
 
   .then (cont, grade) ->
     unless grade
-      updateUserInfo(info, res)
-      return
+      return res.reply "您的信息已过期，请回复“更新”，获取最新信息"
 
     result = grade['qb']['2013-2014学年春(两学期)']
     if not result or result.length is 0
@@ -253,7 +252,7 @@ getNowGrade = (info, res) ->
     res.reply gradeStr.join('')
 
   .fail (cont, err) ->
-    logger.error err
+    logger.trace err
 
 getNoPassGrade = (info, res) ->
   Then (cont) ->
@@ -268,8 +267,7 @@ getNoPassGrade = (info, res) ->
 
   .then (cont, grade) ->
     unless grade
-      updateUserInfo(info, res)
-      return
+      return res.reply "您的信息已过期，请回复“更新”，获取最新信息"
 
     gradeStr = ["学号：#{info.stuid}\n\n"]
     now = grade['bjg']['尚不及格']
@@ -299,31 +297,43 @@ getNoPassGrade = (info, res) ->
     res.reply gradeStr.join('')
 
   .fail (cont, err) ->
-    logger.error err
+    logger.trace err
 
 updateUserInfo = (info, res) ->
   Then (cont) ->
-    studentService.get info.stuid, null, cont
+    openIdService.getUser info.FromUserName, 'stuid', cont
+
+  .then (cont, user) ->
+    unless user.stuid
+      openid = info.FromUserName
+      return res.reply "<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
+
+    studentService.get user.stuid, null, cont
 
   .then (cont, studentInfo) ->
     if studentInfo.is_pswd_invalid
-      res.reply '您的身份信息已过期，请回复"绑定"重新认证'
+      openid = info.FromUserName
+      res.reply "您的身份信息已过期，\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
     else
       res.reply '正在更新你的信息\n            请稍候...'
-      info.student = new studentService(studentInfo.stuid, studentInfo.pswd)
-      info.student.hasBind = true
-      info.student.login cont
+      student = new studentService(studentInfo.stuid, studentInfo.pswd)
+      student.hasBind = true
 
-  .then (cont, result) ->
-    info.student.getInfoAndSave cont
+      Then (cont1) ->
+        student.login cont1
+      .then (cont1, result) ->
+        student.getInfoAndSave cont
+      .fail (cont1, err) ->
+        cont1 err
 
   .then (cont) ->
     if wechatApi.canThis
       wechatApi.sendText info.FromUserName, '您的信息更新成功。'
   .fail (cont, err) ->
-    logger.error err
+    logger.trace err
     if wechatApi.canThis
-      wechatApi.sendText info.FromUserName, '您的信息更新失败。\n请回复"绑定"重新认证身份'
+      openid = info.FromUserName
+      wechatApi.sendText openid, "您的信息更新失败。\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
 
 getCetGrade: (cetNum, name, res) ->
   cetGradeUrl = "http://www.chsi.com.cn/cet/query?zkzh=#{cetNum}&xm=#{encodeURIComponent(name)}"
@@ -367,7 +377,7 @@ getCetGrade: (cetNum, name, res) ->
     res.reply result
 
   .fail (cont, err) ->
-    logger.error err
+    logger.trace err
 
 getTermEndExamInfo = (stuid, res) ->
   url = 'http://202.118.167.76/ksap/all.asp'
@@ -441,4 +451,4 @@ getNeauExamInfo = (stuid, title, url, res) ->
       res.reply result
 
   .fail (cont, err) ->
-    logger.error err
+    logger.trace err

@@ -2,17 +2,15 @@
 Then = require 'thenjs'
 logger = require 'winston'
 
-openIdService = require '../service/OpenId'
-studentService = require '../service/Student'
+OpenIdService = require '../service/OpenId'
+StudentService = require '../service/Student'
 logger = console
-
-
+wechatApi = require '../lib/wechatApi'
 
 module.exports = (app) ->
 
   app.get '/bind', (req, res) ->
     return res.end 'Not Found' unless req.query.openid
-    
     res.render 'bind', {openid: req.query.openid}
 
   app.post '/bind', (req, res) ->
@@ -23,13 +21,13 @@ module.exports = (app) ->
     unless stuid and pswd and openid
       return res.json errcode: -1
 
-    student = new studentService stuid, pswd
+    student = new StudentService stuid, pswd
 
     Then (cont) ->
       student.login cont
 
     .then (cont, result) ->
-      openIdService.bindStuid openid, stuid, cont
+      OpenIdService.bindStuid openid, stuid, cont
 
     .then (cont, openid) ->
       student.getInfoAndSave cont
@@ -58,7 +56,7 @@ module.exports = (app) ->
       wechatApi.sendTemplate openid, templateId, url, topColor, data, cont
 
     .fail (cont, err) ->
-      logger.error err
+      logger.trace err
       if err.errcode
         res.json errcode: err.errcode
       else

@@ -5,10 +5,10 @@ Then = require 'thenjs'
 logger = require 'winston'
 {JwcRequest, loginRequest} = require '../lib/request'
 
-syllabusService = require './Syllabus'
-gradeService = require './Grade'
+SyllabusService = require './HistorySyllabus'
+GradeService = require './Grade'
 
-studentDao = require('../models').Student
+StudentDao = require('../models').Student
 
 logger = console
 
@@ -23,7 +23,6 @@ class Student
 
     loginRequest @stuid, @pswd, (err, data, res) =>
       return callback err if err
-
 
       unless res.statusCode is 200
         return callback new Error('request error status code is ' + statusCode)
@@ -72,48 +71,62 @@ class Student
       callback err
 
   markPswdInvalid: () =>
-    studentDao.findOneAndUpdate {stuid: @stuid}, {is_pswd_invalid: true}, () ->
+    StudentDao.findOneAndUpdate {stuid: @stuid}, {is_pswd_invalid: true}, () ->
 
   @get: (stuid, field, callback) ->
-    studentDao.findOne {stuid: stuid}, field, callback
+    StudentDao.findOne {stuid: stuid}, field, callback
 
   getSyllabusByTicket: (callback) =>
-    syllabus = new syllabusService @stuid, @jwcRequest
+    syllabus = new SyllabusService @stuid, @jwcRequest
     syllabus.getSyllabusByTicket callback
 
   getGradeByTicket: (type, callback) ->
-    grade = new gradeService @stuid, @jwcRequest
+    grade = new GradeService @stuid, @jwcRequest
     grade.getGradeByTicket type, callback
 
   @updateStudent: (student, callback) =>
-    studentDao.findOneAndUpdate {stuid: student.stuid}, student, {upsert: true}, callback
+    StudentDao.findOneAndUpdate {stuid: student.stuid}, student, {upsert: true}, callback
 
   @updateSyllabus: (syllabus, callback) =>
-    syllabusService.updateSyllabus syllabus, callback
+    SyllabusService.updateSyllabus syllabus, callback
 
   @updateGrade: (grade, callback) =>
-    gradeService.updateGrade grade, callback
+    GradeService.updateGrade grade, callback
 
   getInfoAndSave: (callback) =>
-    Then (cont) =>
-      @getStudentAndSave cont
-
-    .then (cont, profile) =>
-      @getSyllabusAndSave cont
-
-    .then (cont, syllabus) =>
-      @getGradeAndSave 'fa', cont
-
-    .then (cont, grade) =>
-      @getGradeAndSave 'qb', cont
-
-    .then (cont, grade) =>
-      @getGradeAndSave 'bjg', cont
-
-    .then (cont, grade) =>
+    self = this
+    Then.parallel [
+        (cont) ->
+          self.getStudentAndSave cont
+        (cont) ->
+          self.getSyllabusAndSave (err, syllabus) ->
+            if err
+              logger.trace err
+              return cont()
+            cont null, syllabus
+            
+        (cont) ->
+          self.getGradeAndSave 'fa', (err, grade) ->
+            if err
+              logger.trace err
+              return cont()
+            cont null, grade
+        (cont) ->
+          self.getGradeAndSave 'qb', (err, grade) ->
+            if err
+              logger.trace err
+              return cont()
+            cont null, grade
+        (cont) ->
+          self.getGradeAndSave 'bjg', (err, grade) ->
+            if err
+              logger.trace err
+              return cont()
+            cont null, grade
+      ]
+    .then (cont, result) ->
       callback()
-
-    .fail (cont, err) ->
+    .fail (cont,err) ->
       callback err
 
   getStudentAndSave: (callback) =>

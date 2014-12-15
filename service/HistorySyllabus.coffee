@@ -8,17 +8,17 @@ syllabustDao = require('../models').Syllabus
 class Syllabus
   constructor: (@stuid, @jwcRequest) ->
 
-  @syllabusItemKeys    = ["pyfa", "kch", "kcm", "kxh", "xf", "kcsx", "kslx", "js", "dgrl", "xdfs", "xkzt", "msg"]
+  @syllabusItemKeys    = ["pyfa", "kch", "kcm", "kx", "xf", "kcsx", "kslx", "js", "xdfs", "xkzt"]
   @syllabusItemSubKeys = ["zc", "xq", "jc", "jieshu", "xiaoqu", "jsl", "js"]
 
   @_filterClassNum = (item, m, weekDay) ->
     switch m.jc
-      when '一大' then Syllabus._fillSyllabusItem(weekDay, 1, item, m)
-      when '二大' then Syllabus._fillSyllabusItem(weekDay, 2, item, m)
-      when '三大' then Syllabus._fillSyllabusItem(weekDay, 3, item, m)
-      when '四大' then Syllabus._fillSyllabusItem(weekDay, 4, item, m)
-      when '五大' then Syllabus._fillSyllabusItem(weekDay, 5, item, m)
-      when '六大' then Syllabus._fillSyllabusItem(weekDay, 6, item, m)
+      when '1' then Syllabus._fillSyllabusItem(weekDay, 1, item, m)
+      when '3' then Syllabus._fillSyllabusItem(weekDay, 2, item, m)
+      when '5' then Syllabus._fillSyllabusItem(weekDay, 3, item, m)
+      when '7' then Syllabus._fillSyllabusItem(weekDay, 4, item, m)
+      when '9' then Syllabus._fillSyllabusItem(weekDay, 5, item, m)
+      when '11' then Syllabus._fillSyllabusItem(weekDay, 6, item, m)
 
   @_fillSyllabusItem = (weekDay, num, item, m) ->
     course = {
@@ -41,8 +41,8 @@ class Syllabus
 
     .then (cont, syllabusHtml) =>
 
-      unless !!~ syllabusHtml.indexOf("学生选课结果")
-        err = new Error('syllabus wrong page')
+      unless !!~ syllabusHtml.indexOf("历年学期课")
+        err = new Error('history syllabus wrong page')
         return cont err
 
       # 解析html， 取得Syllabus对象
@@ -51,16 +51,16 @@ class Syllabus
 
       $("#user .odd").each ->
         temp = $(@).children("td")
-        if temp.length is 18
+        if temp.length is 17
           item = []
           itemSub = []
           temp.each (index, ele) ->
-            if index < 11
-              item.push($(@).text().trim())
+            if index < 10
+              item.push($(ele).text().trim())
             else
-              itemSub.push($(@).text().trim())
-          item.push([])
+              itemSub.push($(ele).text().trim())
           itemObj = _.zipObject(Syllabus.syllabusItemKeys, item)
+          itemObj.msg = []
           itemObj.msg.push(_.zipObject(Syllabus.syllabusItemSubKeys, itemSub))
           items.push(itemObj)
         else
@@ -77,19 +77,15 @@ class Syllabus
 
       for item in items
         for m in item.msg
-          switch m.xq
-            when '1' then Syllabus._filterClassNum(item, m, syllabus[1])
-            when '2' then Syllabus._filterClassNum(item, m, syllabus[2])
-            when '3' then Syllabus._filterClassNum(item, m, syllabus[3])
-            when '4' then Syllabus._filterClassNum(item, m, syllabus[4])
-            when '5' then Syllabus._filterClassNum(item, m, syllabus[5])
-            when '6' then Syllabus._filterClassNum(item, m, syllabus[6])
-            else
-              unassigned.push {
-                name    :item.kcm
-                credit  :item.xf
-                teacher :item.js
-              }
+          xq = Number(m.xq)
+          if xq > 0 and xq < 7
+            Syllabus._filterClassNum(item, m, syllabus[xq])
+          else
+            unassigned.push {
+              name    :item.kcm
+              credit  :item.xf
+              teacher :item.js
+            }
 
       # 挂载未分配的科目
       unless unassigned.length is 0

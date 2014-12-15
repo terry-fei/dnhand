@@ -2,7 +2,7 @@ Then = require 'thenjs'
 should = require 'should'
 config = require '../config'
 
-openIdService = require '../services/OpenId'
+openIdService = require '../service/OpenId'
 openid = config.wechat.openid
 
 describe 'OpenIdService', () ->
