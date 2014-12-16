@@ -1,6 +1,6 @@
 [{
   "name"             : "dnhand",
-  "cwd"              : "D:\\workspace\\dnhand",
+  "cwd"              : "/src",
   "script"           : "./app.coffee",
   "log_date_format"  : "YYYY-MM-DD HH:mm Z",
   "error_file"       : "./log/dnhand.stderr.log",

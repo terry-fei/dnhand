@@ -6,6 +6,11 @@ RUN \
   npm install -g coffee-script && \
   npm install -g pm2 
 
+RUN pm2 dump
+
+EXPOSE 7080
+
+ENV VIRTUAL_HOST n.feit.me
 ENV NODE_ENV production
 ENV MONGO_HOST mongo
 ENV MONGO_PORT 27017
