@@ -16,6 +16,8 @@ module.exports = (app) ->
     code = req.query.code
     state = req.query.state
     oauthApi.getAccessToken code, (err, result) ->
+      unless result.data
+        return res.end('发生错误请重试')
       openid = result.data.openid
       if state is 'bind'
         res.redirect '/bind?openid=' + openid
