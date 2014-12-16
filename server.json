@@ -1,0 +1,19 @@
+[{
+  "name"             : "dnhand",
+  "cwd"              : "D:\\workspace\\dnhand",
+  "script"           : "./app.coffee",
+  "log_date_format"  : "YYYY-MM-DD HH:mm Z",
+  "error_file"       : "./log/dnhand.stderr.log",
+  "out_file"         : "./log/dnhand.stdout.log",
+  "min_uptime"       : "200s", // 200 seconds, defaults to 1000
+  "max_restarts"     : 10, // defaults to 15
+  "max_memory_restart": "1M", // 1 megabytes, e.g.: "2G", "10M", "100K", 1024... the default unit is byte.
+  "cron_restart"     : "1 0 * * *",
+  "watch"            : false,
+  "ignoreWatch"      : ["[\\/\\\\]\\./", "node_modules"],
+  "merge_logs"       : true,
+  "exec_interpreter" : "coffee",
+  "exec_mode"        : "cluster",
+  "env": {
+  }
+}]
