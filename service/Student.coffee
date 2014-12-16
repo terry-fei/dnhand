@@ -98,25 +98,26 @@ class Student
         (cont) ->
           self.getSyllabusAndSave (err, syllabus) ->
             if err
-              logger.trace err
+              logger.error err
               return cont()
             cont null, syllabus
-            
+
         (cont) ->
           self.getGradeAndSave 'fa', (err, grade) ->
             if err
-              logger.trace err
+              logger.error err
               return cont()
             cont null, grade
         (cont) ->
           self.getGradeAndSave 'qb', (err, grade) ->
             if err
-              logger.trace err
+              logger.error err
               return cont()
             cont null, grade
         (cont) ->
           self.getGradeAndSave 'bjg', (err, grade) ->
             if err
+              logger.error err
               return cont()
             cont null, grade
       ]
