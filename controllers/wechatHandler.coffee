@@ -93,7 +93,7 @@ module.exports = wechat.text((info, req, res) ->
         如果没有看到准考证图片
         请检查并重新回复身份证号
         """
-      return res.reply([new ImageText(title, description, url)])
+      return res.reply([new ImageText(title, description, url, url)])
 
     when key is '更新'
       updateUserInfo(info, res)
@@ -126,12 +126,15 @@ module.exports = wechat.text((info, req, res) ->
 
         when 'exam'
           res.reply """
+          查询期末考试安排
           请回复期末+学号查询
           例：期末A19120626
 
+          查询补考信息
           请回复补考+学号查询
           例：补考A19120626
 
+          查询四六级准考证
           请回复身份证号查询四六级准考证
           仅限农大同学
           """
@@ -263,7 +266,7 @@ getAllGrade = (info, res) ->
   desc = """
         请点击本消息查看全部成绩
         """
-  url = "http://n.feit.me/info/grade/all?openid=#{info.FromUserName}"
+  url = "http://n.feit.me/info/allgrade?openid=#{info.FromUserName}"
   logoUrl = "http://n.feit.me/public/dnhandlogo.jpg"
   imageTextItem = new ImageText(title, desc, url, logoUrl)
   res.reply([imageTextItem])
@@ -466,7 +469,7 @@ getNeauExamInfo = (stuid, title, url, res) ->
       else
         msg.time = time
       msgs.push msg
-    
+
     if msgs.length is 0
       res.reply '暂无考试信息'
     else if msgs.length > 8

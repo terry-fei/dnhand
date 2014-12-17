@@ -52,7 +52,7 @@ module.exports = (app) ->
       templateId = 'zPBcYZ708hYfPDCg-bGzZG4g_UyxBxGZe_lbHBVGZ9k'
       url = ''
       topColor = ''
-      data = 
+      data =
         first:
           value: '教务账号绑定成功'
           color: '#173177'
@@ -101,6 +101,7 @@ module.exports = (app) ->
     .fail (cont, error) ->
       logger.trace error
       try
+        res.set('Content-Type', 'text/plain; charset=utf-8');
         res.end('请稍候访问')
       catch e
         # ...
