@@ -118,8 +118,6 @@ if __name__ == '__main__':
   stuid = sys.argv[1]
   pswd  = sys.argv[2]
   host  = sys.argv[3]
-  if host == None:
-     host = "http://202.118.167.86"
 
   result = JwcLoginHelper(stuid, pswd, host).login()
   while(result['errcode'] == 3):
