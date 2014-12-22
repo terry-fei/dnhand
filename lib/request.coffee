@@ -2,7 +2,6 @@ http = require 'http'
 iconv = require 'iconv-lite'
 urllib = require 'urllib'
 urlUtil = require 'url'
-exec = require('child_process').exec
 
 class JwcRequest
   constructor: (@ticket, @host) ->
@@ -38,18 +37,15 @@ class JwcRequest
 
 loginRequest = (stuid, pswd, callback) ->
   host = "http://202.118.167.85"
-  arg = "#{__dirname}/JwcLoginHelper.py #{stuid} #{pswd} #{host}"
-  exec arg, (error, stdout, stderr) ->
-    if error
-      return callback error
+  url = "http://localhost:8888/?stuid=#{stuid}&pswd=#{pswd}&host=#{host}"
+  urllib.request url, {dataType: 'json'}, (err, data, res) ->
+    return callback(err) if err
 
-    try
-      ret = JSON.parse stdout
-    catch e
-      return callback e
-
-    ret.host = host
-    callback null, ret
+    if res.statusCode isnt 200
+      err = new Error('login error, code: ' + res.statusCode)
+      return callback err
+    data.host = host
+    callback(null, data)
 
 httpGet = (opts, callback) ->
   url = opts.url

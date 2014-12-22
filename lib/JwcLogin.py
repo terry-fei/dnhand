@@ -3,13 +3,16 @@
 import urllib
 import urllib2
 from PIL import Image
-import io
 from fonts import code, codeCount, codeWidth, codePrefix, codeHash, codeLocPrefix
 import json
 
+import io
 import sys
 reload(sys)
-sys.setdefaultencoding('utf-8')
+sys.setdefaultencoding('utf-8') 
+
+import tornado.ioloop
+import tornado.web
 
 class JwcLoginHelper:
 
@@ -114,14 +117,26 @@ class JwcLoginHelper:
         hitChar = k
     return codeHash[hitChar]
 
-if __name__ == '__main__':
-  stuid = sys.argv[1]
-  pswd  = sys.argv[2]
-  host  = sys.argv[3]
-  if host == None:
-     host = "http://202.118.167.86"
+class LoginHandler(tornado.web.RequestHandler):
+  def get(self):
+    stuid = self.get_argument("stuid")
+    pswd  = self.get_argument("pswd")
+    host  = self.get_argument("host")
 
-  result = JwcLoginHelper(stuid, pswd, host).login()
-  while(result['errcode'] == 3):
+    if stuid == None or pswd == None or host == None:
+      self.write("Invalid params")
+      return
+
     result = JwcLoginHelper(stuid, pswd, host).login()
-  print json.dumps(result)
+    while(result['errcode'] == 3):
+      result = JwcLoginHelper(stuid, pswd, host).login()
+
+    self.write(json.dumps(result))
+
+application = tornado.web.Application([
+    (r"/", LoginHandler),
+])
+
+if __name__ == '__main__':
+  application.listen(8888)
+  tornado.ioloop.IOLoop.instance().start()

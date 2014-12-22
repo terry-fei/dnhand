@@ -1,21 +1,25 @@
-FROM docker.cn/docker/node:latest
+FROM node:latest
 
-RUN apt-get install -y python-imaging
+RUN \
+  cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+  echo "deb http://mirrors.aliyun.com/debian/ wheezy main non-free contrib" > /etc/apt/sources.list && \
+  echo "deb http://mirrors.aliyun.com/debian/ wheezy-proposed-updates main non-free contrib" >> /etc/apt/sources.list && \
+  echo "deb-src http://mirrors.aliyun.com/debian/ wheezy main non-free contrib" >> /etc/apt/sources.list && \
+  echo "deb-src http://mirrors.aliyun.com/debian/ wheezy-proposed-updates main non-free contrib" >> /etc/apt/sources.list
+
+RUN apt-get update && \
+  apt-get install -y python-imaging && \
+  apt-get install -y python-tornado
 
 RUN \
   npm install -g coffee-script && \
-  npm install -g pm2 
+  npm install -g pm2 && \
+  pm2 dump
 
-RUN pm2 dump
-
-EXPOSE 7080
+EXPOSE 80
 
 ENV VIRTUAL_HOST n.feit.me
-ENV NODE_ENV production
-ENV MONGO_HOST mongo
-ENV MONGO_PORT 27017
-ENV MONGO_DBNAME dnhand
 
 WORKDIR  /src
 
-CMD ["/bin/bash"]
+CMD ["pm2", "start", "boot.json"， "--no-daemon"]

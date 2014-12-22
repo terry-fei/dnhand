@@ -7,4 +7,4 @@ server/errors/logs/
 Vagrantfile
 *.pyc
 log/
-
+boot.json
