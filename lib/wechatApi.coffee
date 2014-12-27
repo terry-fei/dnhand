@@ -34,7 +34,7 @@ menu = '{
       "sub_button":[
         {
           "type":"click",
-          "name":"上学期成绩",
+          "name":"本学期成绩",
           "key":"nowgrade"
         },
         {
