@@ -19,7 +19,6 @@
     "mongoose": "^3.8.19",
     "mysql": "^2.5.3",
     "nodemailer": "0.7.1",
-    "st": "^0.5.2",
     "thenjs": "^1.4.5",
     "urllib": "^2.2.0",
     "wechat": "^1.0.1",

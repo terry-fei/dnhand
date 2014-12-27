@@ -1,7 +1,6 @@
 express = require 'express'
 bodyParser = require 'body-parser'
 session = require 'express-session'
-st = require 'st'
 MongoStore = require('connect-mongo')(session)
 logger = require 'winston'
 require './models'
@@ -25,7 +24,8 @@ app.use session
 app.use '/wx/api', wechat(config.wechat.token, wechatHanler)
 
 # static files
-app.use st({path: __dirname + '/public', url: '/public', index: false})
+staticDir = require('path').join(__dirname, 'public')
+app.use('/public', express.static(staticDir))
 
 # view engin
 app.set('view engine', 'html')
