@@ -4,7 +4,7 @@ urllib  = require 'urllib'
 config  = require '../config'
 
 redis = require 'redis'
-client = redis.createClient(config.redis.port, config.redis.host, {})
+client = redis.createClient(6379, 'redis', {})
 
 SERVERS = [
   'http://202.118.167.85'
