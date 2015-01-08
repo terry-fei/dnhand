@@ -1,12 +1,13 @@
-express = require 'express'
+express    = require 'express'
 bodyParser = require 'body-parser'
-session = require 'express-session'
-MongoStore = require('connect-mongo')(session)
-logger = require 'winston'
+session    = require 'express-session'
+RedisStore = require('connect-redis')(session)
+logger     = require 'winston'
 require './models'
-config = require './config'
 
-wechat = require 'wechat'
+config     = require './config'
+
+wechat       = require 'wechat'
 wechatHanler = require './controllers/wechatHandler'
 
 module.exports = app = express()
@@ -16,9 +17,7 @@ app.use session
   secret: config.session.secret
   resave: false
   saveUninitialized: true
-  store: new MongoStore
-    host: config.mongodb.host
-    db: config.mongodb.dbname
+  store: new RedisStore({host: config.redis.host})
 
 # wechat
 app.use '/wx/api', wechat(config.wechat.token, wechatHanler)

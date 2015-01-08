@@ -1,7 +1,10 @@
-http = require 'http'
-iconv = require 'iconv-lite'
-urllib = require 'urllib'
+http    = require 'http'
+iconv   = require 'iconv-lite'
+urllib  = require 'urllib'
 urlUtil = require 'url'
+
+redis  = require("redis")
+client = redis.createClient(6379, 'redis', {})
 
 class JwcRequest
   constructor: (@ticket, @host) ->
@@ -30,21 +33,30 @@ class JwcRequest
     url = "#{@host}#{path}"
     opts =
       dataType: 'text'
+      timeout: 5000
       headers:
         Cookie: "JSESSIONID=#{@ticket}"
 
     urllib.request url, opts, callback
 
+HOST = 'http://202.118.167.85'
+client.subscribe 'bestServer'
+client.on 'message', (chan, msg) ->
+  HOST = msg
+
 loginRequest = (stuid, pswd, callback) ->
-  host = "http://202.118.167.85"
-  url = "http://localhost:8888/?stuid=#{stuid}&pswd=#{pswd}&host=#{host}"
+  unless !!~ HOST.indexOf 'http'
+    return callback new Error 'AllServerBusy'
+
+  currentHost = HOST
+  url = "http://localhost:8888/?stuid=#{stuid}&pswd=#{pswd}&host=#{currentHost}"
   urllib.request url, {dataType: 'json'}, (err, data, res) ->
     return callback(err) if err
 
     if res.statusCode isnt 200
       err = new Error('login error, code: ' + res.statusCode)
       return callback err
-    data.host = host
+    data.host = currentHost
     callback(null, data)
 
 httpGet = (opts, callback) ->

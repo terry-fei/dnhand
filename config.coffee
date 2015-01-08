@@ -12,6 +12,9 @@ module.exports =
     host  : env.MONGO_HOST
     port  : env.MONGO_PORT
     dbname: env.MONGO_DBNAME
+  redis:
+    host: env.REDIS_HOST
+    port: env.REDIS_PORT
   email:
     user: env.EMALL_USER
     pass: env.EMALL_PASS

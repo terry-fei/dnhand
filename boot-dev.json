@@ -14,8 +14,10 @@
     "env": {
       "NODE_ENV"                     : "development",
       "MONGO_HOST"                   : "mongo",
-      "MONGO_PORT"                   : "27017",
+      "MONGO_PORT"                   : 27017,
       "MONGO_DBNAME"                 : "dnhand_dev",
+      "REDIS_HOST"                   : "redis",
+      "REDIS_PORT"                   : 6379,
       "WECHAT_TOKEN"                 : "feit",
       "WECHAT_APPID"                 : "wx15c96420dd54edf9",
       "WECHAT_SECRET"                : "5bf2a19b70f0aa9b05ea4da757ee3e1a",
@@ -26,7 +28,7 @@
   },{
     "name"             : "dnhand-python",
     "cwd"              : ".",
-    "script"           : "./lib/JwcLogin.py",
+    "script"           : "./scripts/JwcLogin.py",
     "log_date_format"  : "YYYY-MM-DD HH:mm Z",
     "error_file"       : "/var/log/dnhand-py-stderr.log",
     "out_file"         : "/var/log/dnhand-py-stdout.log",
@@ -34,6 +36,16 @@
     "exec_interpreter" : "python",
     "exec_mode"        : "fork",
     "env": {
+    }
+  },{
+    "name"             : "detectServers",
+    "cwd"              : ".",
+    "script"           : "./scripts/detectServers.coffee",
+    "exec_interpreter" : "coffee",
+    "exec_mode"        : "fork",
+    "env": {
+      "REDIS_HOST": "redis",
+      "REDIS_PORT": 6379,
     }
   }]
 }
