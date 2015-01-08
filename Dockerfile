@@ -1,4 +1,4 @@
-FROM node:latest
+FROM docker.cn/docker/node:latest
 
 RUN \
   cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
