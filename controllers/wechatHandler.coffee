@@ -20,6 +20,10 @@ SyllabusService = require '../service/Syllabus'
 class ImageText
   constructor: (@title, @description = '', @url = '', @picurl = '') ->
 
+wechatApiCallback = (err, result) ->
+  if err
+    console.log err
+
 module.exports = wechat.text((info, req, res) ->
   # 处理存在预先状态的消息
   if req.wxsession and req.wxsession.hasStatus
@@ -96,7 +100,18 @@ module.exports = wechat.text((info, req, res) ->
       return res.reply([new ImageText(title, description, url, url)])
 
     when key is '更新'
-      updateUserInfo(info, res)
+      res.reply()
+      updateUserInfo(info)
+
+    when key is 'kf'
+      res.reply('正在发送客服消息')
+      wechatApi.sendText info.FromUserName, '客服消息', wechatApiCallback
+
+    when key is '客服'
+      if wechatApi.canThis
+        wechatApi.sendText info.FromUserName, '随便问~', wechatApiCallback
+      res.transfer2CustomerService('feit')
+
     else
       replyUsage info, res
 
@@ -128,17 +143,20 @@ module.exports = wechat.text((info, req, res) ->
           res.reply """
           查询期末考试安排
           请回复期末+学号查询
-          例：期末A19120626
+          例：期末A19120000
 
           查询补考信息
           请回复补考+学号查询
-          例：补考A19120626
+          例：补考A19120000
 
           查询四六级准考证
           请回复身份证号查询四六级准考证
           仅限农大同学
           """
 
+        when 'updateinfo'
+          res.reply()
+          updateUserInfo(info)
         else
           replyUsage info, res
 
@@ -262,6 +280,8 @@ _transferNumDayToChinese = (day) ->
     when '7' then '日'
 
 getAllGrade = (info, res) ->
+  process.nextTick ->
+    updateUserInfo(info)
   title = "东农助手"
   desc = """
         请点击本消息查看全部成绩
@@ -272,6 +292,8 @@ getAllGrade = (info, res) ->
   res.reply([imageTextItem])
 
 getNowGrade = (info, res) ->
+  process.nextTick ->
+    updateUserInfo(info)
   Then (cont) ->
     OpenIdService.getUser info.FromUserName, 'stuid', cont
 
@@ -302,6 +324,8 @@ getNowGrade = (info, res) ->
     logger.trace err
 
 getNoPassGrade = (info, res) ->
+  process.nextTick ->
+    updateUserInfo(info)
   Then (cont) ->
     OpenIdService.getUser info.FromUserName, 'stuid', cont
 
@@ -346,23 +370,28 @@ getNoPassGrade = (info, res) ->
   .fail (cont, err) ->
     logger.trace err
 
-updateUserInfo = (info, res) ->
+updateUserInfo = (info) ->
+  openid = info.FromUserName
   Then (cont) ->
-    OpenIdService.getUser info.FromUserName, 'stuid', cont
+    OpenIdService.getUser openid, 'stuid', cont
 
   .then (cont, user) ->
     unless user.stuid
-      openid = info.FromUserName
-      return res.reply "<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
+      if wechatApi.canThis
+        wechatApi.sendText openid, "<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>", wechatApiCallback
+        return
 
     StudentService.get user.stuid, null, cont
 
   .then (cont, studentInfo) ->
     if studentInfo.is_pswd_invalid
-      openid = info.FromUserName
-      res.reply "您的身份信息已过期，\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
+      openid = openid
+      if wechatApi.canThis
+        wechatApi.sendText openid, "您的身份信息已过期，\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>", wechatApiCallback
+        return
     else
-      res.reply '正在更新你的信息\n            请稍候...'
+      if wechatApi.canThis
+        wechatApi.sendText openid, '正在更新信息...', wechatApiCallback
       student = new StudentService(studentInfo.stuid, studentInfo.pswd)
       student.hasBind = true
 
@@ -375,13 +404,12 @@ updateUserInfo = (info, res) ->
 
   .then (cont) ->
     if wechatApi.canThis
-      wechatApi.sendText info.FromUserName, '您的信息更新成功。'
+      wechatApi.sendText openid, '您的信息更新成功。', wechatApiCallback
   .fail (cont, err) ->
     if err.name isnt 'loginerror'
       logger.trace err
     if wechatApi.canThis
-      openid = info.FromUserName
-      wechatApi.sendText openid, "您的信息更新失败。\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去绑定账户</a>"
+      wechatApi.sendText openid, "您的信息更新失败。\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去网页更新</a>", wechatApiCallback
 
 getCetGrade: (cetNum, name, res) ->
   cetGradeUrl = "http://www.chsi.com.cn/cet/query?zkzh=#{cetNum}&xm=#{encodeURIComponent(name)}"

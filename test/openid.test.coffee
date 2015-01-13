@@ -3,7 +3,7 @@ should = require 'should'
 config = require '../config'
 
 openIdService = require '../service/OpenId'
-openid = config.wechat.openid
+openid = config.wechat.testOpenid
 
 describe 'OpenIdService', () ->
   describe 'getUser', () ->

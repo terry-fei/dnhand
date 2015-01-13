@@ -1,0 +1,23 @@
+{
+  "apps": [{
+    "name"             : "dnhand-python",
+    "cwd"              : ".",
+    "script"           : "./scripts/JwcLogin.py",
+    "log_date_format"  : "YYYY-MM-DD HH:mm Z",
+    "error_file"       : "/var/log/dnhand-py-stderr.log",
+    "out_file"         : "/var/log/dnhand-py-stdout.log",
+    "merge_logs"       : true,
+    "exec_interpreter" : "python",
+    "exec_mode"        : "fork"
+  },{
+    "name"             : "detectServers",
+    "cwd"              : ".",
+    "script"           : "./scripts/detectServers.coffee",
+    "exec_interpreter" : "coffee",
+    "exec_mode"        : "fork",
+    "env": {
+      "REDIS_HOST": "redis",
+      "REDIS_PORT": 6379,
+    }
+  }]
+}

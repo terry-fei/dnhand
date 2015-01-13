@@ -7,7 +7,7 @@ config = require '../config'
 
 app = require '../app'
 
-openid = config.wechat.openid
+openid = config.wechat.testOpenid
 
 describe 'wechat handler test', () ->
   it 'subscribe should ok', (done) ->
