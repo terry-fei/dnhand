@@ -22,7 +22,7 @@
       "WECHAT_APPID"                 : "wx3ff5c48ba9ac6552",
       "WECHAT_SECRET"                : "6e1b422de4b33e385165ab80f73492df",
       "WECHAT_HAS_ADVANCED_INTERFACE": true,
-      "SESSION_SECRET"               : "fdnhandt",
+      "SESSION_SECRET"               : "cIpP0nUewODU",
       "NODE_LISTEN_PORT"             : 80
     }
   },{
