@@ -72,9 +72,9 @@ module.exports = wechat.text((info, req, res) ->
           例：补考A19120626
           """
       stuid = info.Content.substring(2)
-      process.nextTick ()->
-        wechatApi.sendText info.FromUserName, '学校服务器目前非常繁忙，如果没有返回信息请稍候再试', wechatApiCallback
-      getMakeUpExamInfo stuid, res
+      process.nextTick () ->
+        getMakeUpExamInfo stuid, info.FromUserName
+      res.reply '正在查询补考信息...'
 
     when /^期末.*/.test key
       if key is '期末'
@@ -83,7 +83,9 @@ module.exports = wechat.text((info, req, res) ->
           例：期末A19120626
           """
       stuid = info.Content.substring(2)
-      getTermEndExamInfo stuid, res
+      process.nextTick () ->
+        getTermEndExamInfo stuid, info.FromUserName
+      res.reply '正在查询期末考试信息...'
 
     when key is '准考证'
       res.reply """
@@ -457,15 +459,15 @@ getCetGrade: (cetNum, name, res) ->
   .fail (cont, err) ->
     logger.trace err
 
-getTermEndExamInfo = (stuid, res) ->
+getTermEndExamInfo = (stuid, openid) ->
   url = 'http://202.118.167.76/ksap/all.asp'
-  getNeauExamInfo(stuid, '期末考试', url, res)
+  getNeauExamInfo(stuid, '期末考试', url, openid)
 
-getMakeUpExamInfo = (stuid, res) ->
+getMakeUpExamInfo = (stuid, openid) ->
   url = 'http://202.118.167.91/bm/ksap1/wysj.asp'
-  getNeauExamInfo(stuid, '补考查询', url, res)
+  getNeauExamInfo(stuid, '补考查询', url, openid)
 
-getNeauExamInfo = (stuid, title, url, res) ->
+getNeauExamInfo = (stuid, title, url, openid) ->
   Then (cont) ->
     opts =
       method: 'POST'
@@ -476,7 +478,8 @@ getNeauExamInfo = (stuid, title, url, res) ->
 
   .then (cont, html, urllibRes) ->
     unless urllibRes.statusCode is 200
-      return res.reply '请稍候再试'
+      wechatApi.sendText openid, "学校服务器累坏了，请稍候再试", wechatApiCallback
+      return
 
     html = iconv.decode(html, 'GBK')
     msgs    = []
@@ -501,7 +504,8 @@ getNeauExamInfo = (stuid, title, url, res) ->
       msgs.push msg
 
     if msgs.length is 0
-      res.reply '暂无考试信息'
+      wechatApi.sendText openid, "未查询到考试信息", wechatApiCallback
+
     else if msgs.length > 8
       examInfo = []
       nameAndStuidStr = '姓名:' + msgs[0].stuName + '\n' + '学号:' + msgs[0].stuid + '\n'
@@ -513,7 +517,7 @@ getNeauExamInfo = (stuid, title, url, res) ->
         examInfo.push("时间:#{msg.time}\n")
         examInfo.push("地点:#{msg.location}\n")
         examInfo.push("------------------\n")
-      res.reply examInfo.join('')
+      wechatApi.sendText openid, examInfo.join(''), wechatApiCallback
     else
       result = []
       result.push(new ImageText("                #{title}"))
@@ -526,7 +530,8 @@ getNeauExamInfo = (stuid, title, url, res) ->
           地点:  #{msg.location}
           """
         result.push(new ImageText(examStr))
-      res.reply result
+
+      wechatApi.sendNews openid, result, wechatApiCallback
 
   .fail (cont, err) ->
-    logger.trace err
+    wechatApi.sendText openid, "学校服务器累坏了，请稍候再试", wechatApiCallback
