@@ -72,6 +72,8 @@ module.exports = wechat.text((info, req, res) ->
           例：补考A19120626
           """
       stuid = info.Content.substring(2)
+      process.nextTick ()->
+        wechatApi.sendText info.FromUserName, '学校服务器目前非常繁忙，如果没有返回信息请稍候再试', wechatApiCallback
       getMakeUpExamInfo stuid, res
 
     when /^期末.*/.test key
@@ -460,7 +462,7 @@ getTermEndExamInfo = (stuid, res) ->
   getNeauExamInfo(stuid, '期末考试', url, res)
 
 getMakeUpExamInfo = (stuid, res) ->
-  url = 'http://202.118.167.91/bm/ksap1/all.asp'
+  url = 'http://202.118.167.91/bm/ksap1/wysj.asp'
   getNeauExamInfo(stuid, '补考查询', url, res)
 
 getNeauExamInfo = (stuid, title, url, res) ->
