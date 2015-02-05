@@ -464,7 +464,7 @@ getTermEndExamInfo = (stuid, openid) ->
   getNeauExamInfo(stuid, '期末考试', url, openid)
 
 getMakeUpExamInfo = (stuid, openid) ->
-  url = 'http://202.118.167.91/bm/ksap1/wysj.asp'
+  url = 'http://202.118.167.91/bm/ksap1/all.asp'
   getNeauExamInfo(stuid, '补考查询', url, openid)
 
 getNeauExamInfo = (stuid, title, url, openid) ->
