@@ -3,7 +3,7 @@ ruijie = require '../../lib/ruijieHelper'
 com = require './common'
 ImageText = com.ImageText
 
-StudentService = require '../../services/student'
+StudentService = require '../../services/Student'
 
 module.exports =
   bind: (info) ->
