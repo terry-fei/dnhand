@@ -10,6 +10,16 @@
     "exec_interpreter" : "python",
     "exec_mode"        : "fork"
   },{
+    "name"             : "ruijie-python",
+    "cwd"              : ".",
+    "script"           : "./scripts/RuijieLogin.py",
+    "log_date_format"  : "YYYY-MM-DD HH:mm Z",
+    "error_file"       : "/var/log/ruijie-py-stderr.log",
+    "out_file"         : "/var/log/ruijie-py-stdout.log",
+    "merge_logs"       : true,
+    "exec_interpreter" : "python",
+    "exec_mode"        : "fork"
+  },{
     "name"             : "detectServers",
     "cwd"              : ".",
     "script"           : "./scripts/detectServers.coffee",

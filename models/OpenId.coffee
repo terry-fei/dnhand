@@ -2,6 +2,7 @@ mongoose = require 'mongoose'
 
 OpenIdSchema = new mongoose.Schema
   openid: String
+  youzanId: Number
   stuid: String
   nickname: String
   sex: String
