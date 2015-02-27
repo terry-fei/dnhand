@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker run -it --rm -v $(pwd):/src -p 80:80 --link mongodb:mongo --link redis:redis \
+docker run -it --rm -v $(pwd):/src --link mongodb:mongo --link redis:redis \
   -e NODE_ENV=development \
   -e MONGO_HOST=mongo \
   -e MONGO_PORT=27017 \
