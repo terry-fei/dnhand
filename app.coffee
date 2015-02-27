@@ -1,3 +1,4 @@
+require 'localenv'
 express    = require 'express'
 bodyParser = require 'body-parser'
 session    = require 'express-session'
@@ -8,23 +9,29 @@ require './models'
 config     = require './config'
 
 wechat       = require 'wechat'
-wechatHanler = require './controllers/wechatHandler'
+wechatHanler = require './middleware/wechat'
+bindStuidRouter = require './controllers/bindStuid'
+ruijieRouter = require './controllers/ruijie'
 
-module.exports = app = express()
+app = express()
 
-# session
-app.use session
+if config.env is 'production'
+  sessionStore = new RedisStore({host: config.redis.host})
+
+app.use '/wx', session
   secret: config.session.secret
   resave: false
   saveUninitialized: true
-  store: new RedisStore({host: config.redis.host})
+  store: sessionStore
+  cookie:
+    maxAge: 1000 * 60 * 5
 
 # wechat
 app.use '/wx/api', wechat(config.wechat.token, wechatHanler)
 
 # static files
 staticDir = require('path').join(__dirname, 'public')
-app.use('/public', express.static(staticDir))
+app.use '/public', express.static(staticDir)
 
 # view engin
 app.set('view engine', 'html')
@@ -34,7 +41,8 @@ app.engine('html', require('ejs').renderFile)
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+app.use bindStuidRouter
+app.use '/ruijie', ruijieRouter
+
 app.listen config.port, () ->
   logger.info "Server Start at port #{config.port}"
-
-require('./controllers/bindStuid')(app)

@@ -1,6 +1,7 @@
 env = process.env
 
 module.exports =
+  env: env
   wechat:
     token     : env.WECHAT_TOKEN
     appid     : env.WECHAT_APPID

@@ -1,7 +1,7 @@
 should = require 'should'
 require('nodedump')
 
-studentService = require '../service/Student'
+studentService = require '../services/Student'
 stuid = 'A19120626'
 pswd = '1230.0'
 student = new studentService stuid, pswd

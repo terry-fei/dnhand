@@ -1,6 +1,6 @@
 wechatApi = require('wechat-api')
 config = require '../config'
-api = new wechatApi(config.wechat.appid, config.wechat.secret)
+api = new wechatApi('wx3ff5c48ba9ac6552', '6e1b422de4b33e385165ab80f73492df')
 
 menu = require('fs').readFileSync(__dirname + '/menu.json', {encoding: 'utf-8'})
 

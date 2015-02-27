@@ -2,11 +2,11 @@
   "button":[
     {
       "type":"click",
-      "name":"逢考",
+      "name":"假期",
       "key": "other"
     },
     {
-      "name":"必",
+      "name":"余额",
       "sub_button":[
         {
           "type":"view",
@@ -22,11 +22,20 @@
           "type":"click",
           "name":"考试查询",
           "key":"exam"
+        },
+        {
+          "type":"click",
+          "name":"四六级准考证",
+          "key":"exam"
+        },{
+          "type":"click",
+          "name":"四六级成绩",
+          "key":"cetgrade"
         }
       ]
     },
     {
-      "name":"过",
+      "name":"不足",
       "sub_button":[
         {
           "type":"click",
