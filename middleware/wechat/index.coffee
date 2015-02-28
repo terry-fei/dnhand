@@ -140,7 +140,7 @@ eventHandler = (info, req, res) ->
           gradeMsg.replyAll info, res
 
         when 'cetgrade'
-          return res.reply '抱歉，因四六级查分机制有变，暂不提供查分服务'
+          return res.reply '抱歉，因四六级查分机制有变，本平台暂不提供查分服务\n<a href="http://www.chsi.com.cn/cet/">点我去官网查询</a>'
           req.wxsession.status = 'cet'
           cet =
             stage: 'name'
