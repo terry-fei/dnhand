@@ -45,6 +45,7 @@ textHandler = (info, req, res) ->
           gradeMsg.replyNoPass info, res
 
         when /.*(四|六|四六)级/.test key
+          return res.reply '抱歉，因四六级查分机制有变，暂不提供查分服务'
           req.wxsession.status = 'cet'
           cet =
             stage: 'name'
@@ -139,6 +140,7 @@ eventHandler = (info, req, res) ->
           gradeMsg.replyAll info, res
 
         when 'cetgrade'
+          return res.reply '抱歉，因四六级查分机制有变，暂不提供查分服务'
           req.wxsession.status = 'cet'
           cet =
             stage: 'name'
