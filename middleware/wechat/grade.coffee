@@ -120,7 +120,23 @@ module.exports =
         read: /阅读：<\/span>(.*?)<br \/>/.exec(cetHtml)[1].trim()
         write: /写作与翻译：<\/span>(.*?)<\/td>/.exec(cetHtml)[1].trim()
 
-      com.sendCetGrade openid, grade
+      if grade and grade.name is name
+        result = [new ImageText("                #{grade.type}成绩")]
+        gradeStr = """
+          姓名：#{grade.name}
+          学校：#{grade.schoolName}
+          考试时间：#{grade.examDate}
+
+          总分：#{grade.totle}
+          听力：#{grade.listening}
+          阅读：#{grade.read}
+          写作和翻译：#{grade.write}
+        """
+        result.push(new ImageText(gradeStr))
+
+        com.sendNews openid, result
+      else
+        com.sendText openid, '未找到相关成绩，请检查你回复的准考证号和姓名并重新回复\'cet\''
 
     .fail (cont, err) ->
       com.sendText openid, '服务器忙，请稍候再试'
