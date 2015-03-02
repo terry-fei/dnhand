@@ -32,7 +32,7 @@ router.get '/user', (req, res) ->
         if err then return next err
 
         if result.error_response
-          log.error result.error_response
+          log.error result
           res.json {errcode: 3, errmsg: 'couldnotfinduserbyid'}
           return
 
