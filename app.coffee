@@ -45,6 +45,7 @@ app.use(bodyParser.json())
 app.use bindStuidRouter
 app.use '/ruijie', ruijieRouter
 app.use '/youzan', youzanRouter
+app.use '/log', require './controllers/log'
 
 app.listen config.port, () ->
   logger.info "Server Start at port #{config.port}"

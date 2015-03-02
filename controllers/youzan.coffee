@@ -18,8 +18,6 @@ router.get '/user', (req, res) ->
 
   youzanId = parseInt(youzanId)
 
-  log.info youzanId
-
   data = {}
   Then (next) ->
     OpenId.findOne youzanId: youzanId, next
