@@ -30,7 +30,8 @@
     "wechat": "^1.0.1",
     "wechat-api": "^1.1.2",
     "wechat-oauth": "^1.0.0",
-    "winston": "^0.8.3"
+    "winston": "^0.9.0",
+    "winston-mongodb": "^1.0.1"
   },
   "devDependencies": {
     "coffee-script": "*",

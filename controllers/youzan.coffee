@@ -1,9 +1,11 @@
 Then = require 'thenjs'
+_ = require 'lodash'
 express = require 'express'
 
 {OpenId} = require '../models'
 {Student} = require '../models'
 
+log = require '../lib/log'
 yzApi = require '../lib/kdt'
 
 module.exports = router = express.Router()
@@ -13,6 +15,10 @@ router.get '/user', (req, res) ->
   unless youzanId
     res.json {errmsg: 'without parameter'}
     return
+
+  youzanId = parseInt(youzanId)
+
+  log.info youzanId
 
   data = {}
   Then (next) ->
@@ -28,6 +34,7 @@ router.get '/user', (req, res) ->
         if err then return next err
 
         if result.error_response
+          log.error result.error_response
           res.json {errcode: 3, errmsg: 'couldnotfinduserbyid'}
           return
 
@@ -60,4 +67,5 @@ router.get '/user', (req, res) ->
     res.json user
 
   .fail (next, err) ->
+    log.error err
     res.json err
