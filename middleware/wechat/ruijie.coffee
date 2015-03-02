@@ -43,7 +43,7 @@ module.exports =
 
     .then (cont, student) ->
       unless student.rjpswd
-        com.sendText openid, '请回复"锐捷绑定"，绑定之后再使用'
+        com.sendText openid, '请回复"绑定锐捷"，绑定之后再使用'
         return
 
       info.stuid = student.stuid
@@ -54,7 +54,7 @@ module.exports =
 
     .then (cont, loginResult) ->
       if loginResult.errcode isnt 0
-        com.sendText openid, '你的锐捷认证失败，请回复"锐捷绑定"重新认证'
+        com.sendText openid, '你的锐捷认证失败，请回复"绑定锐捷"重新认证'
         return
 
       ruijie.currentState loginResult, cont

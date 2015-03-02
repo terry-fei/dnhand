@@ -12,6 +12,7 @@ wechat       = require 'wechat'
 wechatHanler = require './middleware/wechat'
 bindStuidRouter = require './controllers/bindStuid'
 ruijieRouter = require './controllers/ruijie'
+youzanRouter = require './controllers/youzan'
 
 app = express()
 
@@ -43,6 +44,7 @@ app.use(bodyParser.json())
 
 app.use bindStuidRouter
 app.use '/ruijie', ruijieRouter
+app.use '/youzan', youzanRouter
 
 app.listen config.port, () ->
   logger.info "Server Start at port #{config.port}"
