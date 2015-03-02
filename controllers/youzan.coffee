@@ -7,6 +7,7 @@ express = require 'express'
 
 log = require '../lib/log'
 yzApi = require '../lib/kdt'
+{comMsg} = require '../middleware/wechat'
 
 module.exports = router = express.Router()
 
@@ -46,7 +47,7 @@ router.get '/user', (req, res) ->
 
   .then (next, openid) ->
     unless openid.stuid
-      res.json {errcode: 1, errmsg: 'unbindstuid'}
+      res.json {errcode: 1, errmsg: 'unbindstuid', openid: openid.openid}
       return
 
     data.openid = openid.openid
@@ -54,7 +55,7 @@ router.get '/user', (req, res) ->
 
   .then (next, student) ->
     unless student and student.rjpswd
-      res.json {errcode: 2, errmsg: 'unbindrjid'}
+      res.json {errcode: 2, errmsg: 'unbindrjid', openid: data.openid}
       return
 
     user =
@@ -67,3 +68,15 @@ router.get '/user', (req, res) ->
   .fail (next, err) ->
     log.error err
     res.json err
+
+router.post '/msg', (req, res) ->
+  body = req.body
+  openid = body.openid
+  content = body.content
+
+  unless openid and content
+    res.json({errcode: 1, errmsg: 'should have openid and content'})
+    return
+
+  comMsg.sendText openid, content
+  res.json({errcode: 0, errmsg: 'ok'})
