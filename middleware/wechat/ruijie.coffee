@@ -2,6 +2,7 @@ Then = require 'thenjs'
 ruijie = require '../../lib/ruijieHelper'
 com = require './common'
 ImageText = com.ImageText
+log = require '../../lib/log'
 
 StudentService = require '../../services/Student'
 
@@ -34,7 +35,7 @@ module.exports =
       replyText = '未知错误，请回复"绑定锐捷"重试'
       com.sendText openid, replyText
 
-  replyStatus: (info) ->
+  replyStatus: (info, req, res) ->
     openid = info.FromUserName
     user = info.user
 
@@ -43,7 +44,8 @@ module.exports =
 
     .then (cont, student) ->
       unless student.rjpswd
-        com.sendText openid, '请回复"绑定锐捷"，绑定之后再使用'
+        req.wxsession.status = 'bindRuijie'
+        res.reply '请回复锐捷登录密码'
         return
 
       info.stuid = student.stuid
@@ -54,7 +56,8 @@ module.exports =
 
     .then (cont, loginResult) ->
       if loginResult.errcode isnt 0
-        com.sendText openid, '你的锐捷认证失败，请回复"绑定锐捷"重新认证'
+        req.wxsession.status = 'bindRuijie'
+        res.reply '请回复锐捷登录密码'
         return
 
       ruijie.currentState loginResult, cont
@@ -74,9 +77,57 @@ module.exports =
       if state.userstate is "正常"
         arr.push("套餐周期：\n#{state.rangeStart}至#{state.rangeEnd}")
         arr.push("已用时长：\n#{state.usedTime}")
-      com.sendText openid, arr.join('\n')
+      res.reply arr.join('\n')
 
     .fail (cont, err) ->
-      logger.trace err
-      replyText = '未知错误，请稍候重试'
-      com.sendText openid, replyText
+      log.error err
+      replyText = '发生错误，请稍候重试'
+      try
+        res.reply replyText
+      catch e
+        com.sendText openid, replyText
+
+  changePolicy: (info, req, res) ->
+    openid = info.FromUserName
+    user = info.user
+
+    Then (cont) ->
+      StudentService.get user.stuid, null, cont
+
+    .then (cont, student) ->
+      unless student.rjpswd
+        req.wxsession.status = 'bindRuijie'
+        res.reply '请回复锐捷登录密码'
+        return
+
+      info.stuid = student.stuid
+      user =
+        stuid: student.stuid
+        pswd: student.rjpswd
+      ruijie.login user, cont
+
+    .then (cont, loginResult) ->
+      if loginResult.errcode isnt 0
+        req.wxsession.status = 'bindRuijie'
+        res.reply '请回复锐捷登录密码'
+        return
+
+      req.wxsession.status = 'changePolicy'
+      req.wxsession.ruijie =
+        loginResult: loginResult
+        stage: 'policy'
+
+      res.reply """
+        请回复你要变更套餐的编号
+        【1】20元30小时套餐
+        【2】30元60小时套餐
+        【3】50元150小时套餐
+      """
+
+    .fail (cont, err) ->
+      log.error err
+      replyText = '发生错误，请稍候重试'
+      try
+        res.reply replyText
+      catch e
+        com.sendText openid, replyText

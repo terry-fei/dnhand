@@ -37,7 +37,7 @@ class Syllabus
 
     Then (cont) =>
 
-      @jwcRequest.get JwcRequest.SYLLABUS, cont
+      @jwcRequest.get JwcRequest.HISTORY_SYLLABUS, cont
 
     .then (cont, syllabusHtml) =>
 

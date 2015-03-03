@@ -5,7 +5,7 @@ Then = require 'thenjs'
 logger = require 'winston'
 {JwcRequest, loginRequest} = require '../lib/request'
 
-SyllabusService = require './HistorySyllabus'
+SyllabusService = require './Syllabus'
 GradeService = require './Grade'
 
 StudentDao = require('../models').Student

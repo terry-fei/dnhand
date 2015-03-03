@@ -7,8 +7,8 @@ class JwcRequest
   constructor: (@ticket, @host) ->
 
   @PROFILE:    '/xjInfoAction.do?oper=xjxx'
-  @SYLLABUS:   '/lnkbcxAction.do?zxjxjhh=2014-2015-2-1'
-  # @SYLLABUS:   '/xkAction.do?actionType=6'
+  @HISTORY_SYLLABUS:   '/lnkbcxAction.do?zxjxjhh=2014-2015-2-1'
+  @SYLLABUS:   '/xkAction.do?actionType=6'
 
   @GRADE_URLS:
     # 本学期成绩

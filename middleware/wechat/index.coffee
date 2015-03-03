@@ -80,8 +80,11 @@ textHandler = (info, req, res) ->
 
     when key is '网络状态'
       return comMsg.replyBind(info, res) unless user.stuid
-      res.reply '正在查询...'
-      ruijieMsg.replyStatus info
+      ruijieMsg.replyStatus info, req, res
+
+    when key is '更改套餐'
+      return comMsg.replyBind(info, res) unless user.stuid
+      ruijieMsg.changePolicy info, req, res
 
     when key.length is 18
       url = "http://202.118.167.91/bm/cetzkz/images/#{key}.jpg"
@@ -167,8 +170,11 @@ eventHandler = (info, req, res) ->
 
         when 'ruijiestatus'
           return comMsg.replyBind(info, res) unless user.stuid
-          res.reply '正在查询...'
-          ruijieMsg.replyStatus info
+          ruijieMsg.replyStatus info, req, res
+
+        when key is 'changepolicy'
+          return comMsg.replyBind(info, res) unless user.stuid
+          ruijieMsg.changePolicy info, req, res
 
         else
           comMsg.replyUsage info, res
