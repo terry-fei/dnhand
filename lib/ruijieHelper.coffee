@@ -58,9 +58,10 @@ module.exports.currentState = (user, callback) ->
       currentPrepareFee      : tmpState['offileForm:currentPrepareFee']
 
     if (state.userstate is '正常') or (state.userstate.indexOf '暂停')
-      timeMatch        = tmpState['offileForm:dateRange'].match /\d{4}-\d{2}-\d{2}/g
-      state.rangeStart = timeMatch[0]
-      state.rangeEnd   = timeMatch[1]
+      if tmpState['offileForm:dateRange']
+        timeMatch        = tmpState['offileForm:dateRange'].match /\d{4}-\d{2}-\d{2}/g
+        state.rangeStart = timeMatch[0]
+        state.rangeEnd   = timeMatch[1]
       freeSessionTime  = tmpState['offileForm:freeSessionTime']
       if freeSessionTime
         state.usedTime = freeSessionTime.split('/')[0]
