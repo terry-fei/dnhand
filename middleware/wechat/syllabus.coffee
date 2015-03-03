@@ -92,7 +92,7 @@ _formatSyllabus = (day, syllabus) ->
   if result.length is 1
     result.push(new ImageText("                             无！"))
 
-  result.push(new ImageText("            本周为第#{moment().week() - 36}周(仅供参考)"))
+  result.push(new ImageText("            本周为第#{moment().week() - 10}周(仅供参考)"))
   return result
 
 _transferNumDayToChinese = (day) ->
