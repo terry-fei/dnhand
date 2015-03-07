@@ -59,7 +59,7 @@ module.exports =
         req.wxsession.status = 'bindRuijie'
         res.reply '请回复锐捷登录密码'
         return
-      
+
       req.wxsession.status = 'charge'
       req.wxsession.ruijie =
         loginResult: loginResult

@@ -52,24 +52,27 @@ module.exports = (info, req, res) ->
           delStatus()
    
    when 'charge'
-      ruijie = req.wxsession.ruijie
-      unless ruijie
-        return delStatus()
-      
-      switch ruijie.stage
-        when 'value'
+    ruijie = req.wxsession.ruijie
+    unless ruijie
+      return delStatus()
+    
+    switch ruijie.stage
+      when 'value'
 
-          if content is '1'
-            res.reply 'http://wap.koudaitong.com/v2/showcase/goods?alias=dnxa1o6c&showsku=true'
-          else if content is '2'
-            policy = 'http://wap.koudaitong.com/v2/showcase/goods?alias=1d5wt53ou&showsku=true'
-          else if content is '3'
-            policy = 'http://wap.koudaitong.com/v2/showcase/goods?alias=m5dvhdj3&showsku=true'
-          else
-            delStatus()
-            return
+        if content is '1'
+          res.reply 'http://wap.koudaitong.com/v2/showcase/goods?alias=dnxa1o6c&showsku=true'
+          delStatus(true)
+        else if content is '2'
+          policy = 'http://wap.koudaitong.com/v2/showcase/goods?alias=1d5wt53ou&showsku=true'
+          delStatus(true)
+        else if content is '3'
+          policy = 'http://wap.koudaitong.com/v2/showcase/goods?alias=m5dvhdj3&showsku=true'
+          delStatus(true)
         else
           delStatus()
+          return
+      else
+        delStatus()
 
     when 'changePolicy'
       ruijie = req.wxsession.ruijie
