@@ -35,6 +35,52 @@ module.exports =
       replyText = '未知错误，请回复"绑定锐捷"重试'
       com.sendText openid, replyText
 
+  charge: (info, req, res) ->
+    openid = info.FromUserName
+    user = info.user
+
+    Then (cont) ->
+      StudentService.get user.stuid, null, cont
+
+    .then (cont, student) ->
+      unless student.rjpswd
+        req.wxsession.status = 'bindRuijie'
+        res.reply '请回复锐捷登录密码'
+        return
+
+      info.stuid = student.stuid
+      user =
+        stuid: student.stuid
+        pswd: student.rjpswd
+      ruijie.login user, cont
+
+    .then (cont, loginResult) ->
+      if loginResult.errcode isnt 0
+        req.wxsession.status = 'bindRuijie'
+        res.reply '请回复锐捷登录密码'
+        return
+      
+      req.wxsession.status = 'charge'
+      req.wxsession.ruijie =
+        loginResult: loginResult
+        stage: 'value'
+
+      res.reply """
+        请回复你要充值面额的编号
+        【1】20元
+        【2】30元
+        【3】50元
+      """
+
+    .fail (cont, err) ->
+      log.error err
+      replyText = '发生错误，请稍候重试'
+      try
+        res.reply replyText
+      catch e
+        com.sendText openid, replyText
+
+
   replyStatus: (info, req, res) ->
     openid = info.FromUserName
     user = info.user
