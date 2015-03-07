@@ -172,11 +172,11 @@ eventHandler = (info, req, res) ->
           return comMsg.replyBind(info, res) unless user.stuid
           ruijieMsg.replyStatus info, req, res
 
-        when key is 'changepolicy'
+        when 'changepolicy'
           return comMsg.replyBind(info, res) unless user.stuid
           ruijieMsg.changePolicy info, req, res
-          
-        when key is 'ruijiecharge'
+
+        when 'ruijiecharge'
           return comMsg.replyBind(info, res) unless user.stuid
           ruijieMsg.charge info, req, res
 
