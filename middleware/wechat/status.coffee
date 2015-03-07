@@ -63,10 +63,10 @@ module.exports = (info, req, res) ->
             res.reply '<a href="http://wap.koudaitong.com/v2/showcase/goods?alias=dnxa1o6c&showsku=true">点我去充值</a>'
             delStatus(true)
           else if content is '2'
-            res.reply = '<a href="http://wap.koudaitong.com/v2/showcase/goods?alias=1d5wt53ou&showsku=true">点我去充值</a>'
+            res.reply '<a href="http://wap.koudaitong.com/v2/showcase/goods?alias=1d5wt53ou&showsku=true">点我去充值</a>'
             delStatus(true)
           else if content is '3'
-            res.reply = '<a href="http://wap.koudaitong.com/v2/showcase/goods?alias=m5dvhdj3&showsku=true">点我去充值</a>'
+            res.reply '<a href="http://wap.koudaitong.com/v2/showcase/goods?alias=m5dvhdj3&showsku=true">点我去充值</a>'
             delStatus(true)
           else
             delStatus()
