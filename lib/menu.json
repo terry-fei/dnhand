@@ -1,9 +1,24 @@
 {
   "button":[
     {
-      "type":"click",
-      "name":"假期",
-      "key": "other"
+      "name":"锐捷",
+      "sub_button":[
+        {
+          "type":"click",
+          "name":"网络状态",
+          "key":"ruijiestatus"
+        },
+        {
+          "type":"click",
+          "name":"更改套餐",
+          "key":"changepolicy"
+        },
+        {
+          "type":"click",
+          "name":"在线充值",
+          "key":"ruijiecharge"
+        }
+      ]
     },
     {
       "name":"余额",
