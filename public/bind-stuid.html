@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no, minimal-ui">
+  <meta name="format-detection" content="telephone=no">
+  <title>东农助手</title>
+  <link rel="stylesheet" href="/public/css/ratchet.min.css">
+  <link rel="stylesheet" href="/public/css/ratchet-theme-ios.min.css">
+  <style>
+    div,p,dl,dd,h1,h2,h3,h4,h5,h6,a,input,textarea,button,select,form,section,label,span,td,li,nav,footer,body,ul,i,img {
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        padding: 0;
+        margin: 0
+    }
+    .input-row {
+      height: 50px;
+    }
+    .input-row label {
+      width: 15%;
+      padding-right: 2px;
+      padding-top: 17px;
+    }
+    .input-row input {
+      width: 85%;
+      padding-top: 21px;
+    }
+    #bind {
+      width: 95%;
+      margin: 10px;
+
+    }
+  </style>
+</head>
+<body>
+  <header class="bar bar-nav">
+    <h1 class="title">绑定教务账户</h1>
+  </header>
+  <div class="content">
+  <form class="input-group">
+    <div class="input-row">
+      <label>学号</label>
+      <input type="text" value="A">
+    </div>
+    <div class="input-row">
+      <label>密码</label>
+      <input type="password" placeholder="教务处登录密码">
+    </div>
+  </form>
+  <button id="bind" class="btn btn-positive btn-block btn-outlined">绑定</button>
+  </div>
+</body>
+</html>

@@ -49,7 +49,7 @@ loginRequest = (stuid, pswd, callback) ->
     return callback new Error 'AllServerBusy'
 
   currentHost = HOST
-  url = "http://localhost:8888/?stuid=#{stuid}&pswd=#{pswd}&host=#{currentHost}"
+  url = "http://nh.feit.me/jwc?stuid=#{stuid}&pswd=#{pswd}&host=#{currentHost}"
   urllib.request url, {dataType: 'json'}, (err, data, res) ->
     return callback(err) if err
 

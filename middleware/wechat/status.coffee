@@ -3,7 +3,7 @@ com = require './common'
 ruijieMsg = require './ruijie'
 gradeMsg = require './grade'
 moment = require 'moment'
-ruijieHelper = require '../../lib/ruijieHelper'
+ruijieHelper = require 'ruijie'
 
 ImageText = com.ImageText
 
@@ -110,7 +110,7 @@ module.exports = (info, req, res) ->
               含时长 #{policyDesc[ruijie.policy]} 小时，有效期1个月
               套餐将会立即生效
               新周期起始时刻：
-              #{moment().format('YYYY-MM-DD HH:mm')}
+              #{moment.utc().add(8, 'hours').format('YYYY-MM-DD HH:mm:ss')}
 
               变更影响：
               当前计费周期剩余可用的时长或者流量将清零！！！
@@ -144,7 +144,7 @@ module.exports = (info, req, res) ->
           res.reply confirmStr
 
         when 'confirm'
-          unless content is 1
+          unless content is '1'
             delStatus()
             return
 
