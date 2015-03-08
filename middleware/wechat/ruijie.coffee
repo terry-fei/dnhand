@@ -1,5 +1,5 @@
 Then = require 'thenjs'
-ruijie = require '../../lib/ruijieHelper'
+ruijie = require 'ruijie'
 com = require './common'
 ImageText = com.ImageText
 log = require '../../lib/log'
