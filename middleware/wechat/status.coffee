@@ -110,7 +110,7 @@ module.exports = (info, req, res) ->
               含时长 #{policyDesc[ruijie.policy]} 小时，有效期1个月
               套餐将会立即生效
               新周期起始时刻：
-              #{moment.utc().add(8, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+              #{moment.utc().add(8, 'hours').format('YYYY-MM-DD   HH:mm')}
 
               变更影响：
               当前计费周期剩余可用的时长或者流量将清零！！！
@@ -152,7 +152,7 @@ module.exports = (info, req, res) ->
           res.reply '正在变更套餐，请稍候'
 
           ruijie.loginResult.policy = ruijie.policy
-          ruijie.immediately = ruijie.immediately
+          ruijie.loginResult.immediately = ruijie.immediately
           ruijieHelper.changePolicy ruijie.loginResult, (err, result) ->
             if result.errcode is 0
               com.sendText info.FromUserName, '套餐变更成功！'
