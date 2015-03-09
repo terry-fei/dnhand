@@ -22,7 +22,7 @@ module.exports =
       """
     items.push new ImageText(subscribeStr)
     unless user.stuid
-      items.push new ImageText('   欢迎关注，点我绑定账户', '', "http://n.feit.me/bind?openid=#{openid}")
+      items.push new ImageText('   欢迎关注，点我绑定账户', '', "http://n.feit.me/jwc/bind")
     res.reply items
 
   replyBind: (info, res) ->
@@ -30,8 +30,8 @@ module.exports =
     desc = """
           请点击本消息绑定学号，绑定后可使用查询课表，成绩，考试信息等实用功能
           """
-    url = "http://n.feit.me/bind?openid=#{info.FromUserName}"
-    logoUrl = "http://n.feit.me/public/dnhandlogo.jpg"
+    url = "http://n.feit.me/jwc/bind"
+    logoUrl = "http://n.feit.me/img/imagetext_bg.jpg"
     imageTextItem = new ImageText(title, desc, url, logoUrl)
     res.reply([imageTextItem])
 
@@ -120,7 +120,7 @@ module.exports =
 
     .fail (cont, err) ->
       console.trace err
-      wechatApi.sendText openid, "更新失败。\n<a href=\"http://n.feit.me/bind?openid=#{openid}\">点我去网页更新</a>", wechatApiCallback
+      wechatApi.sendText openid, "更新失败。\n<a href=\"http://n.feit.me/jwc/bind\">点我去网页更新</a>", wechatApiCallback
 
 class ImageText
   constructor: (@title, @description = '', @url = '', @picurl = '') ->

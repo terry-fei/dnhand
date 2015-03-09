@@ -47,11 +47,11 @@ module.exports =
     Then (cont) ->
 
       info.day = if info.day
-        absDay = (moment().day() + info.day) % 7
+        absDay = (moment.utc().add(8, 'hours').day() + info.day) % 7
         absDay = 7 + absDay if absDay < 0
         absDay
       else
-        moment().day()
+        moment.utc().add(8, 'hours').day()
 
       if info.day is 0
         com.sendText openid, '星期天休息[愉快]' 
