@@ -2,6 +2,7 @@ Then = require 'thenjs'
 express  = require 'express'
 validate = require 'parameter'
 {oauthApi} = require '../lib/wechatApi'
+log = require '../lib/log'
 
 {OpenId} = require '../models'
 {Student} = require '../models'
@@ -37,14 +38,20 @@ router.get '/check', (req, res) ->
 
     unless openid.stuid
       res.end '请在“东农助手”内完成绑定操作后，再来充值'
+      return
 
     Student.findOne {stuid: openid.stuid}, next
 
   .then (next, student) ->
     unless student.rjpswd
       res.end '请在“东农助手”内回复“绑定锐捷”，完成绑定后再来充值'
+      return
 
-    res.render 'ruijie/check'
+    res.render 'ruijie/check', student
+
+  .fail (next, error) ->
+    log.error error
+    res.end '发生错误，请稍候再试'
 
 # 登录入口， 如果有state参数则返回的信息中有用户状态
 router.all '/login', (req, res) ->
