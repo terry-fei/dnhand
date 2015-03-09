@@ -21,7 +21,7 @@ router.get '/check', (req, res) ->
     res.redirect oauthUrl
     return
 
-  student = null
+  stu = null
   Then (next) ->
     oauthApi.getAccessToken code, next
 
@@ -48,7 +48,7 @@ router.get '/check', (req, res) ->
       res.end '请在“东农助手”内回复“绑定锐捷”，完成绑定后再来充值'
       return
 
-    student = student
+    stu = student
 
     data =
       stuid: student.stuid
