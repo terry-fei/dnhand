@@ -47,7 +47,17 @@ router.get '/check', (req, res) ->
       res.end '请在“东农助手”内回复“绑定锐捷”，完成绑定后再来充值'
       return
 
-    res.render 'ruijie/check', student
+    data =
+      stuid: student.stuid
+      pswd: student.rjpswd
+    ruijie.login data, next
+
+  .then (next, result) ->
+    if result.errcode is 0
+      res.render 'ruijie/check', student
+
+    else
+      res.end '你的账号已过期，请在“东农助手”内回复“绑定锐捷”重新认证'
 
   .fail (next, error) ->
     log.error error
