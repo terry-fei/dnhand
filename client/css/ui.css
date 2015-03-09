@@ -1,0 +1,261 @@
+.ui_layer {
+  position: fixed;
+  height: 100%;
+  z-index: 9999;
+  background: rgba(0, 0, 0, .2);
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden
+}
+
+.ui_pop {
+  position: fixed;
+  width: 270px;
+  left: 50%;
+  margin-left: -135px;
+  top: 40%;
+  margin-top: -50px;
+  background: rgba(255, 255, 255, .95);
+  border-radius: 7px;
+  -webkit-transform: scale(1.3);
+  transform: scale(1.3);
+  opacity: 0;
+  -webkit-transition-duration: .1s, .1s;
+  -webkit-transition-timing-function: linear, linear;
+  -webkit-transition-property: -webkit-transform, opacity
+}
+
+.ui_pop_show {
+  opacity: 1;
+  -webkit-transform: scale(1);
+  transform: scale(1)
+}
+
+.ui_pop p {
+  padding: 15px 20px;
+  text-align: center;
+  line-height: 2em;
+  font-size: 1em
+}
+
+.ui_btns {
+  height: 45px;
+  -webkit-box-flex: .0;
+  display: -webkit-box;
+  border-top: #dfdfdf solid 1px
+}
+
+.ui_btns a {
+  display: block;
+  -webkit-box-flex: 1.0;
+  text-align: center;
+  line-height: 44px;
+  color: #007aff;
+  border-right: #dfdfdf solid 1px;
+  width: 50%
+}
+
+.ui_btns a.active {
+  background: rgba(200,200,200,.05)
+}
+
+.ui_btns a:last-child {
+  border-right: 0 none
+}
+
+.ui_btns a[data-val="cancel"] {
+  color: #333
+}
+
+.ui_toast {
+  padding: 5px 10px;
+  border-radius: 3px;
+  background: rgba(0,0,0,.7);
+  position: fixed;
+  left: 50%;
+  bottom: 70px;
+  max-width: 150px;
+  z-index: 9999;
+  color: #FFF;
+  font-size: 12px;
+  -webkit-transform: translate3d(-50%,100%,0);
+  opacity: 0;
+  transition: all linear .1s
+}
+
+.ui_toast_show {
+  opacity: 1;
+  -webkit-transform: translate3d(-50%,0,0)
+}
+
+.loadingBox {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,.2);
+  z-index: 9999;
+  -webkit-transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden
+}
+
+.loading {
+  max-width: 80%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate3d(-50%,-50%,0);
+  padding: 10px;
+  background: rgba(0,0,0,.5);
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0,0,0,.3);
+  color: #FFF;
+  white-space: nowrap
+}
+
+.icon_loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: url(../img/waiting_tip.png) no-repeat;
+  background-size: contain;
+  vertical-align: middle;
+  margin-top: -5px;
+  -webkit-animation-name: moveWindmill;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-delay: 0;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-play-state: running;
+  -moz-animation-name: moveWindmill;
+  -moz-animation-duration: 1s;
+  -moz-animation-timing-function: linear;
+  -moz-animation-delay: 0;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-play-state: running;
+  -ms-animation-name: moveWindmill;
+  -ms-animation-duration: 1s;
+  -ms-animation-timing-function: linear;
+  -ms-animation-delay: 0;
+  -ms-animation-iteration-count: infinite;
+  -ms-animation-play-state: running;
+  animation-name: moveWindmill;
+  animation-duration: 1s;
+  animation-timing-function: linearanimation-delay:0;
+  animation-iteration-count: infinite;
+  animation-play-state: running
+}
+
+.wrap {
+  width: 100%;
+}
+
+.page {
+  width: 100%;
+  display: none
+}
+
+.page_show {
+  display: block
+}
+
+.show_fn_page {
+  display: block
+}
+
+.page_show.show_fn_page {
+  display: none
+}
+
+@-webkit-keyframes moveWindmill {
+  0% {
+    -webkit-transform: rotate(0deg)
+  }
+
+  25% {
+    -webkit-transform: rotate(90deg)
+  }
+
+  50% {
+    -webkit-transform: rotate(180deg)
+  }
+
+  75% {
+    -webkit-transform: rotate(270deg)
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg)
+  }
+}
+
+@-moz-keyframes moveWindmill {
+  0% {
+    -moz-transform: rotate(0deg)
+  }
+
+  25% {
+    -moz-transform: rotate(90deg)
+  }
+
+  50% {
+    -moz-transform: rotate(180deg)
+  }
+
+  75% {
+    -moz-transform: rotate(270deg)
+  }
+
+  100% {
+    -moz-transform: rotate(360deg)
+  }
+}
+
+@-ms-keyframes moveWindmill {
+  0% {
+    -ms-transform: rotate(0deg)
+  }
+
+  25% {
+    -ms-transform: rotate(90deg)
+  }
+
+  50% {
+    -ms-transform: rotate(180deg)
+  }
+
+  75% {
+    -ms-transform: rotate(270deg)
+  }
+
+  100% {
+    -ms-transform: rotate(360deg)
+  }
+}
+
+@keyframes moveWindmill {
+  0% {
+    -ms-transform: rotate(0deg)
+  }
+
+  25% {
+    -ms-transform: rotate(90deg)
+  }
+
+  50% {
+    -ms-transform: rotate(180deg)
+  }
+
+  75% {
+    -ms-transform: rotate(270deg)
+  }
+
+  100% {
+    -ms-transform: rotate(360deg)
+  }
+}

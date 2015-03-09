@@ -6,8 +6,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no, minimal-ui">
   <meta name="format-detection" content="telephone=no">
   <title>东农助手</title>
-  <link rel="stylesheet" href="/public/css/ratchet.min.css">
-  <link rel="stylesheet" href="/public/css/ratchet-theme-ios.min.css">
+  <link rel="stylesheet" href="/css/ratchet.min.css">
+  <link rel="stylesheet" href="/css/ratchet-theme-ios.min.css">
+  <link rel="stylesheet" href="/css/ui.css">
   <style>
     * {
       -webkit-tap-highlight-color: rgba(0,0,0,0)
@@ -18,7 +19,7 @@
     .title {
       color: #FFFFFF
     }
-    #bind {
+    #bindBtn {
       width: 94%;
       margin: 10px;
     }
@@ -30,13 +31,14 @@
   </header>
   <div class="content">
     <form class="input-group">
-      <input type="text" placeholder="学号">
-      <input type="password" placeholder="教务处登录密码">
+      <input id="stuid" type="text" placeholder="学号">
+      <input id="pswd" type="password" placeholder="教务处登录密码">
     </form>
-    <button id="bind" class="btn btn-positive btn-block btn-outlined">绑定</button>
+    <button id="bindBtn" class="btn btn-positive btn-block btn-outlined">绑定</button>
   </div>
-  <script type="text/javascript" src="/public/js/ratchet.min.js"></script>
-  <script type="text/javascript" src="/public/js/zepto.min.js"></script>
-  <script type="text/javascript" src="/public/js/jwc-bind.js"></script>
+  <script type="text/javascript" src="/js/vendor/ratchet.min.js"></script>
+  <script type="text/javascript" src="/js/vendor/zepto.min.js"></script>
+  <script type="text/javascript" src="/js/vendor/ui.js"></script>
+  <script type="text/javascript" src="/js/jwc-bind.js"></script>
 </body>
 </html>
