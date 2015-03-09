@@ -1,12 +1,50 @@
+Then = require 'thenjs'
 express  = require 'express'
 validate = require 'parameter'
+{oauthApi} = require '../lib/wechatApi'
 
-ruijie = require '../lib/ruijieHelper'
+{OpenId} = require '../models'
+{Student} = require '../models'
+
+ruijie = require 'ruijie'
 
 module.exports = router = express.Router()
 
 errorHandle = (err) ->
   console.trace err
+
+router.get '/check', (req, res) ->
+  code = req.query.code
+  unless code
+    oauthUrl = oauthApi.getAuthorizeURL 'http://n.feit.me/ruijie/check'
+    res.redirect oauthUrl
+    return
+
+  Then (next) ->
+    oauthApi.getAccessToken code, next
+
+  .then (next, result) ->
+    unless result.data
+      return res.end '发生错误请稍候再试'
+    openid = result.data.openid
+
+    OpenId.findOne openid: openid, next
+
+  .then (next, openid) ->
+    unless openid
+      res.end '请关注“东农助手”并完成绑定再来充值'
+      return
+
+    unless openid.stuid
+      res.end '请在“东农助手”内完成绑定操作后，再来充值'
+
+    Student.findOne {stuid: openid.stuid}, next
+
+  .then (next, student) ->
+    unless student.rjpswd
+      res.end '请在“东农助手”内回复“绑定锐捷”，完成绑定后再来充值'
+
+    res.render 'ruijie/check'
 
 # 登录入口， 如果有state参数则返回的信息中有用户状态
 router.all '/login', (req, res) ->
