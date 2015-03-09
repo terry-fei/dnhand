@@ -180,6 +180,12 @@ eventHandler = (info, req, res) ->
           return comMsg.replyBind(info, res) unless user.stuid
           ruijieMsg.charge info, req, res
 
+        when 'ruijiekf'
+          res.reply """
+            你好，如果遇到充值没有到帐的问题
+            请致电：15663629958
+          """
+
         else
           comMsg.replyUsage info, res
 

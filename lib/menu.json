@@ -1,8 +1,13 @@
 {
   "button":[
     {
-      "name":"锐捷",
+      "name":"校园网",
       "sub_button":[
+        {
+          "type":"click",
+          "name":"客服",
+          "key":"ruijiekf"
+        },
         {
           "type":"click",
           "name":"网络状态",
@@ -21,12 +26,12 @@
       ]
     },
     {
-      "name":"余额",
+      "name":"←",
       "sub_button":[
         {
           "type":"view",
           "name":"绑定",
-          "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3ff5c48ba9ac6552&redirect_uri=http://n.feit.me/wx/oauth&response_type=code&scope=snsapi_base&state=bind#wechat_redirect"
+          "url":"http://n.feit.me/jwc/bind"
         },
         {
           "type":"click",
@@ -35,26 +40,17 @@
         },
         {
           "type":"click",
-          "name":"考试查询",
+          "name":"补考",
           "key":"exam"
-        },
-        {
-          "type":"click",
-          "name":"四六级准考证",
-          "key":"exam"
-        },{
-          "type":"click",
-          "name":"四六级成绩",
-          "key":"cetgrade"
         }
       ]
     },
     {
-      "name":"不足",
+      "name":"←",
       "sub_button":[
         {
           "type":"click",
-          "name":"本学期成绩",
+          "name":"上学期成绩",
           "key":"nowgrade"
         },
         {
@@ -64,7 +60,7 @@
         },
         {
           "type":"click",
-          "name":"不及格成绩",
+          "name":"挂科历史",
           "key":"bjggrade"
         },
         {
