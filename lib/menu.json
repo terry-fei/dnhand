@@ -19,9 +19,9 @@
           "key":"changepolicy"
         },
         {
-          "type":"click",
+          "type":"view",
           "name":"在线充值",
-          "key":"ruijiecharge"
+          "url":"http://n.feit.me/ruijie/check"
         }
       ]
     },
