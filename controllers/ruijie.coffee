@@ -57,7 +57,7 @@ router.get '/check', (req, res) ->
 
   .then (next, result) ->
     if result.errcode is 0
-      res.render 'ruijie/check', student
+      res.render 'ruijie/check', stu
 
     else
       res.end '你的账号已过期，请在“东农助手”内回复“绑定锐捷”重新认证'
