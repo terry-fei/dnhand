@@ -10,7 +10,7 @@ config     = require './config'
 
 wechat       = require 'wechat'
 wechatHanler = require './middleware/wechat'
-bindStuidRouter = require './controllers/bindStuid'
+jwcRouter = require './controllers/jwc'
 ruijieRouter = require './controllers/ruijie'
 youzanRouter = require './controllers/youzan'
 
@@ -19,7 +19,7 @@ app = express()
 if config.env is 'production'
   sessionStore = new RedisStore({host: config.redis.host})
 
-app.use '/wx', session
+app.use session
   secret: config.session.secret
   resave: false
   saveUninitialized: true
@@ -30,9 +30,16 @@ app.use '/wx', session
 # wechat
 app.use '/wx/api', wechat(config.wechat.token, wechatHanler)
 
+# youzan user interface
+app.use '/youzan', youzanRouter
+
 # static files
 staticDir = require('path').join(__dirname, 'public')
 app.use '/public', express.static(staticDir)
+
+# client res
+clientDir = require('path').join __dirname, 'client'
+app.use express.static clientDir
 
 # view engin
 app.set('view engine', 'html')
@@ -42,9 +49,8 @@ app.engine('html', require('ejs').renderFile)
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.use bindStuidRouter
+app.use '/jwc', jwcRouter
 app.use '/ruijie', ruijieRouter
-app.use '/youzan', youzanRouter
 app.use '/log', require './controllers/log'
 
 app.listen config.port, () ->
