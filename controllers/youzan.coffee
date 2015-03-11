@@ -79,7 +79,7 @@ router.get '/msg/success', (req, res) ->
     res.json({errcode: 1, errmsg: 'parameter err'})
     return
 
-  templateId = 'zPBcYZ708hYfPDCg-bGzZG4g_UyxBxGZe_lbHBVGZ9k'
+  templateId = 'N6rDOwzxZSSkf4wCTlke7zARBzoJTEQFX2yua-ZSAwM'
   url = ''
   topColor = '#00FF00'
   data =
