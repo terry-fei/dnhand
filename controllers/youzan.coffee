@@ -76,7 +76,7 @@ router.get '/msg/success', (req, res) ->
   value = req.query.value
 
   unless openid and stuid and value
-    res.json({errcode: 1, errmsg: 'should have openid and content'})
+    res.json({errcode: 1, errmsg: 'parameter err'})
     return
 
   templateId = 'zPBcYZ708hYfPDCg-bGzZG4g_UyxBxGZe_lbHBVGZ9k'
@@ -102,7 +102,7 @@ router.get '/msg/success', (req, res) ->
       value: '感谢你的使用！'
       color: '#173177'
   wechatApi.sendTemplate openid, templateId, url, topColor, data, (err, result) ->
-    res.json({errcode: 0, errmsg: 'ok'})
+    res.json(result)
 
 router.post '/msg', (req, res) ->
   openid = req.body.openid
