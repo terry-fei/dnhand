@@ -86,6 +86,15 @@ textHandler = (info, req, res) ->
       return comMsg.replyBind(info, res) unless user.stuid
       ruijieMsg.changePolicy info, req, res
 
+    when key is '我的订单'
+      url = "http://wap.koudaitong.com/v2/showcase/usercenter?kdt_id=229448"
+      picurl = "http://202.118.167.91/bm/cetzkz/images/#{key}.jpg"
+      title = "会员主页"
+      description = """
+        请点击查看
+        """
+      return res.reply([new ImageText(title, description, url, picurl)])
+
     when key.length is 18
       url = "http://202.118.167.91/bm/cetzkz/images/#{key}.jpg"
       title = "四六级准考证"

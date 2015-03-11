@@ -30,6 +30,10 @@ app.use session
 # wechat
 app.use '/wx/api', wechat(config.wechat.token, wechatHanler)
 
+# body parse
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 # youzan user interface
 app.use '/youzan', youzanRouter
 
@@ -44,10 +48,6 @@ app.use express.static clientDir
 # view engin
 app.set('view engine', 'html')
 app.engine('html', require('ejs').renderFile)
-
-# body parse
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
 
 app.use '/jwc', jwcRouter
 app.use '/ruijie', ruijieRouter
