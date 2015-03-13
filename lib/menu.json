@@ -4,9 +4,9 @@
       "name":"校园网",
       "sub_button":[
         {
-          "type":"click",
-          "name":"客服",
-          "key":"ruijiekf"
+          "type":"view",
+          "name":"校园网帮助",
+          "url":"http://m.wsq.qq.com/222869931/v/1024"
         },
         {
           "type":"click",
