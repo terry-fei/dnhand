@@ -62,6 +62,8 @@ module.exports =
           nowStr.push("考试时间：#{item.kssj}\n")
           nowStr.push("------------------\n")
 
+      com.sendText openid, nowStr.join('')
+
       everStr = ["学号：#{info.stuid}\n\n"]
       ever = grade['bjg']['曾不及格']
       everStr.push '\n--曾不及格--\n'
@@ -75,8 +77,7 @@ module.exports =
           everStr.push("考试时间：#{item.kssj}\n")
           everStr.push("------------------\n")
 
-      com.sendText openid everStr.join('')
-      com.sendText openid nowStr.join('')
+      com.sendText openid, everStr.join('')
 
     .fail (cont, err) ->
       # handle err
