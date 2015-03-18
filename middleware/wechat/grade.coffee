@@ -38,6 +38,8 @@ module.exports =
     openid = info.FromUserName
     user = info.user
 
+    res.reply '正在查询。。。'
+
     Then (cont) ->
 
       info.stuid = user.stuid
@@ -47,32 +49,34 @@ module.exports =
       unless grade
         return res.reply "您的信息已过期，请回复“更新”，获取最新信息"
 
-      gradeStr = ["学号：#{info.stuid}\n\n"]
+      nowStr = ["学号：#{info.stuid}\n\n"]
       now = grade['bjg']['尚不及格']
-      gradeStr.push '--尚不及格--\n'
+      nowStr.push '--尚不及格--\n'
       if not now or now.length is 0
-        gradeStr.push '没有尚不及格科目'
+        nowStr.push '没有尚不及格科目'
       else
         for item in now
-          gradeStr.push("#{item.kcm}\n")
-          gradeStr.push("成绩：#{item.cj}\n")
-          gradeStr.push("学分：#{item.xf}\n")
-          gradeStr.push("考试时间：#{item.kssj}\n")
-          gradeStr.push("------------------\n")
+          nowStr.push("#{item.kcm}\n")
+          nowStr.push("成绩：#{item.cj}\n")
+          nowStr.push("学分：#{item.xf}\n")
+          nowStr.push("考试时间：#{item.kssj}\n")
+          nowStr.push("------------------\n")
 
+      everStr = ["学号：#{info.stuid}\n\n"]
       ever = grade['bjg']['曾不及格']
-      gradeStr.push '\n--曾不及格--\n'
+      everStr.push '\n--曾不及格--\n'
       if not ever or ever.length is 0
-        gradeStr.push '没有曾不及格科目'
+        everStr.push '没有曾不及格科目'
       else
         for item in ever
-          gradeStr.push("#{item.kcm}\n")
-          gradeStr.push("成绩：#{item.cj}\n")
-          gradeStr.push("学分：#{item.xf}\n")
-          gradeStr.push("考试时间：#{item.kssj}\n")
-          gradeStr.push("------------------\n")
+          everStr.push("#{item.kcm}\n")
+          everStr.push("成绩：#{item.cj}\n")
+          everStr.push("学分：#{item.xf}\n")
+          everStr.push("考试时间：#{item.kssj}\n")
+          everStr.push("------------------\n")
 
-      res.reply gradeStr.join('')
+      com.sendText openid everStr.join('')
+      com.sendText openid nowStr.join('')
 
     .fail (cont, err) ->
       # handle err
