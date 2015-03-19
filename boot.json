@@ -1,11 +1,9 @@
 {
   "apps": [{
     "name"             : "dnhand",
-    "cwd"              : ".",
-    "script"           : "./app.coffee",
+    "cwd"              : "/usr/src",
+    "script"           : "/usr/src/app.coffee",
     "log_date_format"  : "YYYY-MM-DD HH:mm Z",
-    "error_file"       : "/var/log/dnhand-node-stderr.log",
-    "out_file"         : "/var/log/dnhand-node-stdout.log",
     "watch"            : false,
     "ignoreWatch"      : ["[\\/\\\\]\\./", "node_modules"],
     "merge_logs"       : true,
@@ -27,8 +25,8 @@
     }
   },{
     "name"             : "detectServers",
-    "cwd"              : ".",
-    "script"           : "./scripts/detectServers.coffee",
+    "cwd"              : "/usr/src",
+    "script"           : "/usr/src/scripts/detectServers.coffee",
     "exec_interpreter" : "coffee",
     "exec_mode"        : "fork",
     "env": {
