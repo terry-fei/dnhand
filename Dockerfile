@@ -9,6 +9,6 @@ EXPOSE 80
 
 ENV VIRTUAL_HOST n.feit.me
 
-WORKDIR  /usr/src/dnhand
+WORKDIR  /usr/src
 
 CMD ["npm", "start"]
