@@ -2,7 +2,7 @@
   "apps": [{
     "name"             : "dnhand",
     "cwd"              : "/usr/src",
-    "script"           : "/usr/src/app.coffee",
+    "script"           : "./app.coffee",
     "log_date_format"  : "YYYY-MM-DD HH:mm Z",
     "watch"            : false,
     "ignoreWatch"      : ["[\\/\\\\]\\./", "node_modules"],
@@ -26,7 +26,7 @@
   },{
     "name"             : "detectServers",
     "cwd"              : "/usr/src",
-    "script"           : "/usr/src/scripts/detectServers.coffee",
+    "script"           : "./scripts/detectServers.coffee",
     "exec_interpreter" : "coffee",
     "exec_mode"        : "fork",
     "env": {
