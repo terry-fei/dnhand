@@ -1,15 +1,4 @@
-FROM docker.cn/docker/node:latest
-
-RUN \
-  cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-  echo "deb http://mirrors.aliyun.com/debian/ wheezy main non-free contrib" > /etc/apt/sources.list && \
-  echo "deb http://mirrors.aliyun.com/debian/ wheezy-proposed-updates main non-free contrib" >> /etc/apt/sources.list && \
-  echo "deb-src http://mirrors.aliyun.com/debian/ wheezy main non-free contrib" >> /etc/apt/sources.list && \
-  echo "deb-src http://mirrors.aliyun.com/debian/ wheezy-proposed-updates main non-free contrib" >> /etc/apt/sources.list
-
-RUN apt-get update && \
-  apt-get install -y python-imaging && \
-  apt-get install -y python-tornado
+FROM node:0.10
 
 RUN \
   npm install -g coffee-script && \
@@ -20,6 +9,6 @@ EXPOSE 80
 
 ENV VIRTUAL_HOST n.feit.me
 
-WORKDIR  /src
+WORKDIR  /usr/src/dnhand
 
-CMD ["pm2", "start", "boot.json"， "--no-daemon"]
+CMD ["npm", "start"]

@@ -17,7 +17,7 @@ textHandler = (info, req, res) ->
 
   switch
     when key is '绑定'
-      comMsg.replyBind info, res
+      comMsg.replyBind info, req, res
 
     when /.*(课|课程)表/.test key
       return comMsg.replyBind(info, res) unless user.stuid
@@ -111,7 +111,7 @@ textHandler = (info, req, res) ->
       comMsg.updateUserInfo(info)
 
     else
-      comMsg.replyUsage info, res
+      comMsg.replyUsage info, req, res
 
 eventHandler = (info, req, res) ->
 
@@ -196,16 +196,16 @@ eventHandler = (info, req, res) ->
           """
 
         else
-          comMsg.replyUsage info, res
+          comMsg.replyUsage info, req, res
 
     when 'subscribe'
-      comMsg.replyUsage info, res
+      comMsg.replyUsage info, req, res
 
     when 'unsubscribe'
       res.reply ''
 
     else
-      comMsg.replyUsage info, res
+      comMsg.replyUsage info, req, res
 
 module.exports = (req, res) ->
   info = req.weixin

@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "private": true,
   "scripts": {
-    "start": "pm2 start boot-dev.json"
+    "start": "pm2 start ./pm2.json --no-daemon"
   },
   "dependencies": {
     "body-parser": "^1.9.3",

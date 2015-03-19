@@ -6,9 +6,10 @@ StudentService = require '../../services/Student'
 
 module.exports =
 
-  replyUsage: (info, res) ->
+  replyUsage: (info, req, res) ->
     openid = info.FromUserName
     user = info.user
+    bindUrl = "#{req.protocol}://#{req.hostname}/jwc/bind"
     items = [new ImageText('                       使用指北')]
     nickname = user.nickname or '校友'
     subscribeStr = """
@@ -22,15 +23,15 @@ module.exports =
       """
     items.push new ImageText(subscribeStr)
     unless user.stuid
-      items.push new ImageText('   欢迎关注，点我绑定账户', '', "http://n.feit.me/jwc/bind")
+      items.push new ImageText('   欢迎关注，点我绑定账户', '', bindUrl)
     res.reply items
 
-  replyBind: (info, res) ->
+  replyBind: (info, req, res) ->
     title = "东农助手"
     desc = """
           请点击本消息绑定学号，绑定后可使用查询课表，成绩，考试信息等实用功能
           """
-    url = "http://n.feit.me/jwc/bind"
+    url = "#{req.protocol}://#{req.hostname}/jwc/bind"
     logoUrl = "http://n.feit.me/img/imagetext_bg.jpg"
     imageTextItem = new ImageText(title, desc, url, logoUrl)
     res.reply([imageTextItem])
@@ -120,7 +121,7 @@ module.exports =
 
     .fail (cont, err) ->
       console.trace err
-      wechatApi.sendText openid, "更新失败。\n<a href=\"http://n.feit.me/jwc/bind\">点我去网页更新</a>", wechatApiCallback
+      wechatApi.sendText openid, "更新失败。\n请稍候再试，或点击“更新”按钮", wechatApiCallback
 
 class ImageText
   constructor: (@title, @description = '', @url = '', @picurl = '') ->

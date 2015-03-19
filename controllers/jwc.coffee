@@ -11,6 +11,9 @@ GradeService = require '../services/Grade'
 {oauthApi} = require '../lib/wechatApi'
 module.exports = router = express.Router()
 
+router.get '/test', (req, res) ->
+  res.end "#{req.protocol}://#{req.hostname}"
+
 router.get '/bind', (req, res) ->
   if req.query.dev is 'yes'
     openid = req.query.openid
@@ -20,7 +23,7 @@ router.get '/bind', (req, res) ->
 
   code = req.query.code
   unless code
-    oauthUrl = oauthApi.getAuthorizeURL 'http://n.feit.me/jwc/bind'
+    oauthUrl = oauthApi.getAuthorizeURL "#{req.protocol}://#{req.hostname}/jwc/bind"
     res.redirect oauthUrl
     return
 
