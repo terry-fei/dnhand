@@ -2,7 +2,6 @@ urllib  = require 'urllib'
 redis  = require 'redis'
 
 config = require '../config'
-log = require './log'
 
 class JwcRequest
   constructor: (@ticket, @host) ->

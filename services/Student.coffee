@@ -10,8 +10,6 @@ GradeService = require './Grade'
 
 StudentDao = require('../models').Student
 
-logger = console
-
 class Student
   constructor: (@stuid, @pswd, ticket, host) ->
     if @stuid and @pswd and ticket and host
@@ -36,14 +34,17 @@ class Student
       @jwcRequest = new JwcRequest(data.ticket, data.host)
       callback null, data
 
-  @profileKeys: ["stuid", "name", "xmpy", "ywxm", "cym", "id_card", "sex", "sslb", "tsxslx", "xjzt", "sflb",
-    "native", "jg", "csrq", "zzmm", "kq", "byzx", "gkzf", "lqh", "gkksh", "rxksyz", "txdz", "yb",
-    "jzxx", "rxrq", "xs", "major", "zyfx", "year", "class", "sfyxj", "sfygjxj", "xq", "ydf", "wyyz",
+  @profileKeys: ["stuid", "name", "xmpy", "ywxm", "cym", "id_card",
+    "sex", "sslb", "tsxslx", "xjzt", "sflb",
+    "native", "jg", "csrq", "zzmm", "kq", "byzx", "gkzf", "lqh", "gkksh",
+    "rxksyz", "txdz", "yb", "jzxx", "rxrq", "xs", "major", "zyfx", "year",
+    "class", "sfyxj", "sfygjxj", "xq", "ydf", "wyyz",
     "ssdz", "yxsj", "pycc", "pyfs", "flfx", "sflx", "bz", "bz1", "bz2", "bz3"]
 
   getProfileByTicket: (callback) =>
     unless @jwcRequest
-      return callback new Error 'please instance this class with ticket or use login before this'
+      errmsg = 'please instance this class with ticket or use login before this'
+      return callback new Error errmsg
 
     Then (cont) =>
 
@@ -58,7 +59,9 @@ class Student
       profile = _.zipObject Student.profileKeys, values
       student = pswd: @pswd
       if profile.name and profile.major
-        copy(profile).pick('stuid', 'name', 'sex', 'native', 'class', 'major', 'year', 'id_card').to(student)
+        needField = ['stuid', 'name', 'sex', 'native',
+          'class', 'major', 'year', 'id_card']
+        copy(profile).pick(needField).to(student)
 
         callback null, student
       else
@@ -85,7 +88,8 @@ class Student
     grade.getGradeByTicket type, callback
 
   @updateStudent: (student, callback) =>
-    StudentDao.findOneAndUpdate {stuid: student.stuid}, student, {upsert: true}, callback
+    StudentDao
+    .findOneAndUpdate {stuid: student.stuid}, student, {upsert: true}, callback
 
   @updateSyllabus: (syllabus, callback) =>
     SyllabusService.updateSyllabus syllabus, callback

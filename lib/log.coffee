@@ -11,4 +11,6 @@ mongoOpts =
 
 log.add winston.transports.Console
 log.add winston.transports.MongoDB, mongoOpts
+
+winston.add winston.transports.MongoDB, mongoOpts
 module.exports = log

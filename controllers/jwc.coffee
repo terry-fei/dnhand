@@ -23,7 +23,8 @@ router.get '/bind', (req, res) ->
 
   code = req.query.code
   unless code
-    oauthUrl = oauthApi.getAuthorizeURL "#{req.protocol}://#{req.hostname}/jwc/bind"
+    oauthUrl = oauthApi
+      .getAuthorizeURL "#{req.protocol}://#{req.hostname}/jwc/bind"
     res.redirect oauthUrl
     return
 

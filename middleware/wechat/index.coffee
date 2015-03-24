@@ -1,4 +1,5 @@
 wechat = require 'wechat'
+log = require 'winston'
 
 syllabusMsg = require './syllabus'
 gradeMsg = require './grade'
@@ -20,7 +21,7 @@ textHandler = (info, req, res) ->
       comMsg.replyBind info, req, res
 
     when /.*(课|课程)表/.test key
-      return comMsg.replyBind(info, res) unless user.stuid
+      return comMsg.replyBind(info, req, res) unless user.stuid
 
       res.reply ''
       info.day = switch
@@ -32,16 +33,16 @@ textHandler = (info, req, res) ->
         when !!~ key.indexOf '大前'  then -3
         when !!~ key.indexOf '前'   then -2
 
-      if info.day? then syllabusMsg.replyByDay info else syllabusMsg.replyAll info
+      syllabusMsg[info.day? 'replyByDay':'replyAll'](info)
 
     when /.*(成绩|分数)/.test key
       switch
         when !!~ key.indexOf '本学期'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyNow info, res
 
         when !!~ key.indexOf '不及格'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyNoPass info, res
 
         when /.*(四|六|四六)级/.test key
@@ -52,17 +53,17 @@ textHandler = (info, req, res) ->
           req.wxsession.cet = cet
           res.reply '请回复考生姓名'
         else
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyAll info, res
 
     when key is '补考'
-      return comMsg.replyBind(info, res) unless user.stuid
+      return comMsg.replyBind(info, req, res) unless user.stuid
 
       res.reply '正在查询补考信息...'
       examMsg.replyMarkUp info
 
     when key is '期末'
-      return comMsg.replyBind(info, res) unless user.stuid
+      return comMsg.replyBind(info, req, res) unless user.stuid
 
       res.reply '正在查询期末考试信息...'
       examMsg.replyTermEnd info
@@ -74,16 +75,16 @@ textHandler = (info, req, res) ->
         """
 
     when key is '绑定锐捷'
-      return comMsg.replyBind(info, res) unless user.stuid
+      return comMsg.replyBind(info, req, res) unless user.stuid
       req.wxsession.status = 'bindRuijie'
       res.reply '请回复锐捷登录密码'
 
     when key is '网络状态'
-      return comMsg.replyBind(info, res) unless user.stuid
+      return comMsg.replyBind(info, req, res) unless user.stuid
       ruijieMsg.replyStatus info, req, res
 
     when key is '更改套餐'
-      return comMsg.replyBind(info, res) unless user.stuid
+      return comMsg.replyBind(info, req, res) unless user.stuid
       ruijieMsg.changePolicy info, req, res
 
     when key is '我的订单'
@@ -106,7 +107,7 @@ textHandler = (info, req, res) ->
       return res.reply([new ImageText(title, description, url, url)])
 
     when key is '更新'
-      return comMsg.replyBind(info, res) unless user.stuid
+      return comMsg.replyBind(info, req, res) unless user.stuid
       res.reply ''
       comMsg.updateUserInfo(info)
 
@@ -121,38 +122,40 @@ eventHandler = (info, req, res) ->
 
       switch info.EventKey
         when 'todaysyllabus'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
 
           res.reply ''
           syllabusMsg.replyByDay info
 
         when 'tomorrowsyllabus'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
 
           res.reply ''
           info.day = 1
           syllabusMsg.replyByDay info
 
         when 'allsyllabus'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
 
           res.reply ''
           syllabusMsg.replyAll info
 
         when 'nowgrade'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyNow info, res
 
         when 'bjggrade'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyNoPass info, res
 
         when 'allgrade'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyAll info, res
 
         when 'cetgrade'
-          return res.reply '抱歉，因四六级查分机制有变，本平台暂不提供查分服务\n<a href="http://www.chsi.com.cn/cet/">点我去官网查询</a>'
+          return res.reply """抱歉，因四六级查分机制有变，本平台暂不提供查分服务
+            <a href="http://www.chsi.com.cn/cet/">点我去官网查询</a>"""
+
           req.wxsession.status = 'cet'
           cet =
             stage: 'name'
@@ -173,20 +176,20 @@ eventHandler = (info, req, res) ->
           """
 
         when 'updateinfo'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           res.reply ''
           comMsg.updateUserInfo(info)
 
         when 'ruijiestatus'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           ruijieMsg.replyStatus info, req, res
 
         when 'changepolicy'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           ruijieMsg.changePolicy info, req, res
 
         when 'ruijiecharge'
-          return comMsg.replyBind(info, res) unless user.stuid
+          return comMsg.replyBind(info, req, res) unless user.stuid
           ruijieMsg.charge info, req, res
 
         when 'ruijiekf'
@@ -210,7 +213,9 @@ eventHandler = (info, req, res) ->
 module.exports = (req, res) ->
   info = req.weixin
 
-  OpenIdService.getUser(info.FromUserName, 'stuid nickname sex').then (cont, user) ->
+  OpenIdService
+  .getUser(info.FromUserName, 'stuid nickname sex')
+  .then (cont, user) ->
     info.user = user
 
     # 处理存在预先状态的消息
@@ -229,7 +234,7 @@ module.exports = (req, res) ->
         res.reply '暂不支持该消息类型'
 
   .fail (cont, err) ->
-    console.trace err
+    log.error 'reply error', err
     # ERROR handler
     try
       res.reply '公众号暂时无法提供服务'
