@@ -7,6 +7,7 @@ examMsg = require './exam'
 ruijieMsg = require './ruijie'
 comMsg = require './common'
 statusMsg = require './status'
+rankMsg = require './rank'
 ImageText = comMsg.ImageText
 
 OpenIdService = require '../../services/OpenId'
@@ -110,6 +111,10 @@ textHandler = (info, req, res) ->
       return comMsg.replyBind(info, req, res) unless user.stuid
       res.reply ''
       comMsg.updateUserInfo(info)
+
+    when key is '排名'
+      return comMsg.replyBind(info, req, res) unless user.stuid
+      rankMsg.getRank info, req, res
 
     else
       comMsg.replyUsage info, req, res

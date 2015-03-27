@@ -14,11 +14,13 @@ GradeSchema = require('./Grade')
 OpenIdSchema = require('./OpenId')
 StudentSchema = require('./Student')
 SyllabusSchema = require('./Syllabus')
+zyGradeSchema = require './zyGrade'
 
 models =
   Grade: conn.model('Grade', GradeSchema),
   OpenId: conn.model('OpenId', OpenIdSchema),
   Student: conn.model('Student', StudentSchema),
-  Syllabus: conn.model('Syllabus', SyllabusSchema)
+  Syllabus: conn.model('Syllabus', SyllabusSchema),
+  zyGrade: conn.model('zyGrade', zyGradeSchema)
 
 module.exports = models
