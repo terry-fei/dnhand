@@ -49,6 +49,7 @@ app.use express.static clientDir
 app.set('view engine', 'html')
 app.engine('html', require('ejs').renderFile)
 
+app.use require './controllers/wechat-oauth'
 app.use '/jwc', jwcRouter
 app.use '/ruijie', ruijieRouter
 app.use '/log', require './controllers/log'
