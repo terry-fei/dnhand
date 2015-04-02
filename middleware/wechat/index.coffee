@@ -34,7 +34,7 @@ textHandler = (info, req, res) ->
         when !!~ key.indexOf '大前'  then -3
         when !!~ key.indexOf '前'   then -2
 
-      syllabusMsg[info.day? 'replyByDay':'replyAll'](info)
+      syllabusMsg[if info.day? then 'replyByDay' else 'replyAll'](info)
 
     when /.*(成绩|分数)/.test key
       switch
