@@ -194,8 +194,7 @@ eventHandler = (info, req, res) ->
           ruijieMsg.changePolicy info, req, res
 
         when 'ruijiecharge'
-          return comMsg.replyBind(info, req, res) unless user.stuid
-          ruijieMsg.charge info, req, res
+          res.reply '<a href="wp.feit.me/charge">点我去充值</a>'
 
         when 'ruijiekf'
           res.reply """

@@ -15,6 +15,8 @@ errorHandle = (err) ->
   console.trace err
 
 router.get '/check', (req, res) ->
+  res.redirect 'http://wp.feit.me/charge'
+  return
   code = req.query.code
   unless code
     oauthUrl = oauthApi.getAuthorizeURL 'http://n.feit.me/ruijie/check'
