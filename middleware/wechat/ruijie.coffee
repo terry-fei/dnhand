@@ -134,6 +134,9 @@ module.exports =
         com.sendText openid, replyText
 
   changePolicy: (info, req, res) ->
+    res.reply '东农助手更改套餐功能暂时关闭,请访问 sss.neau.edu.cn 更改套餐！'
+    return
+    
     openid = info.FromUserName
     user = info.user
 
