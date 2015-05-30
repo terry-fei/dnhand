@@ -12,4 +12,4 @@ router.post '/ac', (req, res) ->
     if err
       return res.end 'err'
 
-    res.end token
+    res.json token
