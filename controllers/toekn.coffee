@@ -1,9 +1,9 @@
 express = require 'express'
 wechatApi = require '../lib/wechatApi'
 
-router = express.Router()
+module.exports = router = express.Router()
 
-router.post '/actoken', (req, res) ->
+router.post '/ac', (req, res) ->
   key = req.body.key
   if key isnt 'feitdnhad'
     return res.end 'error'
