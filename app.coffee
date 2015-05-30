@@ -13,7 +13,7 @@ wechatHanler = require './middleware/wechat'
 jwcRouter = require './controllers/jwc'
 ruijieRouter = require './controllers/ruijie'
 youzanRouter = require './controllers/youzan'
-tokenRouter = require './controllers/tokens'
+tokenRouter = require './controllers/token'
 
 app = express()
 
