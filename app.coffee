@@ -1,8 +1,6 @@
-require 'localenv'
 express    = require 'express'
 bodyParser = require 'body-parser'
 session    = require 'express-session'
-RedisStore = require('connect-redis')(session)
 logger     = require 'winston'
 require './models'
 
@@ -17,14 +15,10 @@ tokenRouter = require './controllers/token'
 
 app = express()
 
-if config.env is 'production'
-  sessionStore = new RedisStore({host: config.redis.host})
-
 app.use session
   secret: config.session.secret
   resave: false
   saveUninitialized: true
-  store: sessionStore
   cookie:
     maxAge: 1000 * 60 * 5
 

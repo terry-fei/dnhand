@@ -1,5 +1,4 @@
 urllib  = require 'urllib'
-redis  = require 'redis'
 
 config = require '../config'
 
@@ -37,12 +36,6 @@ class JwcRequest
     urllib.request url, opts, callback
 
 HOST = 'http://202.118.167.85'
-
-if config.env is 'production'
-  client = redis.createClient(6379, 'redis', {})
-  client.subscribe 'bestServer'
-  client.on 'message', (chan, msg) ->
-    HOST = msg
 
 loginRequest = (stuid, pswd, callback) ->
   unless !!~ HOST.indexOf 'http'
