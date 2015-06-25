@@ -1,7 +1,7 @@
 express    = require 'express'
 bodyParser = require 'body-parser'
 session    = require 'express-session'
-logger     = require 'winston'
+log        = require './lib/log'
 require './models'
 
 config     = require './config'
@@ -51,4 +51,4 @@ app.use '/token', tokenRouter
 app.use '/log', require './controllers/log'
 
 app.listen config.port, () ->
-  logger.info "Server Start at port #{config.port}"
+  log.info "Server Start at port #{config.port}"

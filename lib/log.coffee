@@ -1,16 +1,13 @@
-winston = require 'winston'
-require('winston-mongodb').MongoDB
-path = require 'path'
+log = require 'winston'
 
 config = require '../config'
-log = new winston.Logger
+if config.env is 'production'
+  require('winston-mongodb').MongoDB
+  mongoOpts =
+    db: "mongodb://#{config.mongodb.host}/#{config.mongodb.dbname}"
+    level: "info"
 
-mongoOpts =
-  db: "mongodb://#{config.mongodb.host}/#{config.mongodb.dbname}"
-  level: "info"
 
-log.add winston.transports.Console
-log.add winston.transports.MongoDB, mongoOpts
-
-winston.add winston.transports.MongoDB, mongoOpts
+  log.add log.transports.MongoDB, mongoOpts
+  log.remove log.transports.Console
 module.exports = log

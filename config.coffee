@@ -1,7 +1,7 @@
 env = process.env
 
 module.exports =
-  env: env
+  env: env.NODE_ENV
   wechat:
     token     : env.WECHAT_TOKEN
     appid     : env.WECHAT_APPID
@@ -14,12 +14,6 @@ module.exports =
     host  : env.MONGO_HOST
     port  : env.MONGO_PORT
     dbname: env.MONGO_DBNAME
-  redis:
-    host: env.REDIS_HOST
-    port: env.REDIS_PORT
-  email:
-    user: env.EMALL_USER
-    pass: env.EMALL_PASS
   session:
     secret: env.SESSION_SECRET
   port: env.NODE_LISTEN_PORT
