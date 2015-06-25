@@ -12,7 +12,7 @@ GradeService = require '../services/Grade'
 module.exports = router = express.Router()
 
 router.get '/test', (req, res) ->
-  res.end "#{req.protocol}://#{req.hostname}"
+  res.end "#{req.protocol}://#{req.hostname}/hello"
 
 router.get '/bind', (req, res) ->
   if req.query.dev is 'yes'

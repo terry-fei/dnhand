@@ -1,0 +1,25 @@
+{
+  "apps": [{
+    "name"             : "dnhand",
+    "cwd"              : "/src/dnhand/",
+    "script"           : "./app.coffee",
+    "log_date_format"  : "YYYY-MM-DD HH:mm Z",
+    "watch"            : true,
+    "ignoreWatch"      : ["[\\/\\\\]\\./", "node_modules"],
+    "merge_logs"       : true,
+    "exec_interpreter" : "coffee",
+    "exec_mode"        : "cluster",
+    "env": {
+      "NODE_ENV"                     : "development",
+      "MONGO_HOST"                   : "mongo",
+      "MONGO_PORT"                   : "27017",
+      "MONGO_DBNAME"                 : "dnhand_dev",
+      "WECHAT_TOKEN"                 : "1NtYFf4S3VIN",
+      "WECHAT_APPID"                 : "wxc49d99a484205dd0",
+      "WECHAT_SECRET"                : "75676597753ddb51c8d74273650daa76",
+      "WECHAT_HAS_ADVANCED_INTERFACE": true,
+      "SESSION_SECRET"               : "cIpP0nUewODU",
+      "NODE_LISTEN_PORT"             : 80
+    }
+  }]
+}

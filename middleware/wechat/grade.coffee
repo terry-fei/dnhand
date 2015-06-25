@@ -19,9 +19,9 @@ module.exports =
       unless grade
         return res.reply "您的信息已过期，请回复“更新”，获取最新信息"
 
-      result = grade['qb']['2014-2015学年秋(两学期)']
+      result = grade['qb']['2014-2015学年春(两学期)']
       if not result or result.length is 0
-        return res.reply('暂时还没有上学期成绩信息')
+        return res.reply('暂时还没有本学期成绩信息')
 
       gradeStr = ["学号：#{info.stuid}\n\n"]
       for item in result

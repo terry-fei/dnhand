@@ -31,7 +31,7 @@
     "exec_mode"        : "fork",
     "env": {
       "REDIS_HOST": "redis",
-      "REDIS_PORT": 6379,
+      "REDIS_PORT": 6379
     }
   }]
 }
