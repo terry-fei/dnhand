@@ -1,8 +1,9 @@
 _ = require 'lodash'
 Then = require 'thenjs'
 express = require 'express'
+debug = require('debug')('dnhand:ctrl:jwc')
 
-log = require '../lib/log'
+log = require 'winston'
 OpenIdService = require '../services/OpenId'
 StudentService = require '../services/Student'
 GradeService = require '../services/Grade'
@@ -32,7 +33,7 @@ router.get '/bind', (req, res) ->
     unless result.data
       return res.end '发生错误请稍候再试'
     openid = result.data.openid
-
+    debug "bind openid: #{openid}"
     req.session.openid = openid
     res.render 'jwc/bind'
 
@@ -42,7 +43,10 @@ router.post '/bind', (req, res) ->
   openid = req.session.openid
 
   unless stuid and pswd and openid
+    log.debug 'wrong parameter from bind'
     return res.json errcode: -1
+
+  debug "bind #{stuid} -> #{openid}"
 
   student = new StudentService stuid, pswd
 

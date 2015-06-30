@@ -1,7 +1,8 @@
 express    = require 'express'
 bodyParser = require 'body-parser'
 session    = require 'express-session'
-log        = require './lib/log'
+FileStore = require('session-file-store')(session)
+log        = require 'winston'
 require './models'
 
 config     = require './config'
@@ -15,12 +16,15 @@ tokenRouter = require './controllers/token'
 
 app = express()
 
-app.use session
+app.set 'trust proxy', true
+app.use session({
   secret: config.session.secret
   resave: false
   saveUninitialized: true
-  cookie:
-    maxAge: 1000 * 60 * 5
+  store: new FileStore({
+    path: config.session.filesPath
+  })
+})
 
 # wechat
 app.use '/wx/api', wechat(config.wechat.token, wechatHanler)
@@ -31,7 +35,6 @@ app.use(bodyParser.json())
 
 # youzan user interface
 app.use '/youzan', youzanRouter
-
 # static files
 staticDir = require('path').join(__dirname, 'public')
 app.use '/public', express.static(staticDir)

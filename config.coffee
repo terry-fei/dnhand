@@ -1,5 +1,8 @@
+os = require 'os'
+path = require 'path'
 env = process.env
 
+tmpPath = os.tmpdir()
 module.exports =
   env: env.NODE_ENV
   wechat:
@@ -16,4 +19,5 @@ module.exports =
     dbname: env.MONGO_DBNAME
   session:
     secret: env.SESSION_SECRET
+    filesPath: path.join tmpPath, 'dnhand_sessions'
   port: env.NODE_LISTEN_PORT

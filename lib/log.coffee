@@ -10,4 +10,8 @@ if config.env is 'production'
 
   log.add log.transports.MongoDB, mongoOpts
   log.remove log.transports.Console
+else
+  log.transports.Console.level = 'debug'
+  log.transports.Console.colorize = true
+  log.transports.Console.prettyPrint = true
 module.exports = log
