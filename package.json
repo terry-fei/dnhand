@@ -8,7 +8,6 @@
   "dependencies": {
     "body-parser": "^1.9.3",
     "cheerio": "^0.18.0",
-    "connect-mongodb-session": "^1.0.2",
     "copy-to": "^2.0.1",
     "cron": "^1.0.5",
     "debug": "^2.2.0",
