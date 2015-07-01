@@ -44,6 +44,7 @@ clientDir = require('path').join __dirname, 'client'
 app.use express.static clientDir
 
 # view engin
+app.set 'views', './views'
 app.set('view engine', 'html')
 app.engine('html', require('ejs').renderFile)
 
