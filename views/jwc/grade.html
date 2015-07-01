@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>全部及格成绩</title>
+  <link rel="stylesheet" href="/css/grade.css" type="text/css">
+  <link rel="stylesheet" href="/css/ratchet.css" type="text/css">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+</head>
+<body>
+  <header class="bar bar-nav">
+    <h1 class="title"><%=stuid%></h1>
+  </header>
+  <div class="content">
+    <div class="container">
+      <table>
+        <tr>
+          <td>课程名称</td>
+          <td class="col">成绩</td>
+          <td class="col">学分</td>
+        </tr>
+        <% for (var key in qb) {%>
+          <%qb[key].forEach(function (item) {%>
+            <tr>
+                <td><p><%=item.kcm%></p></td>
+                <td class="col"><p><%=item.cj%></p></td>
+                <td class="col"><p><%=item.xf%></p></td>
+            </tr>
+          <%})%>
+        <%}%>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
