@@ -23,15 +23,5 @@
       "SESSION_SECRET"               : "cIpP0nUewODU",
       "NODE_LISTEN_PORT"             : 80
     }
-  },{
-    "name"             : "detectServers",
-    "cwd"              : "/usr/src",
-    "script"           : "./scripts/detectServers.coffee",
-    "exec_interpreter" : "coffee",
-    "exec_mode"        : "fork",
-    "env": {
-      "REDIS_HOST": "redis",
-      "REDIS_PORT": 6379
-    }
   }]
 }
