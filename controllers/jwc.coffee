@@ -46,8 +46,6 @@ router.post '/bind', (req, res) ->
     log.debug 'wrong parameter from bind'
     return res.json errcode: -1
 
-  debug "bind #{stuid} -> #{openid}"
-
   student = new StudentService stuid, pswd
 
   Then (cont) ->
@@ -72,3 +70,26 @@ router.post '/bind', (req, res) ->
       res.json err
     else
       res.json {errcode: -1, errmsg: 'other'}
+
+router.get '/grade/all', (req, res) ->
+  code = req.query.code
+  unless code
+    oauthUrl = oauthApi
+      .getAuthorizeURL "#{req.protocol}://#{req.hostname}/jwc/grade/all"
+    res.redirect oauthUrl
+    return
+
+  oauthApi.getAccessToken code, (err, result) ->
+    unless result.data
+      return res.end '发生错误请稍候再试'
+    openid = result.data.openid
+    debug "query all grade: #{openid}"
+    OpenIdService.getUser(openid, 'stuid').then (cont, user) ->
+      GradeService.get user.stuid, 'qb', (err, grade) ->
+        if err or not grade
+          res.end '查询失败，请稍后再试'
+        result = stuid: user.stuid
+        result.qb = grade.qb
+        res.render('jwc/grade', result)
+    .catch (cont, err) ->
+      log.error err
