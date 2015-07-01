@@ -22,11 +22,16 @@
           "type":"view",
           "name":"在线充值",
           "url":"http://wp.feit.me/charge"
+        },
+        {
+          "type": "view",
+          "name": "暂停恢复",
+          "url": "http://sss.neau.edu.cn"
         }
       ]
     },
     {
-      "name":"←",
+      "name":"一",
       "sub_button":[
         {
           "type":"view",
@@ -46,17 +51,17 @@
       ]
     },
     {
-      "name":"←",
+      "name":"教务信息",
       "sub_button":[
         {
           "type":"click",
-          "name":"上学期成绩",
+          "name":"本学期成绩",
           "key":"nowgrade"
         },
         {
-          "type":"click",
+          "type":"view",
           "name":"全部成绩",
-          "key":"allgrade"
+          "url":"http://n.feit.me/jwc/grade/all"
         },
         {
           "type":"click",
