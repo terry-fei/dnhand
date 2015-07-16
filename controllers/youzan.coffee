@@ -128,16 +128,19 @@ router.post '/card', (req, res)->
   value = req.body.value
   orderID = req.body.oid
   yzOrderID = req.body.yzoid
+  unless openid and value and orderID and yzOrderID
+    res.json({errcode: 2, errmsg: 'parameter error'})
+    return
   title = "#{value}元校园网充值卡"
   picUrl = switch value
-    when 50 then 'http://s.feit.me/card50.jpg'
-    when 30 then 'http://s.feit.me/card30.jpg'
-    when 20 then 'http://s.feit.me/card20.jpg'
+    when '50' then 'http://s.feit.me/card50.jpg'
+    when '30' then 'http://s.feit.me/card30.jpg'
+    when '20' then 'http://s.feit.me/card20.jpg'
   
   targetUrl = "http://wp.feit.me/ss.html?type=onlineCharge&oid=#{orderID}&yzoid=#{yzOrderID}"
   msg =
     title: title
-    description: "面值：#{value}\n编号：#{orderID}\n请尽快点击使用！"
+    description: "面值：#{value}\n编号：#{orderID}\n感谢购买，请尽快点击使用！"
     url: targetUrl
     picurl: picUrl
   wechatApi.sendNews openid, [msg], (err, result) ->
