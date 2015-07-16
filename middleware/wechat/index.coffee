@@ -148,14 +148,17 @@ eventHandler = (info, req, res) ->
         when 'nowgrade'
           return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyNow info, res
+          comMsg.updateUserInfo(info)
 
         when 'bjggrade'
           return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyNoPass info, res
+          comMsg.updateUserInfo(info)
 
         when 'allgrade'
           return comMsg.replyBind(info, req, res) unless user.stuid
           gradeMsg.replyAll info, res
+          comMsg.updateUserInfo(info)
 
         when 'cetgrade'
           return res.reply """抱歉，因四六级查分机制有变，本平台暂不提供查分服务
