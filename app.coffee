@@ -33,8 +33,6 @@ app.use '/wx/api', wechat(config.wechat.token, wechatHanler)
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-# youzan user interface
-app.use '/youzan', youzanRouter
 # static files
 staticDir = require('path').join(__dirname, 'public')
 app.use '/public', express.static(staticDir)
@@ -52,7 +50,7 @@ app.use require './controllers/wechat-oauth'
 app.use '/jwc', jwcRouter
 app.use '/ruijie', ruijieRouter
 app.use '/token', tokenRouter
-app.use '/log', require './controllers/log'
+app.use '/youzan', youzanRouter
 
 app.listen config.port, () ->
   log.info "Server Start at port #{config.port}"

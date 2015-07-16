@@ -104,6 +104,7 @@ router.get '/msg/success', (req, res) ->
   wechatApi.sendTemplate openid, templateId, url, topColor, data, (err, result) ->
     res.json(result)
 
+# lagecy code
 router.post '/msg', (req, res) ->
   openid = req.body.openid
   content = req.body.content
@@ -112,3 +113,32 @@ router.post '/msg', (req, res) ->
     return
   comMsg.sendText openid, content
   res.json({errcode: 0, errmsg: 'ok'})
+
+router.post '/text', (req, res) ->
+  openid = req.body.openid
+  content = req.body.content
+  unless openid and content
+    res.json({errcode: 1, errmsg: 'should have openid and content'})
+    return
+  wechatApi.sendText openid, content, (err, result) ->
+    res.json err or result
+
+router.post '/card', (req, res)->
+  openid = req.body.openid
+  value = req.body.value
+  orderID = req.body.oid
+  yzOrderID = req.body.yzoid
+  title = "#{value}元校园网充值卡"
+  picUrl = switch value
+    when 50 then 'http://s.feit.me/card50.jpg'
+    when 30 then 'http://s.feit.me/card30.jpg'
+    when 20 then 'http://s.feit.me/card20.jpg'
+  
+  targetUrl = "http://wp.feit.me/ss.html?type=onlineCharge&oid=#{orderID}&yzoid=#{yzOrderID}"
+  msg =
+    title: title
+    description: "面值：#{value}\n编号：#{orderID}\n请尽快点击使用！"
+    url: targetUrl
+    picurl: picUrl
+  wechatApi.sendNews openid, [msg], (err, result) ->
+    res.json err or result
