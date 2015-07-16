@@ -1,7 +1,6 @@
 express    = require 'express'
 bodyParser = require 'body-parser'
 session    = require 'express-session'
-FileStore = require('session-file-store')(session)
 log        = require 'winston'
 require './models'
 
@@ -21,9 +20,6 @@ app.use session({
   secret: config.session.secret
   resave: false
   saveUninitialized: true
-  store: new FileStore({
-    path: config.session.filesPath
-  })
 })
 
 # wechat
