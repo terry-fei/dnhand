@@ -132,7 +132,7 @@ router.post '/card', (req, res)->
   unless openid and value and count and num and url
     res.json({errcode: 2, errmsg: 'parameter error'})
     return
-  title = "#{value * count}元校园网充值卡--点击使用"
+  title = "#{value * count}元校园网充值卡"
   picUrl = 'http://s.feit.me/card.jpg'
 
   msg =
