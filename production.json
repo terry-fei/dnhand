@@ -1,7 +1,7 @@
 {
   "apps": [{
     "name"             : "dnhand",
-    "cwd"              : "/usr/src",
+    "cwd"              : "/pcodes/dnhand",
     "script"           : "./app.coffee",
     "log_date_format"  : "YYYY-MM-DD HH:mm Z",
     "watch"            : false,
