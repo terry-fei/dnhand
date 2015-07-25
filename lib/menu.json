@@ -5,8 +5,8 @@
       "sub_button":[
         {
           "type":"view",
-          "name":"校园网帮助",
-          "url":"http://m.wsq.qq.com/222869931/v/1024"
+          "name":"社区帮助",
+          "url":"http://s.p.qq.com/pub/jump?d=AAAOK4Gb"
         },
         {
           "type":"click",
@@ -14,19 +14,14 @@
           "key":"ruijiestatus"
         },
         {
-          "type":"click",
-          "name":"更改套餐",
-          "key":"changepolicy"
-        },
-        {
           "type":"view",
           "name":"在线充值",
-          "url":"http://wp.feit.me/charge"
+          "url":"http://wap.koudaitong.com/v2/feature/15mtse28b"
         },
         {
           "type": "view",
-          "name": "暂停恢复",
-          "url": "http://sss.neau.edu.cn"
+          "name": "自助服务",
+          "url": "http://wp.feit.me/ss.html"
         }
       ]
     },

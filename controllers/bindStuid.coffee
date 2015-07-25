@@ -59,29 +59,3 @@ router.post '/bind', (req, res) ->
       res.json err
     else
       res.json errcode: -1, errmsg: 'other'
-
-router.get "/info/allgrade", (req, res, next) ->
-  openid = req.query.openid
-  Then (cont) ->
-    OpenIdService.getUser openid, 'stuid', cont
-
-  .then (cont, user) ->
-    unless user.stuid
-      return res.redirect '/bind?openid=' + openid
-
-    GradeService.get user.stuid, 'fa', cont
-
-  .then (cont, grade) ->
-    unless grade
-      return res.redirect '/bind?openid=' + openid
-
-    result = _.values(grade['fa'])[0]
-    return res.render 'all_grade', {'items': result}
-
-  .fail (cont, error) ->
-    console.trace error
-    try
-      res.set('Content-Type', 'text/plain; charset=utf-8');
-      res.end('请稍候访问')
-    catch e
-      # ...
