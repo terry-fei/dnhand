@@ -9,9 +9,9 @@ config     = require './config'
 wechat       = require 'wechat'
 wechatHanler = require './middleware/wechat'
 jwcRouter = require './controllers/jwc'
-ruijieRouter = require './controllers/ruijie'
 youzanRouter = require './controllers/youzan'
 tokenRouter = require './controllers/token'
+oauthRouter = require './controllers/wechat-oauth'
 
 app = express()
 
@@ -42,9 +42,8 @@ app.set 'views', './views'
 app.set('view engine', 'html')
 app.engine('html', require('ejs').renderFile)
 
-app.use require './controllers/wechat-oauth'
+app.use oauthRouter
 app.use '/jwc', jwcRouter
-app.use '/ruijie', ruijieRouter
 app.use '/token', tokenRouter
 app.use '/youzan', youzanRouter
 
