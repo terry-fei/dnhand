@@ -1,6 +1,8 @@
 express    = require 'express'
 bodyParser = require 'body-parser'
 session    = require 'express-session'
+MongoStore = require('connect-mongo')(session)
+mongoose   = require 'mongoose'
 log        = require 'winston'
 require './models'
 
@@ -16,10 +18,13 @@ oauthRouter = require './controllers/wechat-oauth'
 app = express()
 
 app.set 'trust proxy', true
+
+conn = mongoose.createConnection(config.mongodb.host, config.mongodb.dbname)
 app.use session({
   secret: config.session.secret
   resave: false
   saveUninitialized: true
+  store: new MongoStore({mongooseConnection: conn})
 })
 
 # wechat
