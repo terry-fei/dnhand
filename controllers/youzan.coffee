@@ -22,13 +22,28 @@ router.post '/card', (req, res)->
   unless openid and value and count and num and url
     res.json({errcode: 2, errmsg: 'parameter error'})
     return
-  title = "#{value * count}元校园网充值卡"
-  picUrl = 'http://s.feit.me/card.jpg'
 
-  msg =
-    title: title
-    description: "面值：#{value * count}\n编号：#{num}\n感谢购买，此卡仅对付款微信号有效，请尽快点击使用！"
-    url: url
-    picurl: picUrl
-  wechatApi.sendNews openid, [msg], (err, result) ->
+  templateId = 'N6rDOwzxZSSkf4wCTlke7zARBzoJTEQFX2yua-ZSAwM'
+  url = url
+  topColor = ''
+  data =
+    first:
+      value: "#{value * count}元校园网充值卡"
+      color: '#FF0000'
+    accountType:
+      value: '卡号'
+      color: '#000000'
+    account:
+      value: "#{num}"
+      color: '#173177'
+    amount:
+      value: "#{value * count}"
+      color: '#FF0000'
+    result:
+      value: '未使用'
+      color: '#173177'
+    remark:
+      value: '感谢购买，此卡仅对付款微信号有效\n\n请尽快点击使用！'
+      color: '#173177'
+  wechatApi.sendTemplate openid, templateId, url, topColor, data, (err ,result) ->
     res.json err or result
