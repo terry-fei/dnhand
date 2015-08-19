@@ -76,12 +76,8 @@ _formatSyllabusOneDay = (day, syllabus) ->
   result = [new ImageText(weekday, '', '', _getDayPic(day))]
 
   for num, courseArray of syllabus
-    numStr = num + '. '
     for course in courseArray
-      courseStr = """
-        #{numStr}#{course.name}
-        @#{course.room}  -> #{course.week}
-        """
+      courseStr = "#{course.name}\n@#{course.room}  &#{course.week}"
       result.push new ImageText(courseStr, '', '', _getNumPic(num))
 
   if result.length is 1
@@ -135,13 +131,13 @@ _getDayPic = (day) ->
 
 _getNumPic = (num) ->
   switch String(num)
-    when '1' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVYe3XZXu3BdjI7eDR52ezTCorhITOjkEkYyoPwTChIPbwQsjxkOmiaKw/0?wx_fmt=png'
-    when '2' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrV1Db0MFBdfbic3Mg87zUQjvhjgsyUFbfdPSAuTAYwZHIkvqgcficMoP5Q/0?wx_fmt=png'
-    when '3' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVckUJD273n7VEQrhMUNRKYjQncGwrcicQODwUh1TwQ6yZicB6nnenTBTQ/0?wx_fmt=png'
-    when '4' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVspHbL7LQ1XrUMoEluufzqqN9qBDh1tm6Ozuo7BzmWoUQYIRNVo92Dg/0?wx_fmt=png'
-    when '5' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVFsobs6KpdnpAJs1coXaibq6iatQbbQuGCRO0a0ibs4ZuZRHVWMnQQOqcQ/0?wx_fmt=png'
-    when '6' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVZBcxHvMbNwMLW8dvH6ic70p7Gb5G1uCTvtiaN95ic60b6eMEL3xu6lkww/0?wx_fmt=png'
-    when '7' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVej3N9ztX9ToyM4KW30O1IxicEA9l2lTEg93IcwVXGeTiaSJ2JVicNmeoA/0?wx_fmt=png'
-    when '8' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVUYhNJc7O3Q4oy6sDRMM3RyXW6iayT0aqqvzqRLSD5fqZxMBwXPCWeBw/0?wx_fmt=png'
-    when '9' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVJ0Enl7MUZhS1SYC6NRtpc7VIUGPWTib6weXCbh5KRun3C5Fdozb3G0w/0?wx_fmt=png'
-    when '0' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVZVWib7h43wThm4d8jBam5DDnMIMB7VkBHGo2LX6tiblrwulicdPnAaK2g/0?wx_fmt=png'
+    when '1' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVkT0icVKl14Nx4WezJv2BsQ17xDkKlzRUAs2CubEOjhaSfoV0HxdcAmQ/0?wx_fmt=jpeg'
+    when '2' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrV11zf8Og8bzQ8BebyZGGHDGicuoClNqJa63QMC8nWuAodE7l6A49YRYg/0?wx_fmt=jpeg'
+    when '3' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVqFlLYQu5snW2MIoM3W1z4NM5P4aFV8NwFXG8oJ01yfy5yPNIJ0kia0w/0?wx_fmt=jpeg'
+    when '4' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrViaIXicEah9fNIBiahvkawRTibwH27JzVKJmYMhD9PJgiaCbULI39XY8pnVg/0?wx_fmt=jpeg'
+    when '5' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVXkJNaJ4oZSCBfylYJIic2gGrqf0MwmQIQMick7qItZkBrYX5h5ECicxDg/0?wx_fmt=jpeg'
+    when '6' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVc1EKTyaLSp5LGtBka7nYUL3oKicqcZEF9kgphZa5dZCuibf5GRpG0dBA/0?wx_fmt=jpeg'
+    when '7' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVrxCic0V6X5JUqXvsMicq7hpFVXYW1YF1sWhJ72Xuwy9fGK9T6WAMRVGA/0?wx_fmt=jpeg'
+    when '8' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVQIdKjMSKsjFIS3nQmdJbnI0CYK5SDBDWqgAmoY5oEr1p489nPJJcjw/0?wx_fmt=jpeg'
+    when '9' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVLWzjjOEsbf0ZywHN4akwORicXuT1toBkO2cKDJvJJjCib7jSibcyCeMew/0?wx_fmt=jpeg'
+    when '0' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVBGRuibDzBmsKiaYlmoAVdwJDowfrsicMW9qM7s1COE45LEicuZhbQyjWQA/0?wx_fmt=jpeg'
