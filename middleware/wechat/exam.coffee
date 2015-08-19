@@ -9,13 +9,13 @@ module.exports =
   replyTermEnd: (info) ->
     openid = info.FromUserName
     user = info.user
-    url = 'http://202.118.167.76/ksap/all.asp'
+    url = 'http://202.118.167.91/bm/ksap1/all.asp'
     getNeauExamInfo(user.stuid, '期末考试', url, openid)
 
   replyMarkUp: (info) ->
     openid = info.FromUserName
     user = info.user
-    url = 'http://202.118.167.91/bm/ksap1/all.asp'
+    url = 'http://202.118.167.76/ksap/all.asp'
     getNeauExamInfo(user.stuid, '补考查询', url, openid)
 
 

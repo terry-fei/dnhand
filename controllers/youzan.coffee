@@ -43,7 +43,7 @@ router.post '/card', (req, res)->
       value: '未使用'
       color: '#173177'
     remark:
-      value: '感谢购买，此卡仅对付款微信号有效\n\n请尽快点击使用！'
+      value: '感谢支持\n请尽快点击使用！'
       color: '#173177'
   wechatApi.sendTemplate openid, templateId, url, topColor, data, (err ,result) ->
     res.json err or result

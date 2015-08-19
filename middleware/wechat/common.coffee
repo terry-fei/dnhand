@@ -81,16 +81,16 @@ module.exports =
         value: '教务账号绑定成功'
         color: '#173177'
       keyword1:
-        value: 'dnhand'
+        value: '东农助手微信平台'
         color: '#173177'
       keyword2:
         value: stuid
         color: '#173177'
       keyword3:
-        value: '查询课表，成绩，考试等实用功能'
+        value: '课表，成绩，网络在线充值等'
         color: '#173177'
       remark:
-        value: '感谢你的关注！'
+        value: '感谢支持！'
         color: '#173177'
     wechatApi.sendTemplate openid, templateId, url, topColor, data, wechatApiCallback
 

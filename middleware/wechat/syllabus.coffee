@@ -66,10 +66,32 @@ module.exports =
         return
 
       syllabus = syllabus[info.day]
-      com.sendNews openid, _formatSyllabus(info.day, syllabus)
+      com.sendNews openid, _formatSyllabusOneDay(info.day, syllabus)
 
     .fail (cont, err) ->
       # handle err
+
+_formatSyllabusOneDay = (day, syllabus) ->
+  if day is 0
+    weekday = '             未分配时间的课程'
+  else
+    weekday = "                    星期#{_transferNumDayToChinese(day)}"
+  result = [new ImageText weekday]
+
+  for num, courseArray of syllabus
+    numStr = num + '.'
+    for course in courseArray
+      courseStr = """
+        #{numStr}#{course.name}
+        @#{course.room} - #{course.week}
+        """
+      result.push new ImageText courseStr
+
+  if result.length is 1
+    result.push(new ImageText("                           没课"))
+
+  result.push(new ImageText("            本周为第#{moment().week() - 10}周(仅供参考)"))
+  return result
 
 _formatSyllabus = (day, syllabus) ->
   if day is 0
@@ -83,7 +105,7 @@ _formatSyllabus = (day, syllabus) ->
     for course in courseArray
       courseStr = """
         #{numStr}：#{course.name}
-        教室： #{course.building}:#{course.room}
+        教室： #{course.building}>#{course.room}
         任课教师： #{course.teacher}   学分：#{course.credit}
         上课周次：  #{course.week}
         """
@@ -92,7 +114,7 @@ _formatSyllabus = (day, syllabus) ->
   if result.length is 1
     result.push(new ImageText("                             无！"))
 
-  result.push(new ImageText("            本周为第#{moment().week() - 10}周(仅供参考)"))
+  result.push(new ImageText("            现在是第#{moment().week() - 36}周(仅供参考)"))
   return result
 
 _transferNumDayToChinese = (day) ->
