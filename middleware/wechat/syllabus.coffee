@@ -75,7 +75,7 @@ _formatSyllabusOneDay = (day, syllabus) ->
   if day is 0
     weekday = '             未分配时间的课程'
   else
-    weekday = "                    星期#{_transferNumDayToChinese(day)}"
+    weekday = "                       星期#{_transferNumDayToChinese(day)}"
   result = [new ImageText weekday]
 
   for num, courseArray of syllabus
@@ -83,21 +83,21 @@ _formatSyllabusOneDay = (day, syllabus) ->
     for course in courseArray
       courseStr = """
         #{numStr}#{course.name}
-        @#{course.room} - #{course.week}
+        @#{course.room} -> #{course.week}
         """
       result.push new ImageText courseStr
 
   if result.length is 1
     result.push(new ImageText("                           没课"))
 
-  result.push(new ImageText("            本周为第#{moment().week() - 10}周(仅供参考)"))
+  result.push(new ImageText("            今天是第#{moment().week() - 36}周"))
   return result
 
 _formatSyllabus = (day, syllabus) ->
   if day is 0
     weekday = '                 未分配时间'
   else
-    weekday = "                    星期#{_transferNumDayToChinese(day)}"
+    weekday = "                       星期#{_transferNumDayToChinese(day)}"
   result = [new ImageText weekday]
 
   for num, courseArray of syllabus
@@ -114,7 +114,7 @@ _formatSyllabus = (day, syllabus) ->
   if result.length is 1
     result.push(new ImageText("                             无！"))
 
-  result.push(new ImageText("            现在是第#{moment().week() - 36}周(仅供参考)"))
+  result.push(new ImageText("            今天是第#{moment().week() - 36}周"))
   return result
 
 _transferNumDayToChinese = (day) ->
