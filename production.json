@@ -6,6 +6,7 @@
     "log_date_format"  : "YYYY-MM-DD HH:mm Z",
     "watch"            : false,
     "ignoreWatch"      : ["[\\/\\\\]\\./", "node_modules"],
+    "instances"        : 1,
     "merge_logs"       : true,
     "exec_interpreter" : "coffee",
     "exec_mode"        : "cluster",

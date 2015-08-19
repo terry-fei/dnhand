@@ -72,29 +72,26 @@ module.exports =
       # handle err
 
 _formatSyllabusOneDay = (day, syllabus) ->
-  if day is 0
-    weekday = '             未分配时间的课程'
-  else
-    weekday = "今天是第#{moment().week() - 36}周"
+  weekday = "今天是第#{moment().week() - 36}周"
   result = [new ImageText(weekday, '', '', _getDayPic(day))]
 
   for num, courseArray of syllabus
-    numStr = num + '.'
+    numStr = num + '. '
     for course in courseArray
       courseStr = """
         #{numStr}#{course.name}
-        @#{course.room} -> #{course.week}
+        @#{course.room}  #{course.week}
         """
       result.push new ImageText(courseStr, '', '', _getNumPic(num))
 
   if result.length is 1
-    result.push(new ImageText("                           没课"))
+    result.push(new ImageText("没课"))
 
   return result
 
 _formatSyllabus = (day, syllabus) ->
   if day is 0
-    weekday = '                 未分配时间'
+    weekday = '              未分配时间的课程'
   else
     weekday = "                       星期#{_transferNumDayToChinese(day)}"
   result = [new ImageText weekday]
@@ -111,7 +108,7 @@ _formatSyllabus = (day, syllabus) ->
       result.push new ImageText courseStr
 
   if result.length is 1
-    result.push(new ImageText("                             无！"))
+    result.push(new ImageText("                             没课"))
 
   result.push(new ImageText("            今天是第#{moment().week() - 36}周"))
   return result
@@ -137,7 +134,7 @@ _getDayPic = (day) ->
     when '7' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrV16XK64W34cZDfFH9IElbYQV7zuciadW0h0Q8PNaadtJDnYmtNp361gw/0?wx_fmt=jpeg'
 
 _getNumPic = (num) ->
-  switch String(day)
+  switch String(num)
     when '1' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVQjTM12lkNMcK6cibaIy9fa7Q5rJzl0S5NXt6atptKuZThBUeu5NwS6Q/0?wx_fmt=png'
     when '2' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVgHjH2ff58K7t3pBmicB9ONSqmcgZTSy7PxrxLKBVenU38knF6O5qsqw/0?wx_fmt=png'
     when '3' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVXp9Kibibjb4MPPgocu8SvQZowbC6W48MmCO52PX7IZH0WicShW8Hv0N1Q/0?wx_fmt=png'
