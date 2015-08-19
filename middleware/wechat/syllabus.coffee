@@ -75,8 +75,8 @@ _formatSyllabusOneDay = (day, syllabus) ->
   if day is 0
     weekday = '             未分配时间的课程'
   else
-    weekday = "                       星期#{_transferNumDayToChinese(day)}"
-  result = [new ImageText weekday]
+    weekday = "今天是第#{moment().week() - 36}周"
+  result = [new ImageText(weekday, '', '', _getDayPic(day))]
 
   for num, courseArray of syllabus
     numStr = num + '.'
@@ -85,12 +85,11 @@ _formatSyllabusOneDay = (day, syllabus) ->
         #{numStr}#{course.name}
         @#{course.room} -> #{course.week}
         """
-      result.push new ImageText courseStr
+      result.push new ImageText(courseStr, '', '', _getNumPic(num))
 
   if result.length is 1
     result.push(new ImageText("                           没课"))
 
-  result.push(new ImageText("            今天是第#{moment().week() - 36}周"))
   return result
 
 _formatSyllabus = (day, syllabus) ->
@@ -126,3 +125,26 @@ _transferNumDayToChinese = (day) ->
     when '5' then '五'
     when '6' then '六'
     when '7' then '日'
+
+_getDayPic = (day) ->
+  switch String(day)
+    when '1' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVVtMbAALibR0icllx3rhibedGgZJJwqpicbnkbibNoaAbckE50vXA0y5ltQw/0?wx_fmt=jpeg'
+    when '2' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVFFqSKyZJpca8OhOVXz1FCjF2leiaKfMFJAoU2CugmjdnaYSCkiagZs5A/0?wx_fmt=jpeg'
+    when '3' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVayZ6ntbM7BoLoGj0rD49wsT8QAkF6zbVQGOiaILbd9zO6IsdbpibIU7A/0?wx_fmt=jpeg'
+    when '4' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrV3P9ibcUv3zR4iap2E53OXAfpud3wHmYspLcM1ibB8hrpZy4eQl6zGw8gQ/0?wx_fmt=jpeg'
+    when '5' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVicGb4Lls4Q709hBtf5HNjRbQ4AiapB9bYU0IF06YvxYiadbPphnrBDemw/0?wx_fmt=jpeg'
+    when '6' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVGeZEnrIZ46UabZ1y7BHrblt2aHJfxicPYuQJcdznib7iaShgV7kt5Lqkg/0?wx_fmt=jpeg'
+    when '7' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrV16XK64W34cZDfFH9IElbYQV7zuciadW0h0Q8PNaadtJDnYmtNp361gw/0?wx_fmt=jpeg'
+
+_getNumPic = (num) ->
+  switch String(day)
+    when '1' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVQjTM12lkNMcK6cibaIy9fa7Q5rJzl0S5NXt6atptKuZThBUeu5NwS6Q/0?wx_fmt=png'
+    when '2' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVgHjH2ff58K7t3pBmicB9ONSqmcgZTSy7PxrxLKBVenU38knF6O5qsqw/0?wx_fmt=png'
+    when '3' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVXp9Kibibjb4MPPgocu8SvQZowbC6W48MmCO52PX7IZH0WicShW8Hv0N1Q/0?wx_fmt=png'
+    when '4' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVsbDyAwIbtV7nayF0wSOqibxibBVeSk0lkW0P7f2rFp3qCPBhCicgYCLBQ/0?wx_fmt=png'
+    when '5' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVIzlXqNg4fVEuGfDxf0TMp1Dh0mjDHQic7GlfibTc9LibdvXOnZ9wiczpjw/0?wx_fmt=png'
+    when '6' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVX0L4Gkg8lnHYVpLb5RgwECtQnfCSRTSCCZZYhkAmibu36jwoCo4o8Ig/0?wx_fmt=png'
+    when '7' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrV4dic98XicEAYzibXghiat9P3tKzbiavW5g6LyTBSK1vH6ZXzWZBvQ3QH6NA/0?wx_fmt=png'
+    when '8' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVoOLwFKJR5oEbY7RsUxjCWnicoc8JhGpic7MClYJVYic3kBMQo8E7DfiaSg/0?wx_fmt=png'
+    when '9' then 'https://mmbiz.qlogo.cn/mmbiz/Um1Q0fUx415uYcic7VHib7tSaI0eYoFOrVHcvyy4zgWsHuNnILmIibmebyUHCstO91mia4cGUWcL0g6qShxYVQV7Ow/0?wx_fmt=png'
+    when '0' then ''
