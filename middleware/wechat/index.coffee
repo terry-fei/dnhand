@@ -71,8 +71,7 @@ textHandler = (info, req, res) ->
 
     when key is '准考证'
       res.reply """
-        请回复身份证号查询四六级准考证
-        仅限农大同学
+        学校没有放出本次四六级考试准考证信息
         """
 
     when key is '绑定锐捷'
@@ -98,6 +97,10 @@ textHandler = (info, req, res) ->
       return res.reply([new ImageText(title, description, url, picurl)])
 
     when key.length is 18
+      res.reply """
+        学校没有放出本次四六级考试准考证信息
+        """
+      return
       url = "http://202.118.167.91/bm/cetzkz/images/#{key}.jpg"
       title = "四六级准考证"
       description = """
