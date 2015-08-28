@@ -2,57 +2,27 @@
   "button":[
     {
       "name":"校园网",
-      "sub_button":[
-        {
-          "type":"view",
-          "name":"社区帮助",
-          "url":"http://s.p.qq.com/pub/jump?d=AAAOK4Gb"
-        },
-        {
-          "type":"click",
-          "name":"网络状态",
-          "key":"ruijiestatus"
-        },
-        {
-          "type":"view",
-          "name":"在线充值",
-          "url":"http://wp.feit.me/charge"
-        },
-        {
-          "type": "view",
-          "name": "自助服务",
-          "url": "http://wp.feit.me/ss.html"
-        }
-      ]
+      "type":"view",
+      "url":"http://wp.feit.me/charge"
     },
     {
-      "name":"一",
+      "name":"_",
       "sub_button":[
         {
           "type":"view",
-          "name":"绑定",
+          "name":"绑定学号",
           "url":"http://n.feit.me/jwc/bind"
         },
         {
           "type":"click",
-          "name":"更新",
+          "name":"更新信息",
           "key":"updateinfo"
-        },
-        {
-          "type":"click",
-          "name":"补考",
-          "key":"exam"
         }
       ]
     },
     {
-      "name":"教务信息",
+      "name":"课表成绩",
       "sub_button":[
-        {
-          "type":"click",
-          "name":"本学期成绩",
-          "key":"nowgrade"
-        },
         {
           "type":"view",
           "name":"全部成绩",
@@ -60,19 +30,20 @@
         },
         {
           "type":"click",
-          "name":"挂科历史",
+          "name":"挂科记录",
           "key":"bjggrade"
-        },
-        {
-          "type":"click",
-          "name":"今天课表",
-          "key":"todaysyllabus"
         },
         {
           "type":"click",
           "name":"全部课表",
           "key":"allsyllabus"
-        }]
+        },
+        {
+          "type":"click",
+          "name":"今天课表",
+          "key":"todaysyllabus"
+        }
+        ]
       }
   ]
 }
