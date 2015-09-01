@@ -1,10 +1,5 @@
 node_modules/
-bower_components/
 *.DS_Store
-.c9/
-server/errors/logs/
 .vagrant
-Vagrantfile
 *.pyc
-log/
-boot.json
+production.json
