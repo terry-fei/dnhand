@@ -72,7 +72,7 @@ module.exports =
       # handle err
 
 _formatSyllabusOneDay = (day, syllabus) ->
-  weekday = "今天是第#{moment().week() - 36}周"
+  weekday = "今天是第#{moment().week() - 35}周"
   result = [new ImageText(weekday, '', '', _getDayPic(day))]
 
   for num, courseArray of syllabus
@@ -90,7 +90,7 @@ _formatSyllabus = (day, syllabus) ->
     weekday = '              未分配时间的课程'
     result = [new ImageText weekday]
   else
-    weekday = "今天是第#{moment().week() - 36}周"
+    weekday = "今天是第#{moment().week() - 35}周"
     result = [new ImageText(weekday, '', '', _getDayPic(day))]
 
   for num, courseArray of syllabus
