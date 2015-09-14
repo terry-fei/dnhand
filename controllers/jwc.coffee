@@ -8,6 +8,7 @@ OpenIdService = require '../services/OpenId'
 StudentService = require '../services/Student'
 GradeService = require '../services/Grade'
 {comMsg} = require '../middleware/wechat'
+{zyGrade, OpenId} = require '../models'
 
 {oauthApi} = require '../lib/wechatApi'
 module.exports = router = express.Router()
@@ -93,3 +94,87 @@ router.get '/grade/all', (req, res) ->
         res.render('jwc/grade', result)
     .catch (cont, err) ->
       log.error err
+
+router.get '/rank/my', (req, res) ->
+  code = req.query.code
+  unless code
+    oauthUrl = oauthApi
+      .getAuthorizeURL "#{req.protocol}://#{req.hostname}/jwc/rank/my"
+    res.redirect oauthUrl
+    return
+
+  oauthApi.getAccessToken code, (err, result) ->
+    unless result.data
+      return res.end '发生错误请稍候再试'
+    openid = result.data.openid
+    res.redirect '/rank.html?openid=' + openid
+
+router.get '/rank', (req, res) ->
+  openid = req.query.openid
+  stuid = req.query.stuid
+
+  if stuid
+    return returnRank stuid, res
+
+  return res.json {errcode: 2} unless openid
+  OpenId.findOne {openid}, (cont, user) ->
+    return res.json {errcode: 3} unless user
+    returnRank user.stuid, res
+
+returnRank = (stuid, res) ->
+  zyGrade.findOne {stuid: stuid}, (err, student) ->
+    return res.json errcode: 1 if err
+
+    return res.json {errcode: 4} unless student
+
+    if student.majorRank
+      return res.json student
+
+    query =
+      majorName: student.majorName
+      majorYear: student.majorYear
+
+    zyGrade.count(query).gte('zyGrade', student.zyGrade).exec (err, majorRank) ->
+      return res.json errcode: 1 if err
+
+      query.clsNo = student.clsNo
+      zyGrade.count(query).gte('zyGrade', student.zyGrade).exec (err, clsRank) ->
+        return res.json errcode: 1 if err
+        student.majorRank = majorRank
+        student.clsRank = clsRank
+        student.save ->
+        res.json student
+
+router.post '/rank/top', (req, res) ->
+  student = req.body
+
+  Then.parallel([
+    (next) ->
+      query =
+        majorName: student.majorName
+        majorYear: student.majorYear
+      zyGrade.count(query, next)
+    (next) ->
+      query =
+        majorName: student.majorName
+        majorYear: student.majorYear
+        clsNo: student.clsNo
+      zyGrade.count(query, next)
+    (next) ->
+      query =
+        majorName: student.majorName
+        majorYear: student.majorYear
+      zyGrade.find(query).sort('-zyGrade').limit(10).exec next
+    (next) ->
+      query =
+        majorName: student.majorName
+        majorYear: student.majorYear
+        clsNo: student.clsNo
+      zyGrade.find(query).sort('-zyGrade').limit(10).exec next
+  ]).then (next, result) ->
+    data =
+      majorCount: result[0]
+      clsCount: result[1]
+      majorTop: result[2]
+      clsTop: result[3]
+    res.json data

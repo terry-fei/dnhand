@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no, minimal-ui">
+  <meta name="format-detection" content="telephone=no">
+  <title>东农助手</title>
+  <link rel="stylesheet" href="/css/ratchet.min.css">
+  <link rel="stylesheet" href="/css/ratchet-theme-ios.min.css">
+  <link rel="stylesheet" href="/css/ui.css">
+  <style>
+    body,td,input,textarea,option,select,button {
+      font-family: "微软雅黑",helvetica,arial;
+      -webkit-text-size-adjust: none;
+    }
+    * {
+      -webkit-tap-highlight-color: rgba(0,0,0,0)
+    }
+    .bar {
+      background-color: #5cb85c
+    }
+    .title {
+      color: #FFFFFF
+    }
+    .btnWrap {
+      margin:10px 12px;
+    }
+    .panel {
+      height: auto;
+      padding: 10px 15px;
+      display: block;
+      text-align: left;
+      background-color: #FFFFFF;
+      border-bottom: #ddd solid 1px;
+    }
+
+    .panel_part {
+      display: inline-block;
+      overflow: hidden;
+      width: 48%
+    }
+
+    .panel_item {
+      display: inline-block;
+      border-left: 3px solid #5cb85c;
+      padding-left:3px;
+      margin-top: 2px;
+      color:#b7b7b7;
+    }
+  </style>
+</head>
+<body>
+  <header class="bar bar-nav">
+    <h1 class="title">排名查询</h1>
+  </header>
+
+  <div class="content">
+
+    <div class="panel">
+
+      <span class="panel_item">姓名</span><br>
+      &nbsp;&nbsp;<span id="name"></span><br>
+
+      <div class="panel_part">
+        <span class="panel_item">班级排名</span><br>
+        &nbsp;&nbsp;<span id="clsRank"></span><br>
+      </div>
+      <div class="panel_part">
+        <span class="panel_item">班级人数</span><br>
+        &nbsp;&nbsp;<span id="clsCount"></span><br>
+      </div>
+      <div class="panel_part">
+        <span class="panel_item">专业排名</span><br>
+        &nbsp;&nbsp;<span id="majorRank"></span><br>
+      </div>
+      <div class="panel_part">
+        <span class="panel_item">专业人数</span><br>
+        &nbsp;&nbsp;<span id="majorCount"></span><br>
+      </div>
+    </div>
+
+    <div class="card">
+      <ul id="clsTop" class="table-view">
+        <li class="table-view-cell table-view-divider">班级TOP10</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <ul id="majorTop" class="table-view">
+        <li class="table-view-cell table-view-divider">专业TOP10</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <form class="input-group">
+        <input id="stuid" type="text" placeholder="输入其他学号查询">
+      </form>
+    </div>
+    <div class="btnWrap">
+      <button id="submit" class="btn btn-positive btn-block">查询</button>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="/js/vendor/ratchet.min.js"></script>
+  <script type="text/javascript" src="/js/vendor/zepto.min.js"></script>
+  <script type="text/javascript" src="/js/vendor/ui.js"></script>
+  <script type="text/javascript">
+  $(function () {
+    var openid = getQuerys()['openid'];
+    query(openid);
+    $('#submit').click(function () {
+      var stuid = $('#stuid').val();
+      if (stuid.substring(0,1) !== 'A' || stuid.length !== 9) {
+        UI.alert('请输入正确的学号');
+        $('#stuid').val('');
+        return;
+      }
+      query(null, stuid);
+    });
+  });
+
+  function query (openid, stuid) {
+    if (openid) {
+      var queryString = '/jwc/rank?openid=' + openid
+    } else {
+      var queryString = '/jwc/rank?stuid=' + stuid
+    }
+
+    UI.showLoading('正在查询');
+    $.get(queryString, function (student) {
+      if (student.errcode) {
+        return UI.alert('发生错误，请重试');
+      }
+      $('#name').text(student.name);
+      $('#clsRank').text(student.clsRank);
+      $('#majorRank').text(student.majorRank);
+
+      $.post('/jwc/rank/top', student, function (tops) {
+        if (tops.errcode) {
+          return UI.alert('发生错误，请重试');
+        }
+        UI.hideLoading();
+        $('#clsCount').text(tops.clsCount);
+        $('#majorCount').text(tops.majorCount);
+
+        tops.clsTop.forEach(function (item) {
+          var node = '<li class="table-view-cell">' + item.name + '<span class="badge">' + item.zyGrade +'</span></li>';
+          $('#clsTop').append($(node));
+        });
+        tops.majorTop.forEach(function (item) {
+          var node = '<li class="table-view-cell">' + item.name + '<span class="badge">' + item.zyGrade +'</span></li>';
+          $('#majorTop').append($(node));
+        });
+      }, 'json');
+    }, 'json');
+  }
+
+  function getQuerys () {
+    var url = location.search; //获取url中"?"符后的字串
+    var theRequest = {};
+    if (url.indexOf("?") != -1) {
+      var str = url.substr(1);
+      if (str.indexOf("&") != -1) {
+        strs = str.split("&");
+        for (var i = 0; i < strs.length; i++) {
+          theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+        }
+      } else {
+        theRequest[str.split("=")[0]] = unescape(str.split("=")[1]);
+      }
+    }
+    return theRequest;
+  }
+  </script>
+</body>
+</html>
