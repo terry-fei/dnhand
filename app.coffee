@@ -1,3 +1,7 @@
+try
+  require('dotenv').load()
+catch e
+
 express    = require 'express'
 bodyParser = require 'body-parser'
 session    = require 'express-session'
@@ -35,12 +39,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 # static files
-staticDir = require('path').join(__dirname, 'public')
+staticDir = require('path').join(__dirname, 'static')
 app.use '/public', express.static(staticDir)
-
-# client res
-clientDir = require('path').join __dirname, 'client'
-app.use express.static clientDir
 
 # view engin
 app.set 'views', './views'

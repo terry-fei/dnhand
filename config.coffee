@@ -19,5 +19,4 @@ module.exports =
     dbname: env.MONGO_DBNAME
   session:
     secret: env.SESSION_SECRET
-    filesPath: path.join tmpPath, 'dnhand_sessions'
-  port: env.NODE_LISTEN_PORT
+  port: env.APP_PORT
