@@ -88,7 +88,7 @@ router.get '/grade/all', (req, res) ->
     OpenIdService.getUser(openid, 'stuid').then (cont, user) ->
       GradeService.get user.stuid, 'qb', (err, grade) ->
         if err or not grade
-          res.end '查询失败，请稍后再试'
+          return res.end '查询失败，请稍后再试'
         result = stuid: user.stuid
         result.qb = grade.qb
         res.render('jwc/grade', result)
