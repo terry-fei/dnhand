@@ -50,7 +50,6 @@ app.engine('html', require('ejs').renderFile)
 
 app.use oauthRouter
 app.use '/jwc', jwcRouter
-app.use '/token', tokenRouter
 app.use '/youzan', youzanRouter
 
 app.listen config.port, () ->
