@@ -18,7 +18,6 @@ wechat       = require 'wechat'
 wechatHanler = require './middleware/wechat'
 jwcRouter = require './controllers/jwc'
 youzanRouter = require './controllers/youzan'
-tokenRouter = require './controllers/token'
 oauthRouter = require './controllers/wechat-oauth'
 
 app = express()

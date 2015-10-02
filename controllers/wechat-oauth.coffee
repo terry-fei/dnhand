@@ -4,7 +4,6 @@ express = require 'express'
 {oauthApi} = require '../lib/wechatApi'
 module.exports = router = express.Router()
 
-
 router.get '/wechat/oauth', (req, res) ->
 
   code = req.query.code
