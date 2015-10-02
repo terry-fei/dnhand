@@ -1,6 +1,8 @@
-try
+isProduction = process.env.NODE_ENV is 'production'
+if isProduction
+  require 'oneapm'
+else
   require('dotenv').load()
-catch e
 
 express    = require 'express'
 bodyParser = require 'body-parser'

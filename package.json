@@ -21,6 +21,7 @@
     "mongoose": "^4.0.6",
     "node-kdt": "^0.1.3",
     "nodemailer": "0.7.1",
+    "oneapm": "^1.2.8",
     "parameter": "^1.0.2",
     "redis": "^0.12.1",
     "ruijie": "^1.0.1",
