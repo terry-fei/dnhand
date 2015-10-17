@@ -41,7 +41,7 @@ app.use(bodyParser.json())
 
 # static files
 staticDir = require('path').join(__dirname, 'static')
-app.use '/public', express.static(staticDir)
+app.use express.static(staticDir)
 
 # view engin
 app.set 'views', './views'
