@@ -1,4 +1,4 @@
-FROM node:0.10
+FROM mhart/alpine-node:4.2
 MAINTAINER feit <i@feit.me>
 
 RUN npm i coffee-script -g
