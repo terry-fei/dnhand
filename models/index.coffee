@@ -10,17 +10,19 @@ conn.on 'error', (err) ->
 conn.once 'open', () ->
   log.info 'mongodb connected!'
 
-GradeSchema = require('./Grade')
-OpenIdSchema = require('./OpenId')
-StudentSchema = require('./Student')
-SyllabusSchema = require('./Syllabus')
-zyGradeSchema = require './zyGrade'
+GradeSchema    = require './Grade'
+OpenIdSchema   = require './OpenId'
+StudentSchema  = require './Student'
+SyllabusSchema = require './Syllabus'
+zyGradeSchema  = require './zyGrade'
+WechatTokenSchema = require './WechatToken'
 
 models =
   Grade: conn.model('Grade', GradeSchema),
   OpenId: conn.model('OpenId', OpenIdSchema),
   Student: conn.model('Student', StudentSchema),
   Syllabus: conn.model('Syllabus', SyllabusSchema),
-  zyGrade: conn.model('zyGrade', zyGradeSchema)
+  zyGrade: conn.model('zyGrade', zyGradeSchema),
+  WechatToken: conn.model('WechatToken',  WechatTokenSchema)
 
 module.exports = models
