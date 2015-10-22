@@ -1,5 +1,5 @@
 Then = require 'thenjs'
-ruijie = require 'ruijie'
+ruijie = require '../../lib/ruijieHelper'
 com = require './common'
 ImageText = com.ImageText
 log = require '../../lib/log'
@@ -136,7 +136,7 @@ module.exports =
   changePolicy: (info, req, res) ->
     res.reply '东农助手更改套餐功能暂时关闭,请访问 sss.neau.edu.cn 更改套餐！'
     return
-    
+
     openid = info.FromUserName
     user = info.user
 

@@ -3,7 +3,7 @@ com = require './common'
 ruijieMsg = require './ruijie'
 gradeMsg = require './grade'
 moment = require 'moment'
-ruijieHelper = require 'ruijie'
+ruijieHelper = require '../../lib/ruijieHelper'
 
 ImageText = com.ImageText
 
@@ -55,7 +55,7 @@ module.exports = (info, req, res) ->
       ruijie = req.wxsession.ruijie
       unless ruijie
         return delStatus()
-      
+
       switch ruijie.stage
         when 'value'
 
