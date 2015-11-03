@@ -61,11 +61,11 @@ router.get '/jser/welcome', (req, res) ->
     oauthDispatherUrl = 'http://n.feit.me/wechat/oauth'
     thisUrl = "#{req.protocol}://#{req.hostname + req.path}"
     state = JSON.stringify {url: thisUrl}
-    oauthUrl = wechatOauth.getAuthorizeURL oauthDispatherUrl, state
+    oauthUrl = oauthApi.getAuthorizeURL oauthDispatherUrl, state
     res.redirect oauthUrl
     return
 
-  wechatOauth.getAccessToken code, (err, result) ->
+  oauthApi.getAccessToken code, (err, result) ->
     if err
       return res.redirect 'http://www.rabbitpre.com/m/qyNmb6ei6'
     unless result.data
