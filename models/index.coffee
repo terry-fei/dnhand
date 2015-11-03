@@ -16,6 +16,7 @@ StudentSchema  = require './Student'
 SyllabusSchema = require './Syllabus'
 zyGradeSchema  = require './zyGrade'
 WechatTokenSchema = require './WechatToken'
+JserSchema     = require './Jser'
 
 models =
   Grade: conn.model('Grade', GradeSchema),
@@ -24,5 +25,6 @@ models =
   Syllabus: conn.model('Syllabus', SyllabusSchema),
   zyGrade: conn.model('zyGrade', zyGradeSchema),
   WechatToken: conn.model('WechatToken',  WechatTokenSchema)
+  Jser: conn.model('Jser', JserSchema)
 
 module.exports = models
