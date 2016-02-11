@@ -2,7 +2,6 @@ os = require 'os'
 path = require 'path'
 env = process.env
 
-tmpPath = os.tmpdir()
 module.exports =
   env: env.NODE_ENV
   wechat:
