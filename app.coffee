@@ -17,7 +17,6 @@ config     = require './config'
 wechat       = require 'wechat'
 wechatHanler = require './middleware/wechat'
 jwcRouter = require './controllers/jwc'
-youzanRouter = require './controllers/youzan'
 oauthRouter = require './controllers/wechat-oauth'
 
 app = express()
@@ -40,8 +39,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 # static files
-staticDir = require('path').join(__dirname, 'static')
-app.use express.static(staticDir)
+publicDir = require('path').join(__dirname, 'public')
+app.use express.static(publicDir)
 
 # view engin
 app.set 'views', './views'
@@ -50,7 +49,6 @@ app.engine('html', require('ejs').renderFile)
 
 app.use oauthRouter
 app.use '/jwc', jwcRouter
-app.use '/youzan', youzanRouter
 
 app.listen config.port, () ->
   log.info "Server Start at port #{config.port}"

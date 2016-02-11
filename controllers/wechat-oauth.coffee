@@ -52,29 +52,3 @@ router.get '/wechat/oauth/test', (req, res) ->
     return
 
   res.end code
-
-router.get '/jser/welcome', (req, res) ->
-  code = req.query.code
-  type = req.query.type
-
-  unless code
-    oauthDispatherUrl = 'http://n.feit.me/wechat/oauth'
-    thisUrl = "#{req.protocol}://#{req.hostname + req.path}"
-    state = JSON.stringify {url: thisUrl}
-    oauthUrl = oauthApi.getAuthorizeURL oauthDispatherUrl, state
-    res.redirect oauthUrl
-    return
-
-  oauthApi.getAccessToken code, (err, result) ->
-    if err
-      return res.redirect 'http://www.rabbitpre.com/m/qyNmb6ei6'
-    unless result.data
-      return res.redirect 'http://www.rabbitpre.com/m/qyNmb6ei6'
-    openid = result.data.openid
-
-    if type is 'sign'
-      Jser.update {openid}, {hasSign: true}, {upsert: true}, ->
-      return res.end '<h2 style="text-aligen: center">预约成功，我们的工作人员会尽快与您取得联系</h2>'
-
-    Jser.update {openid}, {hasVisit: true}, {upsert: true}, ->
-    res.redirect 'http://www.rabbitpre.com/m/qyNmb6ei6'

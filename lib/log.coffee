@@ -7,7 +7,6 @@ if config.env is 'production'
     db: "mongodb://#{config.mongodb.host}/#{config.mongodb.dbname}"
     level: "info"
 
-
   log.add log.transports.MongoDB, mongoOpts
   log.remove log.transports.Console
 else

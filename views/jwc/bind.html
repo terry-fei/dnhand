@@ -5,40 +5,41 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no, minimal-ui">
   <meta name="format-detection" content="telephone=no">
-  <title>东农助手</title>
-  <link rel="stylesheet" href="/css/ratchet.min.css">
-  <link rel="stylesheet" href="/css/ratchet-theme-ios.min.css">
-  <link rel="stylesheet" href="/css/ui.css">
+  <title>绑定教务账户</title>
+  <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.3.0/weui.min.css">
   <style>
-    * {
-      -webkit-tap-highlight-color: rgba(0,0,0,0)
-    }
-    .bar {
-      background-color: #5cb85c
-    }
-    .title {
-      color: #FFFFFF
-    }
-    #bindBtn {
-      width: 94%;
-      margin: 10px;
-    }
+  body {
+    background-color: #FBF9FE;
+    -webkit-tap-highlight-color: transparent;
+  }
   </style>
 </head>
 <body>
-  <header class="bar bar-nav">
-    <h1 class="title">绑定教务账户</h1>
-  </header>
-  <div class="content">
-    <form class="input-group">
-      <input id="stuid" type="text" placeholder="学号">
-      <input id="pswd" type="password" placeholder="教务处登录密码">
-    </form>
-    <button id="bindBtn" class="btn btn-positive btn-block btn-outlined">绑定</button>
+  <div class="weui_cells_title">教务网站绑定</div>
+  <div class="weui_cells weui_cells_form">
+    <div class="weui_cell">
+      <div class="weui_cell_hd">
+        <label class="weui_label">学号</label>
+      </div>
+      <div class="weui_cell_bd weui_cell_primary">
+        <input id="stuid" class="weui_input" type="text" placeholder="请输入学号">
+      </div>
+    </div>
+    <div class="weui_cell">
+      <div class="weui_cell_hd">
+        <label class="weui_label">密码</label>
+      </div>
+      <div class="weui_cell_bd weui_cell_primary">
+        <input id="pswd" class="weui_input" type="password" placeholder="教务网站登录密码">
+      </div>
+    </div>
   </div>
-  <script type="text/javascript" src="/js/vendor/ratchet.min.js"></script>
-  <script type="text/javascript" src="/js/vendor/zepto.min.js"></script>
-  <script type="text/javascript" src="/js/vendor/ui.js"></script>
+  <div class="weui_btn_area">
+    <a class="weui_btn weui_btn_primary" id="bindBtn" href="javascript:">绑定</a>
+  </div>
+
+  <script src="//cdn.bootcss.com/zepto/1.1.6/zepto.min.js"></script>
+  <script type="text/javascript" src="/js/weui.min.js"></script>
   <script type="text/javascript" src="/js/jwc-bind.js"></script>
 </body>
 </html>

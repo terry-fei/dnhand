@@ -204,12 +204,6 @@ eventHandler = (info, req, res) ->
         when 'ruijiecharge'
           res.reply '<a href="wp.feit.me/charge">点我去充值</a>'
 
-        when 'ruijiekf'
-          res.reply """
-            你好，如果遇到充值没有到帐的问题
-            请致电：15663629958
-          """
-
         else
           comMsg.replyUsage info, req, res
 
