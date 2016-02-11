@@ -14,12 +14,6 @@ GradeService = require '../services/Grade'
 module.exports = router = express.Router()
 
 router.get '/bind', (req, res) ->
-  if req.query.dev is 'yes'
-    openid = req.query.openid
-    req.session.openid = openid
-    res.render 'jwc/bind'
-    return
-
   code = req.query.code
   unless code
     oauthUrl = oauthApi
