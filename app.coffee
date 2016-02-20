@@ -1,5 +1,3 @@
-require('dotenv').load()
-
 express    = require 'express'
 bodyParser = require 'body-parser'
 session    = require 'express-session'
